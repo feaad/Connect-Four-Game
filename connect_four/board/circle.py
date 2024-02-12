@@ -80,6 +80,33 @@ class Circle:
         """
         self.token = Token(colour=colour)
 
+    def get_token_symbol(self) -> str:
+        """
+        The function returns the symbol of the token associated with an object.
+
+        Returns
+        -------
+            The method is returning the value of the "symbol" attribute of the
+            "colour" attribute of the "token" attribute.
+
+        """
+        return self.token.get_colour().value.symbol
+
+    def get_token_colour(self) -> Colour:
+        return self.token.get_colour()
+
+    def get_token_win_symbol(self) -> str:
+        """
+        The function returns the symbol of the token associated with an object.
+
+        Returns
+        -------
+            The method is returning the value of the "symbol" attribute of the
+            "colour" attribute of the "token" attribute.
+
+        """
+        return self.token.get_colour().value.win_symbol
+
     def __str__(self) -> str:
         """
         The function returns a string representation of the object.

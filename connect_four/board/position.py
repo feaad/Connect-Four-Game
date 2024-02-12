@@ -35,3 +35,11 @@ class Position:
 
         """
         return f"({self.x}, {self.y})"
+
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Position):
+            return self.x == other.x and self.y == other.y
+        return False

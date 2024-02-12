@@ -19,14 +19,33 @@ from enum import Enum
 
 
 @dataclass
+class ColourSymbol:
+    """Defines the attributes of the ColourSymbol class"""
+
+    name: str
+    value: int
+    symbol: str
+    win_symbol: str
+
+    @property
+    def raw(self):
+        """
+        The function returns the symbol attribute of the object.
+
+        Returns
+        -------
+            The symbol attribute of the object.
+
+        """
+        return self.value
+
+
 class Colour(Enum):
     """Defines the colours of the game tokens"""
 
-    RED = "red"
-    YELLOW = "yellow"
-    GRAY = (
-        "gray"  # The default colour of a token that represents an empty circle
-    )
+    GRAY = ColourSymbol("GRAY", 0, "  ", "  ")
+    RED = ColourSymbol("RED", 1, "🔴", "🟥")
+    YELLOW = ColourSymbol("YELLOW", 2, "🟡", "🟨")
 
     def __str__(self):
         """
@@ -38,7 +57,7 @@ class Colour(Enum):
             The first character of the value attribute, converted to uppercase.
 
         """
-        return self.value[0].upper()
+        return self.value.name.upper()
 
     def __eq__(self, other: object):
         """

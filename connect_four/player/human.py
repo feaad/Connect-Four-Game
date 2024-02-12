@@ -58,6 +58,14 @@ class Human(Player):
         if not self.is_turn:
             raise ValueError(f"It's not the {self.name}'s turn")
 
-        column = int(input(f"{self.name}, kindly enter the column number")) - 1
+        # TODO: Clean the .value.symbol
+        column = (
+            int(
+                input(
+                    f"{self.colour.value.symbol} {self.name}, kindly enter the column number: "
+                )
+            )
+            - 1
+        )
 
         return column

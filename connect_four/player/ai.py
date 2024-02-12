@@ -20,9 +20,8 @@ from algorithms.algorithm import Algorithm
 from algorithms.algorithm_type import AlgorithmType
 from algorithms.alpha_beta import AlphaBeta
 from algorithms.min_max import MinMax
-
-from connect_four.board.board import Board
-from connect_four.board.colour import Colour
+from board.board import Board
+from board.colour import Colour
 
 from .player import Player
 
@@ -51,5 +50,5 @@ class AI(Player):
 
         if not self.is_turn:
             raise ValueError("It's not the {self.name}'s turn")
-        
+
         return self.algo.get_best_move(board)
