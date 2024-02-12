@@ -12,7 +12,7 @@ dimensions = Position(WIDTH, HEIGHT)
 board = Board(dim=dimensions)
 
 human = Human("N", Colour.RED)
-ai = AI("T", Colour.YELLOW, AlgorithmType.MIN_MAX)
+ai = AI("T", Colour.YELLOW, AlgorithmType.ALPHA_BETA)
 
 is_human_turn = True
 

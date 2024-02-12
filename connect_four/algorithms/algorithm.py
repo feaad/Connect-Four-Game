@@ -18,6 +18,17 @@ class Algorithm:
         raise NotImplementedError(
             "Algorithm.get_best_move() must be implemented to return a move."
         )
+    
+    def evaluate(self, board: Board) -> int:
+        if board.is_game_over():
+            if board.is_winner(self.colour):
+                return -1, float("inf")
+            elif board.is_winner(self.opponent):
+                return -1, float("-inf")
+            else:
+                return -1, 0
+        else:
+            return -1, self.get_score(board, self.colour)
 
     def get_score(self, board: Board, colour: Colour) -> int:
         score: int = 0
@@ -35,7 +46,7 @@ class Algorithm:
         # TODO: Tune these values
 
         if sliding_window.count(colour) == 4:
-            score += 10
+            score += 100
         elif (
             sliding_window.count(colour) == 3 and sliding_window.count(Colour.GRAY) == 1
         ):

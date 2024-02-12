@@ -19,21 +19,13 @@ class MinMax(Algorithm):
         self, board: Board, depth: int, is_maximizing: bool = True
     ) -> Tuple[int, float]:
         if depth == 0 or board.is_game_over():
-            if board.is_game_over():
-                if board.is_winner(self.colour):
-                    return -1, float("inf")
-                elif board.is_winner(self.opponent):
-                    return -1, float("-inf")
-                else:
-                    return -1, 0
-            else:
-                return -1, self.get_score(board, self.colour)
+           return self.evaluate(board)
 
         empty_cols: List[int] = board.get_open_columns()
-        best_col: int = choice(empty_cols)
-        best_score: float = float("-inf") if is_maximizing else float("inf")
+        best_col = choice(empty_cols)
+        best_score = float("-inf") if is_maximizing else float("inf")
 
-        # TODO: FIX bug
+        
         for col in empty_cols:
             # TODO: Refactor this to avoid copying the board which produces an overhead.
             temp_board = copy.deepcopy(board)
