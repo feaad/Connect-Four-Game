@@ -66,8 +66,7 @@ class Algorithm:
 
     def __centre_score(self, board: Board, colour: Colour) -> int:
         score: int = 0
-        # TODO: Implement this section
-
+        
         centre: int = board.dimensions.x // 2
 
         sliding_window = [

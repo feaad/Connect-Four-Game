@@ -50,6 +50,7 @@ class Board:
     num_tokens: int  # The number of tokens current on the board
 
     last_filled: Position  # The position of the last filled token
+    moves: List[Position]  # The positions of the moves made
 
     board: List[List[Circle]]  # The board
 
@@ -82,6 +83,7 @@ class Board:
         self.num_tokens = 0
 
         self.last_filled = Position(-1, -1)
+        self.moves = []
 
         self.win_positions = set()
 
@@ -152,11 +154,28 @@ class Board:
             if not self.board[y][column].is_occupied():
                 self.board[y][column].set_token(colour=colour)
                 self.last_filled = Position(column, y)
+                self.moves.append(self.last_filled)
                 self.num_tokens += 1
                 return True
 
         # If the entire column is occupied, return False
         return False
+
+    def undo_move(self) -> None:
+        """
+        The function undoes the last move made by removing the token from the
+        last filled position.
+
+        """
+        if self.moves:
+            move = self.moves.pop()
+            self.last_filled = self.moves[-1] if self.moves else Position(-1, -1)
+
+            self.board[move.y][move.x].set_token(colour=Colour.GRAY)
+            self.num_tokens -= 1
+
+            if Position(move.x, move.y) in self.win_positions:
+                self.win_positions.clear()
 
     def get_open_columns(self) -> List[int]:
         """
@@ -242,9 +261,7 @@ class Board:
         """
         last_circle = self.board[self.last_filled.y][self.last_filled.x]
         same_colour_count = 1
-        win_positions: Set[Position] = {
-            Position(self.last_filled.x, self.last_filled.y)
-        }
+        win_pos: Set[Position] = {Position(self.last_filled.x, self.last_filled.y)}
 
         for dx in [-1, 1]:
             for d in range(1, 4):
@@ -255,12 +272,12 @@ class Board:
                     and self.board[self.last_filled.y][x] == last_circle
                 ):
                     same_colour_count += 1
-                    win_positions.add(Position(x, self.last_filled.y))
+                    win_pos.add(Position(x, self.last_filled.y))
                 else:
                     break
 
                 if same_colour_count >= 4:
-                    self.win_positions.update(win_positions)
+                    self.win_positions.update(win_pos)
                     return True
 
         return False
@@ -279,9 +296,7 @@ class Board:
         """
         last_circle = self.board[self.last_filled.y][self.last_filled.x]
         same_colour_count = 1
-        win_positions: Set[Position] = {
-            Position(self.last_filled.x, self.last_filled.y)
-        }
+        win_pos: Set[Position] = {Position(self.last_filled.x, self.last_filled.y)}
 
         for y in range(self.last_filled.y + 1, self.last_filled.y + 4):
             if (
@@ -289,12 +304,12 @@ class Board:
                 and self.board[y][self.last_filled.x] == last_circle
             ):
                 same_colour_count += 1
-                win_positions.add(Position(self.last_filled.x, y))
+                win_pos.add(Position(self.last_filled.x, y))
             else:
                 break
 
             if same_colour_count >= 4:
-                self.win_positions.update(win_positions)
+                self.win_positions.update(win_pos)
                 return True
 
         return False
@@ -313,9 +328,7 @@ class Board:
 
         """
         last_circle = self.board[self.last_filled.y][self.last_filled.x]
-        win_positions: Set[Position] = {
-            Position(self.last_filled.x, self.last_filled.y)
-        }
+        win_pos: Set[Position] = {Position(self.last_filled.x, self.last_filled.y)}
 
         # The directions in which to check for a diagonal win
         directions = [(1, 1), (1, -1)]
@@ -336,12 +349,12 @@ class Board:
                         and self.board[y][x] == last_circle
                     ):
                         same_colour_count += 1
-                        win_positions.add(Position(x, y))
+                        win_pos.add(Position(x, y))
                     else:
                         break
 
                     if same_colour_count >= 4:
-                        self.win_positions.update(win_positions)
+                        self.win_positions.update(win_pos)
                         return True
 
         return False

@@ -36,7 +36,6 @@ class AI(Player):
         super().__init__(name, colour)
         self.algo_type = algo_type
 
-        # TODO: Implement this
         if algo_type == AlgorithmType.MIN_MAX:
             self.algo = MinMax(colour)
         elif algo_type == AlgorithmType.ALPHA_BETA:

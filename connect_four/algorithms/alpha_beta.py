@@ -1,4 +1,3 @@
-import copy
 from random import choice
 from typing import List, Tuple
 
@@ -34,12 +33,10 @@ class AlphaBeta(Algorithm):
         best_score = float("-inf") if is_maximizing else float("inf")
 
         for col in empty_cols:
-            temp_board = copy.deepcopy(board)
-            temp_board.drop_token(col, self.colour if is_maximizing else self.opponent)
-
-            _, score = self.alpha_beta(
-                temp_board, depth - 1, alpha, beta, not is_maximizing
-            )
+            
+            board.drop_token(col, self.colour if is_maximizing else self.opponent)
+            _, score = self.alpha_beta(board, depth - 1, alpha, beta, not is_maximizing)
+            board.undo_move()
 
             if (is_maximizing and score > best_score) or (
                 not is_maximizing and score < best_score

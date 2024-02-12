@@ -1,4 +1,3 @@
-import copy
 from random import choice
 from typing import List, Tuple
 
@@ -27,11 +26,10 @@ class MinMax(Algorithm):
 
         
         for col in empty_cols:
-            # TODO: Refactor this to avoid copying the board which produces an overhead.
-            temp_board = copy.deepcopy(board)
-            temp_board.drop_token(col, self.colour if is_maximizing else self.opponent)
-
-            _, score = self.min_max(temp_board, depth - 1, not is_maximizing)
+            
+            board.drop_token(col, self.colour if is_maximizing else self.opponent)
+            _, score = self.min_max(board, depth - 1, not is_maximizing)
+            board.undo_move()
 
             if (is_maximizing and score > best_score) or (
                 not is_maximizing and score < best_score
