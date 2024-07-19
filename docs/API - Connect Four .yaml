@@ -1,0 +1,2055 @@
+openapi: 3.0.3
+info:
+  title: Connect Four - OpenAPI 3.0
+  description: |-
+    This is the OpenAPI 3.0 documentation for the Connect Four API.
+    This outlines the endpoints and methods available for use.
+  version: 0.1.0
+servers:
+  - url: https://connect-four.feaad.com/api/v1
+    description: Production Server
+  - url: http://localhost:3390/api/v1
+    description: Local Development Server
+tags:
+  - name: Algorithm
+    description: Different algorithms that can be used to play the game.
+  # - name: ChangeLog
+  #   description: Changes made to the user's account.
+  - name: Event
+    description: Events that are logged for security purposes.
+  - name: Game
+    description: Games that have been created.
+  - name: GameInvitation
+    description: Invitations that have been sent to other users.
+  - name: Guest
+    description: Guests that have played the game.
+  - name: Move
+    description: Moves that have been made in the game.
+  - name: Player
+    description: Players that have played the game.
+  - name: SecurityLog
+    description: Logs of security events.
+  - name: Session
+    description: Sessions that have been created.
+  - name: Status
+    description: Statuses that a game or game invitation can be in.
+  - name: User
+    description: Users that have registered on the platform.
+
+paths:
+  /algorithm:
+    get:
+      tags:
+        - Algorithm
+      summary: Get all algorithms
+      description: Returns all algorithms that can be used to play the game.
+      operationId: getAlgorithms
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Algorithm"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+  /algorithm/{algorithm_id}:
+    get:
+      tags:
+        - Algorithm
+      summary: Get algorithm by ID
+      description: Returns a single algorithm
+      operationId: getAlgorithmById
+      parameters:
+        - name: algorithm_id
+          in: path
+          description: The ID of the algorithm to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Algorithm"
+        "404":
+          description: Algorithm not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Algorithm not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+  # /change_log/{username}:
+  #   get:
+  #     tags:
+  #       - ChangeLog
+  #     summary: Get change logs by username
+  #     description: Returns all change logs for a user
+  #     operationId: getChangeLogsByUsername
+  #     parameters:
+  #       - name: username
+  #         in: path
+  #         description: The username of the user to retrieve change logs for
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: "#/components/schemas/ChangeLog"
+  #       "404":
+  #         description: Change logs not found
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 message:
+  #                   type: string
+  #                   example: "Change logs not found"
+  #       "401":
+  #         description: Unauthorized
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 message:
+  #                   type: string
+  #                   example: "Unauthorized"
+
+  /event:
+    get:
+      tags:
+        - Event
+      summary: Get all events
+      description: Returns all events that have been logged.
+      operationId: getEvents
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /event/{event_id}:
+    get:
+      tags:
+        - Event
+      summary: Get event by ID
+      description: Returns a single event
+      operationId: getEventById
+      parameters:
+        - name: event_id
+          in: path
+          description: The ID of the event to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Event not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /game:
+    post:
+      tags:
+        - Game
+      summary: Create game
+      description: Creates a new game.
+      operationId: createGame
+      requestBody:
+        description: Created game object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Game"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Game"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Game"
+      responses:
+        "200":
+          description: successfully created game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "401":
+          description: Unable to create game
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unable to create game"
+    get:
+      tags:
+        - Game
+      summary: Get all games
+      description: Returns all games that have been created.
+      operationId: getGames
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Game"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /game/{game_id}:
+    get:
+      tags:
+        - Game
+      summary: Get game by ID
+      description: Returns a single game
+      operationId: getGameById
+      parameters:
+        - name: game_id
+          in: path
+          description: The ID of the game to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "404":
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - Game
+      summary: Updated game
+      description: This can only be done by the logged in user.
+      operationId: updateGame
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: game_id
+          in: path
+          description: The ID of the game to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated game object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Game"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Game"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Game"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game not found"
+
+  /game/{username}:
+    get:
+      tags:
+        - Game
+      summary: Get games by username
+      description: Returns all games for a user
+      operationId: getGamesByUsername
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to retrieve games for
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Game"
+        "404":
+          description: Games not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Games not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /game-invitation/{invitation_id}:
+    get:
+      tags:
+        - GameInvitation
+      summary: Get game invitation by ID
+      description: Returns a single game invitation
+      operationId: getGameInvitationById
+      parameters:
+        - name: invitation_id
+          in: path
+          description: The ID of the game invitation to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameInvitation"
+        "404":
+          description: Game invitation not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game invitation not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - GameInvitation
+      summary: Update game invitation
+      description: Updates a game invitation.
+      operationId: updateGameInvitation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: invitation_id
+          in: path
+          description: The ID of the game invitation to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated game invitation object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GameInvitation"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/GameInvitation"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/GameInvitation"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GameInvitation"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: Game invitation not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game invitation not found"
+
+  /game-invitation/sent/{username}:
+    get:
+      tags:
+        - GameInvitation
+      summary: Get game invitations sent by username
+      description: Returns all game invitations sent by a user
+      operationId: getGameInvitationsSentByUsername
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to retrieve game invitations sent by
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GameInvitation"
+        "404":
+          description: Game invitations not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game invitations not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /game-invitations/{username}:
+    get:
+      tags:
+        - GameInvitation
+      summary: Get game invitations for username
+      description: Returns all game invitations for a user
+      operationId: getGameInvitationsForUsername
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to retrieve game invitations for
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GameInvitation"
+        "404":
+          description: Game invitations not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game invitations not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /game-invitations/received/{username}:
+    get:
+      tags:
+        - GameInvitation
+      summary: Get game invitations received by username
+      description: Returns all game invitations received by a user
+      operationId: getGameInvitationsReceivedByUsername
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to retrieve game invitations received by
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GameInvitation"
+        "404":
+          description: Game invitations not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Game invitations not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /guest:
+    post:
+      tags:
+        - Guest
+      summary: Create guest
+      description: Creates a new guest.
+      operationId: createGuest
+      requestBody:
+        description: Created guest object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Guest"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Guest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Guest"
+      responses:
+        "200":
+          description: successfully created guest
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Guest"
+        "401":
+          description: Unable to create guest
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unable to create guest"
+
+  /guest/{guest_id}:
+    get:
+      tags:
+        - Guest
+      summary: Get guest by ID
+      description: Returns a single guest
+      operationId: getGuestById
+      parameters:
+        - name: guest_id
+          in: path
+          description: The ID of the guest to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+        "404":
+          description: Guest not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Guest not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - Guest
+      summary: Update guest
+      description: Updates a guest.
+      operationId: updateGuest
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: guest_id
+          in: path
+          description: The ID of the guest to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated guest object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Guest"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Guest"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Guest"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guest"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: Guest not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Guest not found"
+
+  /move:
+    post:
+      tags:
+        - Move
+      summary: Create move
+      description: Creates a new move.
+      operationId: createMove
+      requestBody:
+        description: Created move object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Move"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Move"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Move"
+      responses:
+        "200":
+          description: successfully created move
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Move"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Move"
+        "401":
+          description: Unable to create move
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unable to create move"
+
+  /move/{move_id}:
+    get:
+      tags:
+        - Move
+      summary: Get move by ID
+      description: Returns a single move
+      operationId: getMoveById
+      parameters:
+        - name: move_id
+          in: path
+          description: The ID of the move to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Move"
+        "404":
+          description: Move not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Move not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - Move
+      summary: Update move
+      description: Updates a move.
+      operationId: updateMove
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: move_id
+          in: path
+          description: The ID of the move to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated move object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Move"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Move"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Move"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Move"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: Move not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Move not found"
+
+  /player:
+    get:
+      tags:
+        - Player
+      summary: Get all players
+      description: Returns all players that have played the game.
+      operationId: getPlayers
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /player/{player_id}:
+    get:
+      tags:
+        - Player
+      summary: Get player by ID
+      description: Returns a single player
+      operationId: getPlayerById
+      parameters:
+        - name: player_id
+          in: path
+          description: The ID of the player to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "404":
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Player not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - Player
+      summary: Update player
+      description: Updates a player.
+      operationId: updatePlayer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: player_id
+          in: path
+          description: The ID of the player to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated player object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Player"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Player"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Player"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Player not found"
+
+  /player/search:
+    get:
+      tags:
+        - Player
+      summary: Get player ID by user ID, guest ID, or algorithm ID
+      description: Retrieve a player ID based on the provided user ID, guest ID, or algorithm ID.
+      operationId: getPlayerId
+      parameters:
+        - name: user_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: 123e4567-e89b-12d3-a456-426614174000
+          description: User ID to search for
+        - name: guest_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: 123e4567-e89b-12d3-a456-426614174000
+          description: Guest ID to search for
+        - name: algorithm_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            example: 123e4567-e89b-12d3-a456-426614174000
+          description: Algorithm ID to search for
+      responses:
+        "200":
+          description: Successfully retrieved player ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  player_id:
+                    type: string
+                    format: uuid
+                    example: 123e4567-e89b-12d3-a456-426614174000
+        "400":
+          description: Bad request. No identifier provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Please provide user_id, guest_id, or algorithm_id."
+        "404":
+          description: Player not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Player not found"
+
+  /security-log:
+    post:
+      tags:
+        - SecurityLog
+      summary: Create security log for user
+      description: Creates a new security log.
+      operationId: createSecurityLog
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Created security log object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SecurityLog"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/SecurityLog"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/SecurityLog"
+      responses:
+        "200":
+          description: successfully created security log
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SecurityLog"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/SecurityLog"
+        "401":
+          description: Unable to create security log
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unable to create security log"
+
+  /security-log/{user_id}:
+    get:
+      tags:
+        - SecurityLog
+      summary: Get security logs for a given user
+      description: Returns all security logs for a user
+      operationId: getSecurityLogsByUsername
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          description: The ID of the user to retrieve security logs for
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SecurityLog"
+        "404":
+          description: Security logs not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Security logs not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /session:
+    post:
+      tags:
+        - Session
+      summary: Create session
+      description: Creates a new session.
+      operationId: createSession
+      requestBody:
+        description: Created session object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Session"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Session"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Session"
+      responses:
+        "200":
+          description: successfully created session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "401":
+          description: Unable to create session
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unable to create session"
+
+  /session/{session_id}:
+    get:
+      tags:
+        - Session
+      summary: Get session by ID
+      description: Returns a single session
+      operationId: getSessionById
+      parameters:
+        - name: session_id
+          in: path
+          description: The ID of the session to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Session not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - Session
+      summary: Update session
+      description: Updates a session.
+      operationId: updateSession
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: session_id
+          in: path
+          description: The ID of the session to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Updated session object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Session"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/Session"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Session"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Session not found"
+
+  /status:
+    get:
+      tags:
+        - Status
+      summary: Get all statuses
+      description: Returns all statuses that have been logged.
+      operationId: getStatuses
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Status"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /status/{status_id}:
+    get:
+      tags:
+        - Status
+      summary: Get status by ID
+      description: Returns a single status
+      operationId: getStatusById
+      parameters:
+        - name: status_id
+          in: path
+          description: The ID of the status to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+        "404":
+          description: Status not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Status not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /user:
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: successfully created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unable to create user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unable to create user"
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: User login
+      description: Authenticates a user and returns a JWT token.
+      operationId: loginUser
+      requestBody:
+        description: User login object
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "nutmeg"
+                password:
+                  type: string
+                  example: "password"
+              required:
+                - username
+                - password
+          application/xml:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "nutmeg"
+                password:
+                  type: string
+                  example: "password"
+              required:
+                - username
+                - password
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "nutmeg"
+                password:
+                  type: string
+                  example: "password"
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: successfully logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        "401":
+          description: Invalid username or password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid username or password"
+  /user/logout:
+    post:
+      tags:
+        - User
+      summary: User logout
+      description: Logs out the user and invalidates the JWT token.
+      operationId: logoutUser
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successfully logged out
+        "401":
+          description: Unauthorized
+
+  /user/{username}:
+    get:
+      tags:
+        - User
+      summary: Get user by username
+      description: Returns a single user
+      operationId: getUserByUsername
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to retrieve
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User not found"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+    put:
+      tags:
+        - User
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/xml:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User not found"
+    delete:
+      tags:
+        - User
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: username
+          in: path
+          description: The username of the user to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User deleted"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User not found"
+
+components:
+  schemas:
+    Algorithm:
+      type: object
+      properties:
+        algorithm_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: "Minimax"
+        description:
+          type: string
+          example: "Minimax algorithm is a recursive algorithm used to determine the best move for a player in a game."
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    # ChangeLog:
+    #   type: object
+    #   properties:
+    #     change_id:
+    #       type: string
+    #       format: uuid
+    #       example: 123e4567-e89b-12d3-a456-426614174000
+    #     user_id:
+    #       type: string
+    #       format: uuid
+    #       example: 123e4567-e89b-12d3-a456-426614174000
+    #     field_changed:
+    #       type: string
+    #       example: "username"
+    #     old_value:
+    #       type: string
+    #       example: "old_username"
+    #     new_value:
+    #       type: string
+    #       example: "new_username"
+    #     changed_at:
+    #       type: string
+    #       format: date-time
+    #       example: "2021-10-01T12:00:00Z"
+
+    Event:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: "Authentication success"
+        description:
+          type: string
+          example: "User successfully authenticated."
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    Game:
+      type: object
+      properties:
+        game_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        player_one_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        player_two_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        rows:
+          type: integer
+        columns:
+          type: integer
+        status_id:
+          type: integer
+        current_turn:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          nullable: true
+        start_time:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        end_time:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+          nullable: true
+        winner_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    GameInvitation:
+      type: object
+      properties:
+        invitation_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        sender_player_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        receiver_player_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        status_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Guest:
+      type: object
+      properties:
+        guest_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        session_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    Move:
+      type: object
+      properties:
+        move_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        game_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        player_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        move_number:
+          type: integer
+          format: int32
+          example: 1
+        column:
+          type: integer
+          format: int32
+          example: 1
+        row:
+          type: integer
+          format: int32
+          example: 1
+        is_undone:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    Player:
+      type: object
+      properties:
+        player_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        user_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          nullable: true
+        guest_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          nullable: true
+        algorithm_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          nullable: true
+        is_human:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    SecurityLog:
+      type: object
+      properties:
+        security_log_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        user_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        event_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        app_version:
+          type: string
+          example: "web 1.0.0"
+        ip_address:
+          type: string
+          format: ipv4
+          example: "0.0.0.0"
+          nullable: true
+        location:
+          type: string
+          example: "Manchester, UK"
+          nullable: true
+        isp:
+          type: string
+          example: "Sky Broadband"
+          nullable: true
+        device:
+          type: string
+          example: "brave, linux"
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    Session:
+      type: object
+      properties:
+        session_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        user_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        start_time:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        end_time:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+          nullable: true
+        is_active:
+          type: boolean
+          example: true
+
+    Status:
+      type: object
+      properties:
+        status_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: "In Progress"
+        description:
+          type: string
+          example: "The game is currently in progress."
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        username:
+          type: string
+          example: "nutmeg"
+        password_hash:
+          type: string
+          example: "$2a$12$.C0fUuyzDIRV27u4bfCOT.74d/N2G.4txjS9Ce3FxN2YBROWjn7O2"
+        email:
+          type: string
+          example: "mail@example.com"
+        profile_picture:
+          type: string
+          example: "https://example.com/image.jpg"
+        is_auth_logs:
+          type: boolean
+          example: true
+        is_adv_logs:
+          type: boolean
+          example: false
+        is_active:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2021-10-01T12:00:00Z"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
