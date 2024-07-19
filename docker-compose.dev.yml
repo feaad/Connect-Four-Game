@@ -18,12 +18,7 @@ services:
         - DEV=${DEBUG}
     volumes:
       - ./backend:/app
-    ports:
-      - ${API_PORT}:8000
-    command: >
-      sh -c "python manage.py wait_for_db &&
-             python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+      - static-data:/vol/web
     environment:
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - DB_HOST=db
@@ -37,5 +32,18 @@ services:
     depends_on:
       - db
 
+  proxy:
+    container_name: connect-four-proxy
+    build:
+      context: ./proxy
+    restart: always
+    volumes:
+      - static-data:/vol/static
+    ports:
+      - ${API_PORT}:8000
+    depends_on:
+      - backend
+
 volumes:
   dev-db-data:
+  static-data:

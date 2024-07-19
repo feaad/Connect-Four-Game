@@ -31,3 +31,15 @@ services:
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME}
     depends_on:
       - db
+
+  proxy:
+    container_name: connect-four-proxy
+    build:
+      context: ./proxy
+    restart: always
+    volumes:
+      - ${ROOT_FOLDER}/static:/vol/static
+    ports:
+      - ${API_PORT}:8000
+    depends_on:
+      - backend

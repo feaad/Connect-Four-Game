@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="changeme")
 
 ALLOWED_HOSTS = []
-if ALLOWED_HOSTS_ENV := config("ALLOWED_HOSTS"):
+if ALLOWED_HOSTS_ENV := config("ALLOWED_HOSTS", default="127.0.0.1,localhost"):
     ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(","))
 
 
@@ -39,9 +39,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
     "drf_spectacular",
     "django_filters",
     "core",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -149,7 +151,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "The Backend API for Connect Four",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-    "CONTACT": "NKNAB",
+    "CONTACT": "FEAAD",
     "COMPONENT_SPLIT_REQUEST": True,
     # "SWAGGER_UI_FAVICON_HREF": f"{STATIC_URL}images/cf.png",
 }
