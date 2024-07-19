@@ -13,6 +13,7 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from core.views import health_check
 from django.contrib import admin
 from django.urls import path
 from drf_spectacular.views import (
@@ -34,4 +35,5 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="api-schema"),
         name="api-docs-redoc",
     ),
+    path("api/health-check", health_check, name="health-check"),
 ]
