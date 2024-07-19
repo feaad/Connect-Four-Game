@@ -1,0 +1,7 @@
+*.vpp.*
+
+.env
+
+.vscode
+
+useful.txt

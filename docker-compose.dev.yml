@@ -1,0 +1,40 @@
+services:
+  db:
+    container_name: connect-four-db
+    image: postgres:16.3-alpine3.20
+    restart: always
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=${DB_USER}
+
+  backend:
+    container_name: connect-four-backend
+    build:
+      context: ./backend
+      args:
+        - DEV=${DEBUG}
+    volumes:
+      - ./backend:/app
+    ports:
+      - ${API_PORT}:8000
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_PASS=${DB_PASS}
+      - DB_USER=${DB_USER}
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
+      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME}
+    depends_on:
+      - db
+
+volumes:
+  dev-db-data:
