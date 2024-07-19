@@ -17,7 +17,7 @@ WORKDIR /app
 COPY pyproject.toml /app/
 
 # Copy the scripts to the container
-COPY ./scripts /scripts
+# COPY ./scripts /scripts
 
 # Expose the port
 EXPOSE 8000
@@ -39,7 +39,7 @@ RUN apk add --update --no-cache postgresql-client && \
 	rm -rf /root/.cache
 
 #  Make all the scripts executable
-RUN	chmod +x /scripts/*
+# RUN	chmod +x /scripts/*
 
 
 # Create a user to run the application

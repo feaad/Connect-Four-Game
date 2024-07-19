@@ -2,6 +2,7 @@
 [flake8]
 exclude =
   migrations,
+  .venv
   __pycache__,
   manage.py,
   settings.py
