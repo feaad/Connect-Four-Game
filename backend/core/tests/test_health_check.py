@@ -27,7 +27,8 @@ class HealthCheckTests(TestCase):
 
         """
         client = APIClient()
-        url = reverse("health-check")
+        url = reverse("core:health-check")
         res = client.get(url)
 
+        self.assertEqual(res.data, {"healthy": True})
         self.assertEqual(res.status_code, status.HTTP_200_OK)

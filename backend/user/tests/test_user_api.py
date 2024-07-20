@@ -1,3 +1,18 @@
+"""
+File: test_user_api.py
+Project: Backend - Connect Four
+File Created: Saturday, 20th July 2024 1:53:44 PM
+Author: feaad
+Email: fantwi02@student.bbk.ac.uk
+Version: 1.0
+Brief: Test user API endpoints.
+-----
+Last Modified: Saturday, 20th July 2024 4:36:39 PM
+Modified By: feaad
+-----
+Copyright ©2024 feaad
+"""
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -5,7 +20,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 REGISTER_USER_URL = reverse("user:user-register")
-AUTH_LOGIN_URL = reverse("login")
+AUTH_LOGIN_URL = reverse("core:login")
 USER_DETAIL_URL = reverse("user:user-detail")
 
 USER_PAYLOAD = {

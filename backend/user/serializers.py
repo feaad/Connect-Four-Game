@@ -1,3 +1,18 @@
+"""
+File: serializers.py
+Project: Backend - Connect Four
+File Created: Friday, 19th July 2024 12:47:19 PM
+Author: feaad
+Email: fantwi02@student.bbk.ac.uk
+Version: 1.0
+Brief: Serializers for the user app.
+-----
+Last Modified: Saturday, 20th July 2024 4:18:46 PM
+Modified By: feaad
+-----
+Copyright ©2024 feaad
+"""
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
