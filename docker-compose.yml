@@ -21,11 +21,13 @@ services:
       - ${ROOT_FOLDER}/static:/vol/web
     environment:
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - API_PORT=${API_PORT}
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
       - DB_PASS=${DB_PASS}
       - DB_USER=${DB_USER}
       - DEBUG=${DEBUG}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - SECRET_KEY=${SECRET_KEY}
       - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME}

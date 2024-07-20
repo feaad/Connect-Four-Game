@@ -63,3 +63,15 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
+    list_display = [
+        "user_id",
+        "username",
+        "password",
+        "email",
+        "profile_picture",
+        "is_auth_logs",
+        "is_adv_logs",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+    ]

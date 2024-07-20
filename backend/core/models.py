@@ -13,6 +13,8 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+import uuid
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -91,8 +93,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     """
 
-    user_id = models.BigAutoField(
-        auto_created=True, primary_key=True, serialize=False
+    user_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
     )
 
     username = models.CharField(
@@ -101,9 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         max_length=255, unique=True, validators=[EmailValidator()]
     )
-    profile_picture = models.ImageField(
-        upload_to="profile_pictures/", null=True, blank=True
-    )
+    profile_picture = models.CharField(max_length=255, blank=True)
     is_auth_logs = models.BooleanField(default=True)
     is_adv_logs = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -114,3 +117,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "username"
+
+    def __str__(self) -> str:
+        return f"{self.username}"
