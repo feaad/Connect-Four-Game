@@ -7,7 +7,7 @@ Email: fantwi02@student.bbk.ac.uk
 Version: 1.0
 Brief: The models for system.
 -----
-Last Modified: Thursday, 18th July 2024 1:20:43 PM
+Last Modified: Saturday, 20th July 2024 6:08:38 PM
 Modified By: feaad
 -----
 Copyright ©2024 feaad
@@ -120,3 +120,41 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return f"{self.username}"
+
+
+class Guest(models.Model):
+    """
+    Guests within the system are represented by this model.
+
+    """
+
+    guest_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+    )
+    session_id = models.UUIDField(
+        auto_created=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    username = models.CharField(
+        max_length=50, unique=True, validators=[MinLengthValidator(5)]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for Guest.
+
+        """
+
+        ordering = ["guest_id"]
+        verbose_name = "Guest"
+        verbose_name_plural = "Guests"
+
+    def __str__(self) -> str:
+        return f"{self.username}_{self.session_id}"

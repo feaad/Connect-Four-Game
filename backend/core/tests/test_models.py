@@ -7,13 +7,14 @@ Email: fantwi02@student.bbk.ac.uk
 Version: 1.0
 Brief: Unit Testing for various models.
 -----
-Last Modified: Friday, 19th July 2024 10:37:42 AM
+Last Modified: Saturday, 20th July 2024 6:08:53 PM
 Modified By: feaad
 -----
 Copyright ©2024 feaad
 """
 
 
+from core import models
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
 
@@ -87,3 +88,14 @@ class ModelTests(TransactionTestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_active)
+
+    def test_create_guest(self) -> None:
+        """
+        Test Case for creating a guest.
+
+        """
+        guest_name = "test_guest"
+        guest = models.Guest.objects.create(username=guest_name)
+
+        self.assertEqual(guest.username, guest_name)
+        self.assertIn(guest_name, str(guest))

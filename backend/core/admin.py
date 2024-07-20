@@ -75,3 +75,15 @@ class UserAdmin(BaseUserAdmin):
         "is_staff",
         "is_superuser",
     ]
+
+
+@admin.register(models.Guest)
+class GuestAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for Guest.
+
+    """
+
+    ordering = ["guest_id"]
+    readonly_fields = ["session_id"]
+    list_display = ["guest_id", "session_id", "username"]
