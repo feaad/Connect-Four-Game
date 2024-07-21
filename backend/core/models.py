@@ -93,7 +93,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     """
 
-    # TODO: add max_length to the id fields
     user_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
