@@ -36,4 +36,5 @@ urlpatterns = [
     ),
     path("api/", include("user.urls")),
     path("api/", include("core.urls")),
+    path("api/", include("algorithm.urls")),
 ]

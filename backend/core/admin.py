@@ -86,3 +86,19 @@ class GuestAdmin(admin.ModelAdmin):
 
     ordering = ["guest_id"]
     list_display = ["guest_id", "session_id", "username"]
+
+
+@admin.register(models.Algorithm)
+class AlgorithmsAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for Algorithms.
+
+    """
+
+    list_display = [
+        "algorithm_id",
+        "name",
+        "description",
+    ]
+
+    list_filter = ["algorithm_id", "name", "description"]
