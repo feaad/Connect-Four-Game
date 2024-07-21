@@ -18,6 +18,13 @@ from core import models
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
 
+SAMPLE_USERNAMES = [
+    ["tesT1", "test1"],
+    ["Test2", "test2"],
+    ["TEST3", "test3"],
+    ["test4", "test4"],
+]
+
 
 def create_user(username: str = "testuser", password: str = "password"):
     """Create a user for testing purposes.
@@ -58,6 +65,41 @@ class ModelTests(TransactionTestCase):
         self.assertFalse(user.is_staff)
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_superuser)
+
+    def test_create_user_email_normalized(self) -> None:
+        """
+        Test Case for normalizing the email for a new user.
+
+        """
+
+        sample_emails = [
+            ["test1@EXAMPLE.com", "test1@example.com"],
+            ["Test2@Example.com", "Test2@example.com"],
+            ["TEST3@EXAMPLE.com", "TEST3@example.com"],
+            ["test4@example.COM", "test4@example.com"],
+        ]
+
+        for index, (email, expected) in enumerate(sample_emails):
+            user = get_user_model().objects.create_user(
+                username=f"test{index}",
+                password="password",
+                email=email,
+            )
+            self.assertEqual(user.email, expected)
+
+    def test_create_user_username_normalized(self) -> None:
+        """
+        Test Case for normalizing the username for a new user.
+
+        """
+
+        for username, expected in SAMPLE_USERNAMES:
+            user = get_user_model().objects.create_user(
+                username=username,
+                email=f"{username}@example.com",
+                password="password",
+            )
+            self.assertEqual(user.username, expected)
 
     def test_create_user_unsuccessful(self) -> None:
         """
@@ -100,4 +142,12 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(guest.username, guest_name)
         self.assertIn(guest_name, str(guest))
 
-    # TODO: Test email normalization
+    def test_create_guest_username_normalized(self) -> None:
+        """
+        Test Case for normalizing the username for a new guest.
+
+        """
+
+        for username, expected in SAMPLE_USERNAMES:
+            guest = models.Guest.objects.create(username=username)
+            self.assertEqual(guest.username, expected)

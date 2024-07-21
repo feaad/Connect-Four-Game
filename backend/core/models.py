@@ -54,6 +54,13 @@ class UserManager(BaseUserManager):
         if not password:
             raise ValueError("User must have a password.")
 
+        # Convert the username to lowercase
+        username = username.lower()
+
+        if email := extra_fields.get("email", None):
+            email = self.normalize_email(email)
+            extra_fields["email"] = email
+
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -163,3 +170,7 @@ class Guest(models.Model):
 
     def __str__(self) -> str:
         return f"{self.username}"
+
+    def save(self, *args, **kwargs):
+        self.username = self.username.lower()
+        super().save(*args, **kwargs)
