@@ -36,8 +36,8 @@ auth_patterns = (
 token_patterns = (
     [
         path("", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-        path("/refresh", TokenRefreshView.as_view(), name="token_refresh"),
-        path("/verify", TokenVerifyView.as_view(), name="token_verify"),
+        path("refresh", TokenRefreshView.as_view(), name="token_refresh"),
+        path("verify", TokenVerifyView.as_view(), name="token_verify"),
     ],
     "token",
 )
@@ -45,5 +45,5 @@ token_patterns = (
 urlpatterns = [
     path("health-check", HealthCheckView.as_view(), name="health-check"),
     path("auth/", include(auth_patterns)),
-    path("token", include(token_patterns)),
+    path("token/", include(token_patterns)),
 ]

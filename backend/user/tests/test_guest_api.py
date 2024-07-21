@@ -13,6 +13,7 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from django.contrib.auth import get_user_model
 from core.models import Guest
 from django.urls import reverse
 from rest_framework import status
@@ -75,6 +76,23 @@ class PublicUserAPITests(APITestCase):
         response = self.client.post(CREATE_GUEST_URL, GUEST_PAYLOAD)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("Guest-Session-ID", response.headers)
+        self.assertNotIn("guest_id", response.data)
+
+    def test_create_guest_with_existing_username_user_table(self):
+        """
+        Test creating a guest with an existing username in the user table
+
+        """
+
+        get_user_model().objects.create_user(
+            username=GUEST_PAYLOAD["username"], password="testpassword"
+        )
+
+        response = self.client.post(CREATE_GUEST_URL, GUEST_PAYLOAD)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "Username already exists")
         self.assertNotIn("Guest-Session-ID", response.headers)
         self.assertNotIn("guest_id", response.data)
 

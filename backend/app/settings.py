@@ -202,4 +202,4 @@ if DEBUG:
     SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"] = timedelta(seconds=30)
     SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"] = timedelta(minutes=1)
 
-APPEND_SLASH = False
+# APPEND_SLASH = False

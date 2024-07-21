@@ -18,6 +18,7 @@ Copyright ©2024 feaad
 from core.models import Guest, User
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status, viewsets
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -55,6 +56,15 @@ class RegisterView(GenericAPIView, AuthMixin):
 
         """
         serializer = self.get_serializer(data=request.data)
+
+        # Check if username exists in guest table
+        if Guest.objects.filter(
+            username=request.data.get("username")
+        ).exists():
+            return Response(
+                {"error": "Username already exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if serializer.is_valid():
             user = serializer.save()
@@ -215,3 +225,10 @@ class GuestView(viewsets.ModelViewSet):
     permission_classes = [GuestHasSessionID]
     authentication_classes = []
     queryset = Guest.objects.all()
+
+    def perform_create(self, serializer):
+        username = self.request.data.get("username")
+        if User.objects.filter(username=username).exists():
+            raise ValidationError({"error": "Username already exists"})
+
+        serializer.save()

@@ -13,11 +13,11 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from core.models import Guest
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APITestCase
 
 REGISTER_USER_URL = reverse("user:user:user-register")
 AUTH_LOGIN_URL = reverse("core:auth:login")
@@ -38,8 +38,7 @@ def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
 
-# TODO: switch to APITestCase
-class PublicUserAPITests(TestCase):
+class PublicUserAPITests(APITestCase):
     """
     API Requests that do not require Authentication
 
@@ -54,14 +53,14 @@ class PublicUserAPITests(TestCase):
 
         """
 
-        res = self.client.post(REGISTER_USER_URL, USER_PAYLOAD)
+        response = self.client.post(REGISTER_USER_URL, USER_PAYLOAD)
 
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         user = get_user_model().objects.get(username=USER_PAYLOAD["username"])
         self.assertTrue(user.check_password(USER_PAYLOAD["password"]))
 
-        self.assertNotIn("password", res.data)
+        self.assertNotIn("password", response.data)
 
     def test_create_user_with_existing_username(self):
         """
@@ -74,9 +73,22 @@ class PublicUserAPITests(TestCase):
         payload = USER_PAYLOAD.copy()
         payload["email"] = "test_2@example.com"
 
-        res = self.client.post(REGISTER_USER_URL, payload)
+        response = self.client.post(REGISTER_USER_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_user_with_existing_username_in_guest_table(self):
+        """
+        Test creating a user with an existing username in the guest table
+
+        """
+
+        Guest.objects.create(username=USER_PAYLOAD["username"])
+
+        response = self.client.post(REGISTER_USER_URL, USER_PAYLOAD)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "Username already exists")
 
     def test_create_user_with_existing_email(self):
         """
@@ -88,9 +100,9 @@ class PublicUserAPITests(TestCase):
         payload = USER_PAYLOAD.copy()
         payload["username"] = "test_2"
 
-        res = self.client.post(REGISTER_USER_URL, payload)
+        response = self.client.post(REGISTER_USER_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
         """
@@ -100,8 +112,8 @@ class PublicUserAPITests(TestCase):
         payload = USER_PAYLOAD.copy()
         payload["password"] = "pw"
 
-        res = self.client.post(REGISTER_USER_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(REGISTER_USER_URL, payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = (
             get_user_model()
             .objects.filter(username=USER_PAYLOAD["username"])
@@ -121,11 +133,11 @@ class PublicUserAPITests(TestCase):
             "username": USER_PAYLOAD["username"],
             "password": USER_PAYLOAD["password"],
         }
-        res = self.client.post(AUTH_LOGIN_URL, payload)
+        response = self.client.post(AUTH_LOGIN_URL, payload)
 
-        self.assertIn("access", res.data)
-        self.assertIn("refresh", res.data)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_token_for_wrong_password(self):
         """
@@ -139,12 +151,12 @@ class PublicUserAPITests(TestCase):
             "username": USER_PAYLOAD["username"],
             "password": "password",
         }
-        res = self.client.post(AUTH_LOGIN_URL, payload)
+        response = self.client.post(AUTH_LOGIN_URL, payload)
 
-        self.assertNotIn("access", res.data)
-        self.assertNotIn("refresh", res.data)
-        self.assertEqual("Wrong password", res.data["error"])
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        self.assertEqual("Wrong password", response.data["error"])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_token_for_non_existent_user(self):
         """
@@ -158,12 +170,12 @@ class PublicUserAPITests(TestCase):
             "username": "user",
             "password": USER_PAYLOAD["username"],
         }
-        res = self.client.post(AUTH_LOGIN_URL, payload)
+        response = self.client.post(AUTH_LOGIN_URL, payload)
 
-        self.assertNotIn("access", res.data)
-        self.assertNotIn("refresh", res.data)
-        self.assertEqual("No user exists", res.data["error"])
-        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        self.assertEqual("No user exists", response.data["error"])
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_token_for_inactive_user(self):
         """
@@ -179,24 +191,24 @@ class PublicUserAPITests(TestCase):
             "username": USER_PAYLOAD["username"],
             "password": USER_PAYLOAD["password"],
         }
-        res = self.client.post(AUTH_LOGIN_URL, payload)
+        response = self.client.post(AUTH_LOGIN_URL, payload)
 
-        self.assertNotIn("access", res.data)
-        self.assertNotIn("refresh", res.data)
-        self.assertEqual("User is not active", res.data["error"])
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
+        self.assertEqual("User is not active", response.data["error"])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_user_unauthorized(self):
         """
         Test that authentication is required for users
 
         """
-        res = self.client.get(USER_DETAIL_URL)
+        response = self.client.get(USER_DETAIL_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateUserAPITests(TestCase):
+class PrivateUserAPITests(APITestCase):
     """
     API Requests that do require Authentication
 
@@ -212,11 +224,11 @@ class PrivateUserAPITests(TestCase):
         Test retrieving profile for logged in user
 
         """
-        res = self.client.get(USER_DETAIL_URL)
+        response = self.client.get(USER_DETAIL_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data["username"], self.user.username)
-        self.assertEqual(res.data["email"], self.user.email)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["username"], self.user.username)
+        self.assertEqual(response.data["email"], self.user.email)
 
     def test_update_user_profile(self):
         """
@@ -226,9 +238,9 @@ class PrivateUserAPITests(TestCase):
 
         payload = {"profile_picture": "new/profile.jpg"}
 
-        res = self.client.patch(USER_DETAIL_URL, payload)
+        response = self.client.patch(USER_DETAIL_URL, payload)
 
         self.user.refresh_from_db()
 
         self.assertEqual(self.user.profile_picture, payload["profile_picture"])
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
