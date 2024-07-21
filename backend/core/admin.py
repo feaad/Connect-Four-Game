@@ -85,5 +85,4 @@ class GuestAdmin(admin.ModelAdmin):
     """
 
     ordering = ["guest_id"]
-    readonly_fields = ["session_id"]
     list_display = ["guest_id", "session_id", "username"]

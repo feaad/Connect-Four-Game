@@ -19,9 +19,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-REGISTER_USER_URL = reverse("user:user-register")
-AUTH_LOGIN_URL = reverse("core:login")
-USER_DETAIL_URL = reverse("user:user-detail")
+REGISTER_USER_URL = reverse("user:user:user-register")
+AUTH_LOGIN_URL = reverse("core:auth:login")
+USER_DETAIL_URL = reverse("user:user:user-detail")
 
 USER_PAYLOAD = {
     "username": "test_username",
@@ -38,6 +38,7 @@ def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
 
+# TODO: switch to APITestCase
 class PublicUserAPITests(TestCase):
     """
     API Requests that do not require Authentication

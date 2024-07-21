@@ -93,11 +93,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     """
 
+    # TODO: add max_length to the id fields
     user_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
+        max_length=36,
         serialize=False,
         default=uuid.uuid4,
+        editable=False,
     )
 
     username = models.CharField(
@@ -131,12 +134,15 @@ class Guest(models.Model):
     guest_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
+        max_length=36,
         serialize=False,
         default=uuid.uuid4,
+        editable=False,
     )
     session_id = models.UUIDField(
         auto_created=True,
-        serialize=False,
+        max_length=36,
+        unique=True,
         default=uuid.uuid4,
         editable=False,
     )
@@ -157,4 +163,4 @@ class Guest(models.Model):
         verbose_name_plural = "Guests"
 
     def __str__(self) -> str:
-        return f"{self.username}_{self.session_id}"
+        return f"{self.username}"

@@ -99,3 +99,5 @@ class ModelTests(TransactionTestCase):
 
         self.assertEqual(guest.username, guest_name)
         self.assertIn(guest_name, str(guest))
+
+    # TODO: Test email normalization

@@ -13,6 +13,7 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from core import models
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -25,6 +26,11 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
+        """
+        Meta class for the GuestSerializer
+
+        """
+
         model = get_user_model()
         fields = [
             "username",
@@ -62,3 +68,19 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class GuestSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Guest Object
+    """
+
+    class Meta:
+        """
+        Meta class for the GuestSerializer
+
+        """
+
+        model = models.Guest
+        fields = ["guest_id", "username"]
+        read_only_fields = ["guest_id"]

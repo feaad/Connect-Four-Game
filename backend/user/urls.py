@@ -13,13 +13,26 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from django.urls import path
+from core.router import CustomRouter
+from django.urls import include, path
 
 from . import views
 
 app_name = "user"
 
+
+router = CustomRouter(trailing_slash=False)
+router.register("guest", views.GuestView)
+
+user_patterns = (
+    [
+        path("/register", views.RegisterView.as_view(), name="user-register"),
+        path("", views.UserDetailView.as_view(), name="user-detail"),
+    ],
+    "user",
+)
+
 urlpatterns = [
-    path("/register", views.RegisterView.as_view(), name="user-register"),
-    path("", views.UserDetailView.as_view(), name="user-detail"),
+    path("user", include(user_patterns)),
+    path("", include(router.urls)),
 ]

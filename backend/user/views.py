@@ -13,18 +13,25 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from core.models import User
+
+# from core.models import Guest, User
+from core.models import Guest, User
 from django.contrib.auth import authenticate, login, logout
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from user.serializers import UserSerializer
+from user.permissions import GuestHasSessionID
+from user.serializers import GuestSerializer, UserSerializer
+
+from .mixins import AuthMixin
+
+# from user.serializers import GuestSerializer, UserSerializer
 
 
-class RegisterView(GenericAPIView):
+class RegisterView(GenericAPIView, AuthMixin):
     """
     Register user view
 
@@ -51,18 +58,13 @@ class RegisterView(GenericAPIView):
 
         if serializer.is_valid():
             user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                },
-                status=status.HTTP_201_CREATED,
-            )
+            tokens = self.get_tokens_for_user(user)
+            return Response(tokens, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(GenericAPIView):
+class LoginView(GenericAPIView, AuthMixin):
     """
     Login user view
 
@@ -105,14 +107,8 @@ class LoginView(GenericAPIView):
         )
         if user is not None:
             login(request._request, user)
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                },
-                status=status.HTTP_200_OK,
-            )
+            tokens = self.get_tokens_for_user(user)
+            return Response(tokens, status=status.HTTP_200_OK)
         return Response(
             {"error": "Wrong password"},
             status=status.HTTP_400_BAD_REQUEST,
@@ -208,3 +204,14 @@ class UserDetailView(GenericAPIView):
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GuestView(viewsets.ModelViewSet):
+    """
+    View for the Guest model
+    """
+
+    serializer_class = GuestSerializer
+    permission_classes = [GuestHasSessionID]
+    authentication_classes = []
+    queryset = Guest.objects.all()
