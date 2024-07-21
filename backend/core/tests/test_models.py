@@ -151,3 +151,18 @@ class ModelTests(TransactionTestCase):
         for username, expected in SAMPLE_USERNAMES:
             guest = models.Guest.objects.create(username=username)
             self.assertEqual(guest.username, expected)
+
+    def test_create_algorithm(self) -> None:
+        """
+        Test Case for creating an algorithm.
+
+        """
+        algorithm_name = "test_algorithm"
+        algorithm_description = "This is a test algorithm."
+        algorithm = models.Algorithm.objects.create(
+            name=algorithm_name,
+            description=algorithm_description
+        )
+
+        self.assertEqual(algorithm.name, algorithm_name)
+        self.assertEqual(algorithm.description, algorithm_description)
