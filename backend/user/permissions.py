@@ -37,7 +37,7 @@ class GuestHasSessionID(BasePermission):
             return True
 
         session_id = request.headers.get("Guest-Session-ID")
-        
+
         if request.path.endswith("register"):
             guest_id = view.kwargs.get("guest_id")
         else:
