@@ -196,3 +196,6 @@ class PrivateUserAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(player.user, user)
+        self.assertNotIn("password", response.data)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)

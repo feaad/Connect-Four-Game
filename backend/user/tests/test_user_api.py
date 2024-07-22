@@ -13,7 +13,7 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from core.models import Guest
+from core.models import Guest, Player
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
@@ -60,7 +60,11 @@ class PublicUserAPITests(APITestCase):
         user = get_user_model().objects.get(username=USER_PAYLOAD["username"])
         self.assertTrue(user.check_password(USER_PAYLOAD["password"]))
 
+        player = Player.objects.get(user=user)
+        self.assertEqual(player.user, user)
         self.assertNotIn("password", response.data)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
 
     def test_create_user_with_invalid_email(self):
         """
@@ -112,6 +116,19 @@ class PublicUserAPITests(APITestCase):
 
         payload = USER_PAYLOAD.copy()
         payload["username"] = "test_2"
+
+        response = self.client.post(REGISTER_USER_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_user_with_no_email(self):
+        """
+        Test creating a user with no email
+
+        """
+
+        payload = USER_PAYLOAD.copy()
+        payload.pop("email")
 
         response = self.client.post(REGISTER_USER_URL, payload)
 
