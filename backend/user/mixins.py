@@ -28,3 +28,16 @@ class AuthMixin:
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
+
+    def get_tokens_for_guest(self, guest):
+        guest_id_str = str(guest.guest_id)
+        refresh = RefreshToken()
+        access = refresh.access_token
+
+        for token in (refresh, access):
+            token["guest_id"] = guest_id_str
+
+        return {
+            "refresh": str(refresh),
+            "access": str(access),
+        }

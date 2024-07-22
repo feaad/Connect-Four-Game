@@ -19,13 +19,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from user.permissions import GuestHasSessionID
 from user.serializers import GuestSerializer, PlayerSerializer, UserSerializer
 
 from .mixins import AuthMixin
@@ -227,32 +225,95 @@ class UserDetailView(GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GuestViewSet(viewsets.ModelViewSet):
+class RegisterGuestView(GenericAPIView, AuthMixin):
     """
-    View for the Guest model
+    View for the Register Guest view
     """
 
     serializer_class = GuestSerializer
-    permission_classes = [GuestHasSessionID]
-    authentication_classes = []
-    queryset = Guest.objects.all()
 
-    def perform_create(self, serializer):
-        username = self.request.data.get("username")
-        if User.objects.filter(username=username).exists():
-            raise ValidationError({"error": "Username already exists"})
+    def post(self, request: Request) -> Response:
+        """
+        Post request to register guest
 
-        serializer.save()
+        Parameters
+        ----------
+        request : Request
+            The request object.
 
-        response = Response(serializer.data, status=status.HTTP_201_CREATED)
-        response.set_cookie(
-            "guest_id",
-            serializer.data["guest_id"],
-            httponly=True,  # HttpOnly flag for security
-            secure=True,
-            samesite="Strict",
-        )
-        return response
+        Returns
+        -------
+        Response
+            The response object.
+
+        """
+        serializer = self.get_serializer(data=request.data)
+
+        if User.objects.filter(username=request.data.get("username")).exists():
+            return Response(
+                {"error": "Username already exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if serializer.is_valid():
+            guest = serializer.save()
+            tokens = self.get_tokens_for_guest(guest)
+            return Response(tokens, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GuestDetailView(GenericAPIView):
+    """
+    Retrieve and update guest details view
+
+    """
+
+    serializer_class = GuestSerializer
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request: Request) -> Response:
+        """
+        Retrieve guest details.
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+        """
+        guest = request.user
+        serializer = GuestSerializer(guest)
+
+        return Response(serializer.data)
+
+    def patch(self, request: Request) -> Response:
+        """
+        Update guest details.
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+        """
+
+        guest = request.user
+        serializer = GuestSerializer(guest, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GuestToUserView(GenericAPIView, AuthMixin):
@@ -261,10 +322,8 @@ class GuestToUserView(GenericAPIView, AuthMixin):
     """
 
     serializer_class = UserSerializer
-    permission_classes = [GuestHasSessionID]
-    authentication_classes = []
 
-    def post(self, request: Request, guest_id: str) -> Response:
+    def post(self, request: Request) -> Response:
         """
         Post request to convert guest to user.
 
@@ -279,8 +338,11 @@ class GuestToUserView(GenericAPIView, AuthMixin):
             The response object.
         """
 
+        guest = request.user
+        serializer = GuestSerializer(guest)
+
         try:
-            guest = Guest.objects.get(guest_id=guest_id)
+            guest = Guest.objects.get(guest_id=guest.guest_id)
         except Guest.DoesNotExist:
             return Response(
                 {"error": "Guest not found"}, status=status.HTTP_404_NOT_FOUND
@@ -296,6 +358,11 @@ class GuestToUserView(GenericAPIView, AuthMixin):
 
         if serializer.is_valid():
             user = serializer.save()
+
+            refresh_token = request.data.get("refresh")
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
             tokens = self.get_tokens_for_user(user)
             return Response(tokens, status=status.HTTP_201_CREATED)
 

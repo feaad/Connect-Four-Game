@@ -19,7 +19,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-CREATE_GUEST_URL = reverse("user:guest-create")
+GUEST_URL = reverse("user:guest:guest-detail")
+CREATE_GUEST_URL = reverse("user:guest:guest-create")
+CONVERT_GUEST_URL = reverse("user:guest:guest-convert")
 
 GUEST_PAYLOAD = {"username": "test_guest_user"}
 
@@ -30,14 +32,6 @@ def create_guest(**params):
 
     """
     return Guest.objects.create(**params)
-
-
-def detail_url(guest_id):
-    """
-    Return the guest detail URL
-
-    """
-    return reverse("user:guest-detail", args=[guest_id])
 
 
 class PublicUserAPITests(APITestCase):
@@ -56,14 +50,16 @@ class PublicUserAPITests(APITestCase):
 
         response = self.client.post(CREATE_GUEST_URL, GUEST_PAYLOAD)
 
-        guest = Guest.objects.get(guest_id=response.data["guest_id"])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        guest = Guest.objects.get(username=GUEST_PAYLOAD["username"])
+
+        player = Player.objects.get(guest=guest)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn("Guest-Session-ID", response.headers)
-        self.assertEqual(
-            str(guest.session_id), response.headers["Guest-Session-ID"]
-        )
-        self.assertEqual(guest.username, GUEST_PAYLOAD["username"])
+        self.assertEqual(player.guest, guest)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
 
     def test_create_guest_with_existing_username(self):
         """
@@ -76,8 +72,8 @@ class PublicUserAPITests(APITestCase):
         response = self.client.post(CREATE_GUEST_URL, GUEST_PAYLOAD)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertNotIn("Guest-Session-ID", response.headers)
-        self.assertNotIn("guest_id", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
 
     def test_create_guest_with_existing_username_user_table(self):
         """
@@ -93,8 +89,8 @@ class PublicUserAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["error"], "Username already exists")
-        self.assertNotIn("Guest-Session-ID", response.headers)
-        self.assertNotIn("guest_id", response.data)
+        self.assertNotIn("access", response.data)
+        self.assertNotIn("refresh", response.data)
 
 
 class PrivateUserAPITests(APITestCase):
@@ -105,11 +101,8 @@ class PrivateUserAPITests(APITestCase):
 
     def setUp(self):
         self.client = APIClient()
-
         self.guest = create_guest(**GUEST_PAYLOAD)
-
-        self.url = detail_url(self.guest.guest_id)
-        self.header = {"Guest-Session-ID": self.guest.session_id}
+        self.client.force_authenticate(user=self.guest)
 
     def test_retrieve_guest(self):
         """
@@ -117,23 +110,11 @@ class PrivateUserAPITests(APITestCase):
 
         """
 
-        response = self.client.get(self.url, headers=self.header)
+        response = self.client.get(GUEST_URL)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["guest_id"], str(self.guest.guest_id))
         self.assertEqual(response.data["username"], self.guest.username)
-
-    def test_retrieve_guest_without_permission(self):
-        """
-        Test retrieving the guest without permission
-
-        """
-
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertNotIn("guest_id", response.data)
-        self.assertNotIn("username", response.data)
 
     def test_update_guest(self):
         """
@@ -143,7 +124,7 @@ class PrivateUserAPITests(APITestCase):
 
         payload = {"username": "new_guest_username"}
 
-        response = self.client.patch(self.url, payload, headers=self.header)
+        response = self.client.patch(GUEST_URL, payload)
 
         self.guest.refresh_from_db()
 
@@ -162,7 +143,7 @@ class PrivateUserAPITests(APITestCase):
 
         payload = {"username": "new_guest_username"}
 
-        response = self.client.patch(self.url, payload, headers=self.header)
+        response = self.client.patch(GUEST_URL, payload)
 
         self.guest.refresh_from_db()
 
@@ -174,7 +155,7 @@ class PrivateUserAPITests(APITestCase):
 
         """
 
-        response = self.client.put(self.url, headers=self.header)
+        response = self.client.put(GUEST_URL)
 
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
@@ -186,10 +167,9 @@ class PrivateUserAPITests(APITestCase):
 
         """
 
-        url = reverse("user:guest-register", args=[self.guest.guest_id])
         payload = {"email": "user@example.com", "password": "testpassword"}
 
-        response = self.client.post(url, payload, headers=self.header)
+        response = self.client.post(CONVERT_GUEST_URL, payload)
 
         user = get_user_model().objects.get(username=GUEST_PAYLOAD["username"])
         player = Player.objects.get(guest=self.guest)

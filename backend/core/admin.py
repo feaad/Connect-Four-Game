@@ -85,7 +85,7 @@ class GuestAdmin(admin.ModelAdmin):
     """
 
     ordering = ["guest_id"]
-    list_display = ["guest_id", "session_id", "username"]
+    list_display = ["guest_id", "username"]
 
 
 @admin.register(models.Algorithm)

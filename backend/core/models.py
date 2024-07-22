@@ -144,13 +144,6 @@ class Guest(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    session_id = models.UUIDField(
-        auto_created=True,
-        max_length=36,
-        unique=True,
-        default=uuid.uuid4,
-        editable=False,
-    )
     username = models.CharField(
         max_length=50, unique=True, validators=[MinLengthValidator(5)]
     )

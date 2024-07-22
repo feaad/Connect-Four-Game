@@ -13,7 +13,6 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from core.router import CustomRouter
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -21,9 +20,6 @@ from . import views
 
 app_name = "user"
 
-
-guest_router = CustomRouter(trailing_slash=False)
-guest_router.register("guest", views.GuestViewSet)
 
 player_router = DefaultRouter(trailing_slash=False)
 player_router.register("player", views.PlayerViewSet)
@@ -35,14 +31,25 @@ user_patterns = (
     ],
     "user",
 )
+guest_patterns = (
+    [
+        path("", views.GuestDetailView.as_view(), name="guest-detail"),
+        path(
+            "/create",
+            views.RegisterGuestView.as_view(),
+            name="guest-create",
+        ),
+        path(
+            "/convert",
+            views.GuestToUserView.as_view(),
+            name="guest-convert",
+        ),
+    ],
+    "guest",
+)
 
 urlpatterns = [
     path("user", include(user_patterns)),
-    path(
-        "guest/<str:guest_id>/register",
-        views.GuestToUserView.as_view(),
-        name="guest-register",
-    ),
-    path("", include(guest_router.urls)),
+    path("guest", include(guest_patterns)),
     path("", include(player_router.urls)),
 ]
