@@ -88,3 +88,21 @@ class PublicUserAPITests(APITransactionTestCase):
 
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_algorithm_by_name_search(self) -> None:
+        """
+        Test retrieving an algorithm by name search.
+
+        """
+        create_algorithm("test_1")
+        create_algorithm("test_2")
+
+        response = self.client.get(ALGO_URL, {"search": "test_1"})
+
+        algorithm = Algorithm.objects.filter(name="test_1")
+        serializer = AlgorithmSerializer(algorithm, many=True)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 1)
