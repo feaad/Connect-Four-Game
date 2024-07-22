@@ -166,13 +166,40 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(algorithm.name, algorithm_name)
         self.assertEqual(algorithm.description, algorithm_description)
 
-    def test_create_player(self) -> None:
+    def test_create_player_when_user_created(self) -> None:
         """
-        Test Case for creating a player.
+        Test Case for creating a player when a user is created.
 
         """
         user = create_user()
+        player = models.Player.objects.get(user=user)
 
-        player = models.Player.objects.create(user=user)
-
+        self.assertIsNotNone(player)
         self.assertEqual(player.user, user)
+        self.assertTrue(player.is_human)
+
+    def test_create_player_when_guest_created(self):
+        """
+        Test Case for creating a player when a guest is created.
+
+        """
+        guest = models.Guest.objects.create(username="test_guest")
+        player = models.Player.objects.get(guest=guest)
+
+        self.assertIsNotNone(player)
+        self.assertEqual(player.guest, guest)
+        self.assertTrue(player.is_human)
+
+    def test_create_player_when_algorithm_created(self):
+        """
+        Test Case for creating a player when an algorithm is created.
+
+        """
+        algorithm = models.Algorithm.objects.create(
+            name="test_algorithm", description="This is a test algorithm."
+        )
+        player = models.Player.objects.get(algorithm=algorithm)
+
+        self.assertIsNotNone(player)
+        self.assertEqual(player.algorithm, algorithm)
+        self.assertFalse(player.is_human)
