@@ -100,6 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     Users within the system are represented by this model.
 
     """
+
     user_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
@@ -251,3 +252,35 @@ class Player(models.Model):
             if self.algorithm
             else str(self.player_id)
         )
+
+
+class Status(models.Model):
+    """
+    Represents the status of a game.
+
+    """
+
+    status_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for Status.
+
+        """
+
+        ordering = ["status_id"]
+        verbose_name_plural = "Statuses"
+        db_table = "Statuses"
+
+    def __str__(self) -> str:
+        return f"{self.name}"

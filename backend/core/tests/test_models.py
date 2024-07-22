@@ -203,3 +203,17 @@ class ModelTests(TransactionTestCase):
         self.assertIsNotNone(player)
         self.assertEqual(player.algorithm, algorithm)
         self.assertFalse(player.is_human)
+
+    def test_create_status(self) -> None:
+        """
+        Test Case for creating a status.
+
+        """
+        status_name = "test_status"
+        status_description = "This is a test status."
+        status = models.Status.objects.create(
+            name=status_name, description=status_description
+        )
+
+        self.assertEqual(status.name, status_name)
+        self.assertEqual(status.description, status_description)

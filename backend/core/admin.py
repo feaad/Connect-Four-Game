@@ -89,9 +89,9 @@ class GuestAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Algorithm)
-class AlgorithmsAdmin(admin.ModelAdmin):
+class AlgorithmAdmin(admin.ModelAdmin):
     """
-    Define the parameters to display on the admin page for Algorithms.
+    Define the parameters to display on the admin page for Algorithm.
 
     """
 
@@ -134,3 +134,19 @@ class PlayerAdmin(admin.ModelAdmin):
         "draws",
         "total_games",
     ]
+
+
+@admin.register(models.Status)
+class StatusAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for Status.
+
+    """
+
+    list_display = [
+        "status_id",
+        "name",
+        "description",
+    ]
+
+    list_filter = ["status_id", "name", "description"]
