@@ -185,7 +185,7 @@ class PublicUserAPITests(APITestCase):
 
         self.assertNotIn("access", response.data)
         self.assertNotIn("refresh", response.data)
-        self.assertEqual("Wrong password", response.data["error"])
+        self.assertEqual(response.data["error"], "Wrong password")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_token_for_non_existent_user(self):
@@ -204,7 +204,7 @@ class PublicUserAPITests(APITestCase):
 
         self.assertNotIn("access", response.data)
         self.assertNotIn("refresh", response.data)
-        self.assertEqual("No user exists", response.data["error"])
+        self.assertEqual(response.data["error"], "No user exists")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_token_for_inactive_user(self):
@@ -225,7 +225,7 @@ class PublicUserAPITests(APITestCase):
 
         self.assertNotIn("access", response.data)
         self.assertNotIn("refresh", response.data)
-        self.assertEqual("User is not active", response.data["error"])
+        self.assertEqual(response.data["error"], "User is not active")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_user_unauthorized(self):
@@ -274,3 +274,16 @@ class PrivateUserAPITests(APITestCase):
 
         self.assertEqual(self.user.profile_picture, payload["profile_picture"])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_user_username(self):
+        """
+        Test updating user username
+
+        """
+
+        payload = {"username": "new_username"}
+
+        response = self.client.patch(USER_DETAIL_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "Username cannot be updated")

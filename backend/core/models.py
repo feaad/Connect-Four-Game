@@ -100,7 +100,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     Users within the system are represented by this model.
 
     """
-    # TODO: always make usernames lowercase
     user_id = models.UUIDField(
         auto_created=True,
         primary_key=True,

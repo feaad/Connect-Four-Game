@@ -94,7 +94,7 @@ class LoginView(GenericAPIView, AuthMixin):
             The response object.
         """
 
-        username = request.data.get("username")
+        username = request.data.get("username").lower()
         password = request.data.get("password")
 
         try:
@@ -203,6 +203,12 @@ class UserDetailView(GenericAPIView):
         Response
             The response object.
         """
+        if "username" in request.data:
+            return Response(
+                {"error": "Username cannot be updated"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user = request.user
         serializer = UserSerializer(user, data=request.data, partial=True)
 
