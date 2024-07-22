@@ -15,14 +15,18 @@ Copyright ©2024 feaad
 
 from core.router import CustomRouter
 from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
 app_name = "user"
 
 
-router = CustomRouter(trailing_slash=False)
-router.register("guest", views.GuestView)
+guest_router = CustomRouter(trailing_slash=False)
+guest_router.register("guest", views.GuestViewSet)
+
+player_router = DefaultRouter(trailing_slash=False)
+player_router.register("player", views.PlayerViewSet)
 
 user_patterns = (
     [
@@ -39,5 +43,6 @@ urlpatterns = [
         views.GuestToUserView.as_view(),
         name="guest-register",
     ),
-    path("", include(router.urls)),
+    path("", include(guest_router.urls)),
+    path("", include(player_router.urls)),
 ]

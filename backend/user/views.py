@@ -14,9 +14,11 @@ Copyright ©2024 feaad
 """
 
 
-from core.models import Guest, User
+from core.models import Guest, Player, User
 from django.contrib.auth import authenticate, login, logout
-from rest_framework import status, viewsets
+from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, status, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -24,9 +26,15 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from user.permissions import GuestHasSessionID
-from user.serializers import GuestSerializer, UserSerializer
+from user.serializers import GuestSerializer, PlayerSerializer, UserSerializer
 
 from .mixins import AuthMixin
+
+backends = [
+    DjangoFilterBackend,
+    filters.SearchFilter,
+    filters.OrderingFilter,
+]
 
 
 class RegisterView(GenericAPIView, AuthMixin):
@@ -219,7 +227,7 @@ class UserDetailView(GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GuestView(viewsets.ModelViewSet):
+class GuestViewSet(viewsets.ModelViewSet):
     """
     View for the Guest model
     """
@@ -235,6 +243,16 @@ class GuestView(viewsets.ModelViewSet):
             raise ValidationError({"error": "Username already exists"})
 
         serializer.save()
+
+        response = Response(serializer.data, status=status.HTTP_201_CREATED)
+        response.set_cookie(
+            "guest_id",
+            serializer.data["guest_id"],
+            httponly=True,  # HttpOnly flag for security
+            secure=True,
+            samesite="Strict",
+        )
+        return response
 
 
 class GuestToUserView(GenericAPIView, AuthMixin):
@@ -282,3 +300,30 @@ class GuestToUserView(GenericAPIView, AuthMixin):
             return Response(tokens, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PlayerViewSet(viewsets.ModelViewSet):
+    """
+    View for the Guest model
+    """
+
+    serializer_class = PlayerSerializer
+    http_method_names = ["get"]
+    authentication_classes = []
+    queryset = Player.objects.all()
+
+    filter_backends = backends
+    filterset_fields = ["player_id", "user", "guest"]
+    search_fields = ["player_id", "user__username", "guest__username"]
+    ordering_fields = filterset_fields
+
+    def get_queryset(self):
+        """
+        Retrieve all players.
+
+        """
+        return (
+            self.queryset.filter(is_human=True)
+            .filter(Q(user__is_active=True) | Q(user__isnull=True))
+            .order_by("player_id")
+        )

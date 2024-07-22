@@ -84,3 +84,46 @@ class GuestSerializer(serializers.ModelSerializer):
         model = models.Guest
         fields = ["guest_id", "username"]
         read_only_fields = ["guest_id"]
+
+
+class PlayerSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Player Object
+    """
+
+    username = serializers.SerializerMethodField()
+    is_guest = serializers.SerializerMethodField()
+
+    class Meta:
+        """
+        Meta class for the PlayerSerializer
+
+        """
+
+        model = models.Player
+        fields = [
+            "player_id",
+            "username",
+            "is_guest",
+            "wins",
+            "losses",
+            "draws",
+            "total_games",
+        ]
+        read_only_fields = [
+            "player_id",
+            "wins",
+            "losses",
+            "draws",
+            "total_games",
+        ]
+
+    def get_username(self, obj):
+        if obj.user:
+            return obj.user.username
+        elif obj.guest:
+            return obj.guest.username
+        return None
+
+    def get_is_guest(self, obj):
+        return obj.user is None and obj.guest is not None
