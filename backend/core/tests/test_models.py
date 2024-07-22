@@ -160,9 +160,19 @@ class ModelTests(TransactionTestCase):
         algorithm_name = "test_algorithm"
         algorithm_description = "This is a test algorithm."
         algorithm = models.Algorithm.objects.create(
-            name=algorithm_name,
-            description=algorithm_description
+            name=algorithm_name, description=algorithm_description
         )
 
         self.assertEqual(algorithm.name, algorithm_name)
         self.assertEqual(algorithm.description, algorithm_description)
+
+    def test_create_player(self) -> None:
+        """
+        Test Case for creating a player.
+
+        """
+        user = create_user()
+
+        player = models.Player.objects.create(user=user)
+
+        self.assertEqual(player.user, user)

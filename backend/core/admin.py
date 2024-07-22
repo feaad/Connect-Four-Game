@@ -102,3 +102,35 @@ class AlgorithmsAdmin(admin.ModelAdmin):
     ]
 
     list_filter = ["algorithm_id", "name", "description"]
+
+
+@admin.register(models.Player)
+class PlayerAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for Player.
+
+    """
+
+    list_display = [
+        "player_id",
+        "user",
+        "guest",
+        "algorithm",
+        "is_human",
+        "wins",
+        "losses",
+        "draws",
+        "total_games",
+    ]
+
+    list_filter = [
+        "player_id",
+        "user",
+        "guest",
+        "algorithm",
+        "is_human",
+        "wins",
+        "losses",
+        "draws",
+        "total_games",
+    ]

@@ -86,12 +86,13 @@ class UserManager(BaseUserManager):
 
         """
 
-        user = self.create_user(username, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
-
-        return user
+        return self.create_user(
+            username,
+            password,
+            is_staff=True,
+            is_superuser=True,
+            is_adv_logs=True,
+        )
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -99,11 +100,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     Users within the system are represented by this model.
 
     """
-
+    # TODO: always make usernames lowercase
     user_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
-        max_length=36,
         serialize=False,
         default=uuid.uuid4,
         editable=False,
@@ -140,7 +140,6 @@ class Guest(models.Model):
     guest_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
-        max_length=36,
         serialize=False,
         default=uuid.uuid4,
         editable=False,
@@ -185,7 +184,6 @@ class Algorithm(models.Model):
     algorithm_id = models.UUIDField(
         auto_created=True,
         primary_key=True,
-        max_length=36,
         serialize=False,
         default=uuid.uuid4,
         editable=False,
@@ -207,3 +205,50 @@ class Algorithm(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+
+class Player(models.Model):
+    """
+    Represents players within the system.
+    """
+
+    player_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+
+    # Relationships
+    user = models.OneToOneField(
+        User, on_delete=models.RESTRICT, null=True, blank=True
+    )
+    guest = models.OneToOneField(
+        Guest, on_delete=models.RESTRICT, null=True, blank=True
+    )
+    algorithm = models.OneToOneField(
+        Algorithm, on_delete=models.RESTRICT, null=True, blank=True
+    )
+
+    # Player attributes
+    is_human = models.BooleanField(default=True)
+    wins = models.IntegerField(default=0)
+    losses = models.IntegerField(default=0)
+    draws = models.IntegerField(default=0)
+    total_games = models.IntegerField(default=0)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return (
+            self.user.username
+            if self.user
+            else self.guest.username
+            if self.guest
+            else self.algorithm.name
+            if self.algorithm
+            else str(self.player_id)
+        )
