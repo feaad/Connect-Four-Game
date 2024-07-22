@@ -14,7 +14,6 @@ Copyright ©2024 feaad
 """
 
 
-# from core.models import Guest, User
 from core.models import Guest, User
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status, viewsets
@@ -28,8 +27,6 @@ from user.permissions import GuestHasSessionID
 from user.serializers import GuestSerializer, UserSerializer
 
 from .mixins import AuthMixin
-
-# from user.serializers import GuestSerializer, UserSerializer
 
 
 class RegisterView(GenericAPIView, AuthMixin):
@@ -232,3 +229,50 @@ class GuestView(viewsets.ModelViewSet):
             raise ValidationError({"error": "Username already exists"})
 
         serializer.save()
+
+
+class GuestToUserView(GenericAPIView, AuthMixin):
+    """
+    Convert guest to user view.
+    """
+
+    serializer_class = UserSerializer
+    permission_classes = [GuestHasSessionID]
+    authentication_classes = []
+
+    def post(self, request: Request, guest_id: str) -> Response:
+        """
+        Post request to convert guest to user.
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+        """
+
+        try:
+            guest = Guest.objects.get(guest_id=guest_id)
+        except Guest.DoesNotExist:
+            return Response(
+                {"error": "Guest not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        user_data = {
+            "username": guest.username,
+            "email": request.data.get("email"),
+            "password": request.data.get("password"),
+        }
+
+        serializer = self.get_serializer(data=user_data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+            tokens = self.get_tokens_for_user(user)
+            return Response(tokens, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

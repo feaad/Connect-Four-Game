@@ -15,6 +15,7 @@ Copyright ©2024 feaad
 
 
 from core.models import Guest
+from django.urls import reverse
 from rest_framework.permissions import BasePermission
 
 
@@ -30,11 +31,17 @@ class GuestHasSessionID(BasePermission):
         """
 
         # Allow the request if it's a POST request (creating a new guest)
-        if request.method == "POST":
+        if request.method == "POST" and request.path == reverse(
+            "user:guest-create"
+        ):
             return True
 
-        guest_id = view.kwargs.get("pk")
         session_id = request.headers.get("Guest-Session-ID")
+        
+        if request.path.endswith("register"):
+            guest_id = view.kwargs.get("guest_id")
+        else:
+            guest_id = view.kwargs.get("pk")
 
         if not guest_id or not session_id:
             return False

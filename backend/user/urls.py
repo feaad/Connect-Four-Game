@@ -26,13 +26,18 @@ router.register("guest", views.GuestView)
 
 user_patterns = (
     [
-        path("register", views.RegisterView.as_view(), name="user-register"),
+        path("/register", views.RegisterView.as_view(), name="user-register"),
         path("", views.UserDetailView.as_view(), name="user-detail"),
     ],
     "user",
 )
 
 urlpatterns = [
-    path("user/", include(user_patterns)),
+    path("user", include(user_patterns)),
+    path(
+        "guest/<str:guest_id>/register",
+        views.GuestToUserView.as_view(),
+        name="guest-register",
+    ),
     path("", include(router.urls)),
 ]

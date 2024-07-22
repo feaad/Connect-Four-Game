@@ -13,8 +13,8 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from core.models import Guest, Player
 from django.contrib.auth import get_user_model
-from core.models import Guest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
@@ -110,7 +110,6 @@ class PrivateUserAPITests(APITestCase):
 
         self.url = detail_url(self.guest.guest_id)
         self.header = {"Guest-Session-ID": self.guest.session_id}
-        # self.client.force_authenticate(user=self.user)
 
     def test_retrieve_guest(self):
         """
@@ -180,3 +179,20 @@ class PrivateUserAPITests(APITestCase):
         self.assertEqual(
             response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
         )
+
+    def test_guest_registration(self):
+        """
+        Test guest registration
+
+        """
+
+        url = reverse("user:guest-register", args=[self.guest.guest_id])
+        payload = {"email": "user@example.com", "password": "testpassword"}
+
+        response = self.client.post(url, payload, headers=self.header)
+
+        user = get_user_model().objects.get(username=GUEST_PAYLOAD["username"])
+        player = Player.objects.get(guest=self.guest)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(player.user, user)
