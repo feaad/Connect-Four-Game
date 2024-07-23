@@ -24,8 +24,8 @@ class AlgorithmViewSet(viewsets.ModelViewSet):
     authentication_classes = []
 
     filter_backends = backends
-    filterset_fields = ["algorithm_id", "name"]
-    search_fields = ["algorithm_id", "name"]
+    filterset_fields = ["algorithm_id", "name", "description"]
+    search_fields = ["algorithm_id", "name", "description"]
     ordering_fields = filterset_fields
 
     def get_queryset(self):

@@ -1,12 +1,17 @@
+from typing import TypeVar
+
 from app.settings import SIMPLE_JWT
 from core.models import Guest, User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.tokens import Token
+
+AuthUser = TypeVar("AuthUser", User, Guest)
 
 
 class CustomJWTAuthentication(JWTAuthentication):
-    def get_user(self, validated_token):
+    def get_user(self, validated_token: Token) -> AuthUser:
         user_id_claim = SIMPLE_JWT.get("USER_ID_CLAIM", "user_id")
         guest_id_claim = "guest_id"
 

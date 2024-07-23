@@ -20,8 +20,17 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.core.validators import EmailValidator, MinLengthValidator
+from django.core.validators import (
+    EmailValidator,
+    MinLengthValidator,
+    RegexValidator,
+)
 from django.db import models
+
+username_validator = RegexValidator(
+    regex="^[a-zA-Z0-9_]*$",
+    message="Username must be alphanumeric or contain underscores only.",
+)
 
 
 class UserManager(BaseUserManager):
@@ -110,7 +119,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
 
     username = models.CharField(
-        max_length=50, unique=True, validators=[MinLengthValidator(5)]
+        max_length=50,
+        unique=True,
+        validators=[MinLengthValidator(5), username_validator],
     )
     email = models.EmailField(
         max_length=255, unique=True, validators=[EmailValidator()]
@@ -145,7 +156,9 @@ class Guest(models.Model):
         editable=False,
     )
     username = models.CharField(
-        max_length=50, unique=True, validators=[MinLengthValidator(5)]
+        max_length=50,
+        unique=True,
+        validators=[MinLengthValidator(5), username_validator],
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -166,6 +179,14 @@ class Guest(models.Model):
     def save(self, *args, **kwargs):
         self.username = self.username.lower()
         super().save(*args, **kwargs)
+
+    @property
+    def is_authenticated(self):
+        """
+        Always return True. This method is used to identify if the user
+        is authenticated in Django.
+        """
+        return True
 
 
 class Algorithm(models.Model):

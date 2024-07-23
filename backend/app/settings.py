@@ -162,7 +162,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "core.authentications.JWTAuthentication",
+        "core.authentications.CustomJWTAuthentication",
     ],
 }
 

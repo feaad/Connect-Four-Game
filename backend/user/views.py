@@ -15,6 +15,7 @@ Copyright ©2024 feaad
 
 
 from core.models import Guest, Player, User
+from core.permissions import IsAuthenticatedGuest
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
@@ -270,7 +271,7 @@ class GuestDetailView(GenericAPIView):
     """
 
     serializer_class = GuestSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedGuest]
 
     def get(self, request: Request) -> Response:
         """
@@ -322,6 +323,7 @@ class GuestToUserView(GenericAPIView, AuthMixin):
     """
 
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticatedGuest]
 
     def post(self, request: Request) -> Response:
         """
@@ -380,8 +382,24 @@ class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
 
     filter_backends = backends
-    filterset_fields = ["player_id", "user", "guest"]
-    search_fields = ["player_id", "user__username", "guest__username"]
+    filterset_fields = [
+        "player_id",
+        "user",
+        "guest",
+        "wins",
+        "losses",
+        "draws",
+        "total_games",
+    ]
+    search_fields = [
+        "player_id",
+        "user__username",
+        "guest__username",
+        "wins",
+        "losses",
+        "draws",
+        "total_games",
+    ]
     ordering_fields = filterset_fields
 
     def get_queryset(self):

@@ -14,14 +14,14 @@ Copyright ©2024 feaad
 """
 
 from django.urls import include, path
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
 from user.views import LoginView, LogoutView
 
-from .views import HealthCheckView
+from .views import (
+    CustomTokenObtainPairView,
+    CustomTokenRefreshView,
+    CustomTokenVerifyView,
+    HealthCheckView,
+)
 
 app_name = "core"
 
@@ -35,9 +35,17 @@ auth_patterns = (
 
 token_patterns = (
     [
-        path("", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-        path("refresh", TokenRefreshView.as_view(), name="token_refresh"),
-        path("verify", TokenVerifyView.as_view(), name="token_verify"),
+        path(
+            "", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"
+        ),
+        path(
+            "/refresh", CustomTokenRefreshView.as_view(), name="token_refresh"
+        ),
+        path(
+            "/verify",
+            CustomTokenVerifyView.as_view(),
+            name="token_verify",
+        ),
     ],
     "token",
 )
@@ -45,5 +53,5 @@ token_patterns = (
 urlpatterns = [
     path("health-check", HealthCheckView.as_view(), name="health-check"),
     path("auth/", include(auth_patterns)),
-    path("token/", include(token_patterns)),
+    path("token", include(token_patterns)),
 ]
