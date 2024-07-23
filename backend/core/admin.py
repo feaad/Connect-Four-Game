@@ -138,3 +138,27 @@ class StatusAdmin(admin.ModelAdmin):
     ]
 
     list_filter = ["status_id", "name", "description"]
+
+
+@admin.register(models.Game)
+class GameAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for Game.
+
+    """
+
+    list_display = [
+        "game_id",
+        "player_one",
+        "player_two",
+        "rows",
+        "columns",
+        "board",
+        "status",
+        "current_turn",
+        "start_time",
+        "end_time",
+        "winner",
+    ]
+
+    list_filter = ["rows", "columns", "status"]

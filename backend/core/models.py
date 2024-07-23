@@ -33,6 +33,10 @@ username_validator = RegexValidator(
 )
 
 
+def default_board():
+    return [[0 for _ in range(7)] for _ in range(6)]
+
+
 class UserManager(BaseUserManager):
     """
     Manager users in the system.
@@ -298,3 +302,68 @@ class Status(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+
+class Game(models.Model):
+    """
+    Represents a game within the system.
+    """
+
+    game_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    player_one = models.ForeignKey(
+        Player,
+        on_delete=models.RESTRICT,
+        related_name="player_one",
+        null=False,
+        blank=False,
+    )
+    player_two = models.ForeignKey(
+        Player,
+        on_delete=models.RESTRICT,
+        related_name="player_two",
+        null=True,
+        blank=True,
+    )
+    rows = models.IntegerField(default=6)
+    columns = models.IntegerField(default=7)
+    board = models.JSONField(default=default_board)
+    status = models.ForeignKey(
+        Status, on_delete=models.RESTRICT, null=True, blank=True
+    )
+    current_turn = models.ForeignKey(
+        Player,
+        on_delete=models.RESTRICT,
+        null=True,
+        blank=True,
+        related_name="current_turn",
+    )
+    start_time = models.DateTimeField(null=True, blank=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+    winner = models.ForeignKey(
+        Player,
+        on_delete=models.RESTRICT,
+        null=True,
+        blank=True,
+        related_name="winner",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for Game.
+
+        """
+
+        ordering = ["game_id"]
+        verbose_name = "Game"
+        verbose_name_plural = "Games"
+
+    def __str__(self) -> str:
+        return f"{self.game_id}"

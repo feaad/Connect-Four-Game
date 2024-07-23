@@ -14,6 +14,7 @@ Copyright ©2024 feaad
 """
 
 
+import core.tests.helper as hp
 from core import models
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
@@ -24,25 +25,6 @@ SAMPLE_USERNAMES = [
     ["TEST3", "test3"],
     ["test4", "test4"],
 ]
-
-
-def create_user(username: str = "testuser", password: str = "password"):
-    """Create a user for testing purposes.
-
-    Parameters
-    ----------
-    username : (str, optional)
-        Username. Defaults to 'testuser'.
-
-    password : (str, optional)
-        Password. Defaults to 'password'.
-
-    Returns
-    -------
-    User
-        The user object that has been created and saved in the database.
-    """
-    return get_user_model().objects.create_user(username, password)
 
 
 class ModelTests(TransactionTestCase):
@@ -58,7 +40,7 @@ class ModelTests(TransactionTestCase):
         """
         username = "testuser"
         password = "password"
-        user = create_user(username, password)
+        user = hp.create_user(username, password)
 
         self.assertEqual(user.username, username)
         self.assertTrue(user.check_password(password))
@@ -80,10 +62,10 @@ class ModelTests(TransactionTestCase):
         ]
 
         for index, (email, expected) in enumerate(sample_emails):
-            user = get_user_model().objects.create_user(
-                username=f"test{index}",
-                password="password",
-                email=email,
+            user = hp.create_user(
+                f"test{index}",
+                "password",
+                email,
             )
             self.assertEqual(user.email, expected)
 
@@ -94,10 +76,10 @@ class ModelTests(TransactionTestCase):
         """
 
         for username, expected in SAMPLE_USERNAMES:
-            user = get_user_model().objects.create_user(
+            user = hp.create_user(
                 username=username,
-                email=f"{username}@example.com",
                 password="password",
+                email=f"{username}@example.com",
             )
             self.assertEqual(user.username, expected)
 
@@ -109,11 +91,11 @@ class ModelTests(TransactionTestCase):
 
         # Test for no username
         with self.assertRaises(ValueError):
-            get_user_model().objects.create_user("", "test123")
+            hp.create_user("", "test123")
 
         # Test for no password
         with self.assertRaises(ValueError):
-            get_user_model().objects.create_user(
+            hp.create_user(
                 "user",
                 "",
             )
@@ -137,7 +119,7 @@ class ModelTests(TransactionTestCase):
 
         """
         guest_name = "test_guest"
-        guest = models.Guest.objects.create(username=guest_name)
+        guest = hp.create_guest(guest_name)
 
         self.assertEqual(guest.username, guest_name)
         self.assertIn(guest_name, str(guest))
@@ -149,7 +131,7 @@ class ModelTests(TransactionTestCase):
         """
 
         for username, expected in SAMPLE_USERNAMES:
-            guest = models.Guest.objects.create(username=username)
+            guest = hp.create_guest(username)
             self.assertEqual(guest.username, expected)
 
     def test_create_algorithm(self) -> None:
@@ -157,21 +139,19 @@ class ModelTests(TransactionTestCase):
         Test Case for creating an algorithm.
 
         """
-        algorithm_name = "test_algorithm"
-        algorithm_description = "This is a test algorithm."
-        algorithm = models.Algorithm.objects.create(
-            name=algorithm_name, description=algorithm_description
-        )
+        name = "test_algorithm"
+        description = "This is a test algorithm."
+        algorithm = hp.create_algorithm(name, description)
 
-        self.assertEqual(algorithm.name, algorithm_name)
-        self.assertEqual(algorithm.description, algorithm_description)
+        self.assertEqual(algorithm.name, name)
+        self.assertEqual(algorithm.description, description)
 
     def test_create_player_when_user_created(self) -> None:
         """
         Test Case for creating a player when a user is created.
 
         """
-        user = create_user()
+        user = hp.create_user()
         player = models.Player.objects.get(user=user)
 
         self.assertIsNotNone(player)
@@ -183,7 +163,7 @@ class ModelTests(TransactionTestCase):
         Test Case for creating a player when a guest is created.
 
         """
-        guest = models.Guest.objects.create(username="test_guest")
+        guest = hp.create_guest()
         player = models.Player.objects.get(guest=guest)
 
         self.assertIsNotNone(player)
@@ -195,9 +175,7 @@ class ModelTests(TransactionTestCase):
         Test Case for creating a player when an algorithm is created.
 
         """
-        algorithm = models.Algorithm.objects.create(
-            name="test_algorithm", description="This is a test algorithm."
-        )
+        algorithm = hp.create_algorithm()
         player = models.Player.objects.get(algorithm=algorithm)
 
         self.assertIsNotNone(player)
@@ -209,11 +187,24 @@ class ModelTests(TransactionTestCase):
         Test Case for creating a status.
 
         """
-        status_name = "test_status"
-        status_description = "This is a test status."
-        status = models.Status.objects.create(
-            name=status_name, description=status_description
-        )
+        name = "test_status"
+        description = "This is a test status."
+        status = hp.create_status(name, description)
 
-        self.assertEqual(status.name, status_name)
-        self.assertEqual(status.description, status_description)
+        self.assertEqual(status.name, name)
+        self.assertEqual(status.description, description)
+
+    def test_create_game(self) -> None:
+        """
+        Test Case for creating a game.
+
+        """
+
+        game = hp.create_game()
+
+        self.assertIsNotNone(game)
+        self.assertEqual(game.player_one.user.username, "testuser")
+        self.assertEqual(game.player_two.guest.username, "test_guest")
+        self.assertEqual(game.status.name, "test_status")
+        self.assertEqual(game.rows, 6)
+        self.assertEqual(game.columns, 7)
