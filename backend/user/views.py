@@ -24,6 +24,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework_simplejwt.token_blacklist.models import (
+    BlacklistedToken,
+    OutstandingToken,
+)
 from rest_framework_simplejwt.tokens import RefreshToken
 from user.serializers import GuestSerializer, PlayerSerializer, UserSerializer
 
@@ -155,11 +159,58 @@ class LogoutView(GenericAPIView):
         """
         try:
             refresh_token = request.data.get("refresh")
+
+            if not refresh_token:
+                return Response(
+                    {"error": "Refresh token is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             token = RefreshToken(refresh_token)
+
             token.blacklist()
             logout(request._request)
             return Response(
                 {"message": "Logged out successfully"},
+                status=status.HTTP_205_RESET_CONTENT,
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class LogoutAllView(GenericAPIView):
+    """
+    Logout all user view
+
+    """
+
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request) -> Response:
+        """
+        Post request to logout all user
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+
+        """
+        try:
+            user = request.user
+            tokens = OutstandingToken.objects.filter(user_id=user.user_id)
+            for token in tokens:
+                t, _ = BlacklistedToken.objects.get_or_create(token=token)
+            return Response(
+                {"message": "Logged out from all devices"},
                 status=status.HTTP_205_RESET_CONTENT,
             )
         except Exception as e:

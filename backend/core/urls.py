@@ -14,7 +14,7 @@ Copyright ©2024 feaad
 """
 
 from django.urls import include, path
-from user.views import LoginView, LogoutView
+from user.views import LoginView, LogoutAllView, LogoutView
 
 from .views import (
     CustomTokenObtainPairView,
@@ -29,6 +29,7 @@ auth_patterns = (
     [
         path("login", LoginView.as_view(), name="login"),
         path("logout", LogoutView.as_view(), name="logout"),
+        path("logout/all", LogoutAllView.as_view(), name="logout-all"),
     ],
     "auth",
 )

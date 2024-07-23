@@ -18,9 +18,15 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
+from rest_framework_simplejwt.token_blacklist.models import (
+    BlacklistedToken,
+    OutstandingToken,
+)
 
 REGISTER_USER_URL = reverse("user:user:user-register")
 AUTH_LOGIN_URL = reverse("core:auth:login")
+AUTH_LOGOUT_URL = reverse("core:auth:logout")
+AUTH_LOGOUT_ALL_URL = reverse("core:auth:logout-all")
 USER_DETAIL_URL = reverse("user:user:user-detail")
 
 USER_PAYLOAD = {
@@ -177,9 +183,13 @@ class PublicUserAPITests(APITestCase):
         }
         response = self.client.post(AUTH_LOGIN_URL, payload)
 
+        user = get_user_model().objects.get(username=USER_PAYLOAD["username"])
+        token = OutstandingToken.objects.get(user=user)
+
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["refresh"], str(token.token))
 
     def test_create_token_for_wrong_password(self):
         """
@@ -299,3 +309,58 @@ class PrivateUserAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["error"], "Username cannot be updated")
+
+    def test_user_logout(self):
+        """
+        Test user logout
+
+        """
+
+        auth_payload = USER_PAYLOAD.copy()
+        auth_payload.pop("email")
+
+        auth_response = self.client.post(AUTH_LOGIN_URL, auth_payload)
+
+        refresh = auth_response.data["refresh"]
+
+        payload = {"refresh": refresh}
+
+        response = self.client.post(AUTH_LOGOUT_URL, payload)
+        token = OutstandingToken.objects.get(user=self.user)
+        token_blacklist = BlacklistedToken.objects.get(token=token)
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+        self.assertIsNotNone(token_blacklist)
+
+    def test_user_logout_without_refresh_token(self):
+        """
+        Test user logout without refresh token
+
+        """
+
+        response = self.client.post(AUTH_LOGOUT_URL)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "Refresh token is required")
+
+    def test_user_logout_all(self):
+        """
+        Test user logout all
+
+        """
+
+        auth_payload = USER_PAYLOAD.copy()
+        auth_payload.pop("email")
+
+        auth_response = self.client.post(AUTH_LOGIN_URL, auth_payload)
+
+        refresh = auth_response.data["refresh"]
+
+        payload = {"refresh": refresh}
+
+        response = self.client.post(AUTH_LOGOUT_ALL_URL, payload)
+        token = OutstandingToken.objects.get(user=self.user)
+        token_blacklist = BlacklistedToken.objects.get(token=token)
+
+        self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
+        self.assertIsNotNone(token_blacklist)
