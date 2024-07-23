@@ -121,6 +121,18 @@ class PublicUserAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_user_with_invalid_username(self):
+        """
+        Test creating a user with an invalid username
+
+        """
+
+        payload = USER_PAYLOAD.copy()
+        payload["username"] = "te-st usern@me"
+        response = self.client.post(REGISTER_USER_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_create_user_with_no_email(self):
         """
         Test creating a user with no email

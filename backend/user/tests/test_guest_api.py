@@ -92,6 +92,18 @@ class PublicUserAPITests(APITestCase):
         self.assertNotIn("access", response.data)
         self.assertNotIn("refresh", response.data)
 
+    def test_create_guest_with_invalid_username(self):
+        """
+        Test creating a guest with an invalid username
+
+        """
+
+        payload = GUEST_PAYLOAD.copy()
+        payload["username"] = "te-st pl@yer"
+        response = self.client.post(CREATE_GUEST_URL, payload)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class PrivateUserAPITests(APITestCase):
     """
