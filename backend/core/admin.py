@@ -101,8 +101,6 @@ class AlgorithmAdmin(admin.ModelAdmin):
         "description",
     ]
 
-    list_filter = ["algorithm_id", "name", "description"]
-
 
 @admin.register(models.Player)
 class PlayerAdmin(admin.ModelAdmin):
@@ -123,17 +121,7 @@ class PlayerAdmin(admin.ModelAdmin):
         "total_games",
     ]
 
-    list_filter = [
-        "player_id",
-        "user",
-        "guest",
-        "algorithm",
-        "is_human",
-        "wins",
-        "losses",
-        "draws",
-        "total_games",
-    ]
+    list_filter = ["is_human"]
 
 
 @admin.register(models.Status)
