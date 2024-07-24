@@ -13,10 +13,11 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from core import models
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
+
+from core import models
 
 admin.site.site_header = "Connect Four"
 admin.site.index_title = "Connect Four Admin Panel"
@@ -159,6 +160,9 @@ class GameAdmin(admin.ModelAdmin):
         "start_time",
         "end_time",
         "winner",
+        "created_by",
+        "created_at",
+        "updated_at",
     ]
 
     list_filter = ["rows", "columns", "status"]

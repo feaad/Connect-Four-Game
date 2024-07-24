@@ -14,10 +14,12 @@ Copyright ©2024 feaad
 """
 
 
-import core.tests.helper as hp
-from core import models
 from django.contrib.auth import get_user_model
 from django.test import TransactionTestCase
+
+import core.tests.helper as hp
+from core import models
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS
 
 SAMPLE_USERNAMES = [
     ["tesT1", "test1"],
@@ -206,5 +208,5 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(game.player_one.user.username, "testuser")
         self.assertEqual(game.player_two.guest.username, "test_guest")
         self.assertEqual(game.status.name, "test_status")
-        self.assertEqual(game.rows, 6)
-        self.assertEqual(game.columns, 7)
+        self.assertEqual(game.rows, DEFAULT_ROWS)
+        self.assertEqual(game.columns, DEFAULT_COLUMNS)

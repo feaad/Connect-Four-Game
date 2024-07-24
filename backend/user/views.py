@@ -14,12 +14,12 @@ Copyright ©2024 feaad
 """
 
 
+from core.constants import BACKENDS
 from core.models import Guest, Player, User
 from core.permissions import IsAuthenticatedGuest
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
@@ -32,12 +32,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from user.serializers import GuestSerializer, PlayerSerializer, UserSerializer
 
 from .mixins import AuthMixin
-
-backends = [
-    DjangoFilterBackend,
-    filters.SearchFilter,
-    filters.OrderingFilter,
-]
 
 
 class RegisterView(GenericAPIView, AuthMixin):
@@ -432,7 +426,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
     authentication_classes = []
     queryset = Player.objects.all()
 
-    filter_backends = backends
+    filter_backends = BACKENDS
     filterset_fields = [
         "player_id",
         "user",

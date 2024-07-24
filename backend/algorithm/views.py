@@ -1,16 +1,11 @@
+from core.constants import BACKENDS
+from core.models import Algorithm
+from rest_framework import viewsets
+
 from algorithm.serializers import (
     AlgorithmDetailSerializer,
     AlgorithmSerializer,
 )
-from core.models import Algorithm
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
-
-backends = [
-    DjangoFilterBackend,
-    filters.SearchFilter,
-    filters.OrderingFilter,
-]
 
 
 class AlgorithmViewSet(viewsets.ModelViewSet):
@@ -23,7 +18,7 @@ class AlgorithmViewSet(viewsets.ModelViewSet):
     http_method_names = ["get"]
     authentication_classes = []
 
-    filter_backends = backends
+    filter_backends = BACKENDS
     filterset_fields = ["algorithm_id", "name", "description"]
     search_fields = ["algorithm_id", "name", "description"]
     ordering_fields = filterset_fields

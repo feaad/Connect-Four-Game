@@ -1,0 +1,62 @@
+[
+	{
+		"model": "core.Status",
+		"pk": "450a838e-b359-462b-b28b-9dbea0cd82db",
+		"fields": {
+			"name": "Created",
+			"description": "The game has been created but not yet started.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "32a3804d-d538-4f36-ae34-ba7caf5044bf",
+		"fields": {
+			"name": "Waiting for Opponent",
+			"description": "The game is waiting for an opponent to join.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "7d4ac566-e685-488b-b046-a15f825cb593",
+		"fields": {
+			"name": "In Progress",
+			"description": "The game is ongoing and neither player has won yet.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "6d48f9d7-4477-44ff-9f3b-ce74edb3fe75",
+		"fields": {
+			"name": "Player 1 Wins",
+			"description": "Player 1 has connected four pieces in a row.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "d1873f2d-343f-4c8d-a340-ab0fdf5b3b55",
+		"fields": {
+			"name": "Player 2 Wins",
+			"description": "Player 2 has connected four pieces in a row.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "8b2c864e-d863-4bee-a85f-e60961e42186",
+		"fields": {
+			"name": "Draw",
+			"description": "The board is full, and no player has won.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	}
+]

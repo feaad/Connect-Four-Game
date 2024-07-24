@@ -1,6 +1,6 @@
 [
 	{
-		"model": "core.algorithm",
+		"model": "core.Algorithm",
 		"pk": "744eefee-8be1-47db-b133-0c1bf1965955",
 		"fields": {
 			"name": "Minimax Algorithm",
@@ -10,7 +10,7 @@
 		}
 	},
 	{
-		"model": "core.algorithm",
+		"model": "core.Algorithm",
 		"pk": "b739d1e4-5e5e-4a3f-abe7-dc2a61b2cde5",
 		"fields": {
 			"name": "Alpha-Beta Pruning",
@@ -20,7 +20,7 @@
 		}
 	},
 	{
-		"model": "core.algorithm",
+		"model": "core.Algorithm",
 		"pk": "ec8db9f2-2c43-4e6c-9f6d-1c71f5489ef7",
 		"fields": {
 			"name": "Monte Carlo Tree Search",
@@ -30,7 +30,7 @@
 		}
 	},
 	{
-		"model": "core.algorithm",
+		"model": "core.Algorithm",
 		"pk": "afb7d13e-5f79-482d-b3e2-92e3a8f528db",
 		"fields": {
 			"name": "Neural Networks",
@@ -40,7 +40,7 @@
 		}
 	},
 	{
-		"model": "core.algorithm",
+		"model": "core.Algorithm",
 		"pk": "f2395b3e-6f38-4cfd-b2a1-9f24f535d66d",
 		"fields": {
 			"name": "Reinforcement Learning",

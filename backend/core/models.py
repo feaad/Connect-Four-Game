@@ -15,6 +15,7 @@ Copyright ©2024 feaad
 
 import uuid
 
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -34,7 +35,9 @@ username_validator = RegexValidator(
 
 
 def default_board():
-    return [[0 for _ in range(7)] for _ in range(6)]
+    return [
+        [EMPTY for _ in range(DEFAULT_ROWS)] for _ in range(DEFAULT_COLUMNS)
+    ]
 
 
 class UserManager(BaseUserManager):
@@ -320,8 +323,8 @@ class Game(models.Model):
         Player,
         on_delete=models.RESTRICT,
         related_name="player_one",
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
     )
     player_two = models.ForeignKey(
         Player,
@@ -330,8 +333,8 @@ class Game(models.Model):
         null=True,
         blank=True,
     )
-    rows = models.IntegerField(default=6)
-    columns = models.IntegerField(default=7)
+    rows = models.IntegerField(default=DEFAULT_ROWS)
+    columns = models.IntegerField(default=DEFAULT_COLUMNS)
     board = models.JSONField(default=default_board)
     status = models.ForeignKey(
         Status, on_delete=models.RESTRICT, null=True, blank=True
@@ -351,6 +354,13 @@ class Game(models.Model):
         null=True,
         blank=True,
         related_name="winner",
+    )
+    created_by = models.ForeignKey(
+        Player,
+        on_delete=models.RESTRICT,
+        null=True,
+        blank=True,
+        related_name="created_by",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

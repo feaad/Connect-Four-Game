@@ -69,6 +69,8 @@ def create_game() -> models.Game:
         player_one=models.Player.objects.get(user=player_one),
         player_two=models.Player.objects.get(guest=player_two),
         status=status,
+        current_turn=models.Player.objects.get(user=player_one),
+        created_by=models.Player.objects.get(user=player_one),
     )
 
     return instance
