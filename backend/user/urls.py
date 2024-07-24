@@ -52,4 +52,9 @@ urlpatterns = [
     path("user", include(user_patterns)),
     path("guest", include(guest_patterns)),
     path("", include(player_router.urls)),
+    path(
+        "update-activity",
+        views.UpdateActivityView.as_view(),
+        name="update-activity",
+    ),
 ]

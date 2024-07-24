@@ -10,22 +10,15 @@ from core.constants import (
     PLAYER_TWO,
     RANDOM,
 )
-from core.models import Game, Player, Status
+from core.models import Game, Status
 from core.permissions import IsAuthenticatedGuest
+from core.utils import get_player
 from game.serializers import CreateGameSerializer, GameSerializer
 from rest_framework import status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-
-
-def get_player(user):
-    if hasattr(user, "guest_id"):
-        return Player.objects.get(guest=user.guest_id)
-    elif hasattr(user, "user_id"):
-        return Player.objects.get(user=user.user_id)
-    return None
 
 
 class CreateGameView(GenericAPIView):
@@ -168,7 +161,7 @@ class GameHistoryView(GenericAPIView):
         player = get_player(request.user)
         if not player:
             return Response(
-                {"error": "Not a valid user"},
+                {"error": "Player does not exist"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

@@ -109,6 +109,7 @@ class PlayerSerializer(serializers.ModelSerializer):
             "losses",
             "draws",
             "total_games",
+            "last_activity",
         ]
         read_only_fields = [
             "player_id",
@@ -116,14 +117,23 @@ class PlayerSerializer(serializers.ModelSerializer):
             "losses",
             "draws",
             "total_games",
+            "last_activity",
         ]
 
-    def get_username(self, obj):
+    def get_username(self, obj: models.Player) -> str:
         if obj.user:
             return obj.user.username
         elif obj.guest:
             return obj.guest.username
         return None
 
-    def get_is_guest(self, obj):
+    def get_is_guest(self, obj: models.Player) -> bool:
         return obj.user is None and obj.guest is not None
+
+
+class UpdateActivitySerializer(serializers.Serializer):
+    """
+    Serializer for the UpdateActivityView
+    """
+
+    pass

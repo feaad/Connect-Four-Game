@@ -120,6 +120,7 @@ class PlayerAdmin(admin.ModelAdmin):
         "losses",
         "draws",
         "total_games",
+        "last_activity",
     ]
 
     list_filter = ["is_human"]

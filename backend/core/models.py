@@ -258,6 +258,7 @@ class Player(models.Model):
     losses = models.IntegerField(default=0)
     draws = models.IntegerField(default=0)
     total_games = models.IntegerField(default=0)
+    last_activity = models.DateTimeField(null=True, blank=True)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)

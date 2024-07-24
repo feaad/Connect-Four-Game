@@ -69,54 +69,52 @@ class GameSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["game_id"]
 
-    def get_player_one_username(self, obj):
+    def get_player_one_username(self, obj: models.Game) -> str:
         """
         Get the username of player one
         """
         return self._get_username_or_name(obj.player_one)
 
-    def get_player_two_username(self, obj):
+    def get_player_two_username(self, obj: models.Game) -> str:
         """
         Get the username of player two
         """
         return self._get_username_or_name(obj.player_two)
 
-    def get_current_turn_username(self, obj):
+    def get_current_turn_username(self, obj: models.Game) -> str:
         """
         Get the username of the current turn
         """
         return self._get_username_or_name(obj.current_turn)
 
-    def get_winner_username(self, obj):
+    def get_winner_username(self, obj: models.Game) -> str:
         """
         Get the username of the winner
         """
         return self._get_username_or_name(obj.winner)
 
-    def get_created_by_username(self, obj):
+    def get_created_by_username(self, obj: models.Game) -> str:
         """
         Get the username of the creator
         """
         return self._get_username_or_name(obj.created_by)
 
-    def get_status_name(self, obj):
+    def get_status_name(self, obj: models.Game) -> str:
         """
         Get the name of the status
         """
         return obj.status.name if obj.status else None
 
-    def _get_username_or_name(self, player):
+    def _get_username_or_name(self, player: models.Player) -> str:
         """
         Helper method to get the username or name from a Player object.
         """
-        name = ""
         if player is None:
             return None
         if player.user:
-            name = player.user.username
+            return player.user.username
         elif player.guest:
-            name = player.guest.username
+            return player.guest.username
         elif player.algorithm:
-            name = player.algorithm.name
-
-        return name
+            return player.algorithm.name
+        return ""

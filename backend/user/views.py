@@ -17,8 +17,10 @@ Copyright ©2024 feaad
 from core.constants import BACKENDS
 from core.models import Guest, Player, User
 from core.permissions import IsAuthenticatedGuest
+from core.utils import get_player
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -29,7 +31,13 @@ from rest_framework_simplejwt.token_blacklist.models import (
     OutstandingToken,
 )
 from rest_framework_simplejwt.tokens import RefreshToken
-from user.serializers import GuestSerializer, PlayerSerializer, UserSerializer
+
+from user.serializers import (
+    GuestSerializer,
+    PlayerSerializer,
+    UpdateActivitySerializer,
+    UserSerializer,
+)
 
 from .mixins import AuthMixin
 
@@ -456,4 +464,48 @@ class PlayerViewSet(viewsets.ModelViewSet):
             self.queryset.filter(is_human=True)
             .filter(Q(user__is_active=True) | Q(user__isnull=True))
             .order_by("player_id")
+        )
+
+
+class UpdateActivityView(GenericAPIView):
+    """
+    Update activity view
+    """
+
+    serializer_class = UpdateActivitySerializer
+
+    def get_permissions(self):
+        user = self.request.user
+        if hasattr(user, "guest_id"):
+            return [IsAuthenticatedGuest()]
+        else:
+            return [IsAuthenticated()]
+
+    def post(self, request: Request) -> Response:
+        """
+        Post request to update activity
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+
+        """
+        player = get_player(request.user)
+        if not player:
+            return Response(
+                {"error": "Player does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        player.last_activity = timezone.now()
+        player.save()
+        return Response(
+            {"message": "Activity updated"},
+            status=status.HTTP_200_OK,
         )
