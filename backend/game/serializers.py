@@ -118,3 +118,27 @@ class GameSerializer(serializers.ModelSerializer):
         elif player.algorithm:
             return player.algorithm.name
         return ""
+
+
+class MatchMakingQueueSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Match Making Object
+
+    """
+
+    class Meta:
+        """
+        Meta class for the MatchMakingSerializer
+
+        """
+
+        model = models.MatchMakingQueue
+        fields = [
+            "queue_id",
+            "player",
+            "turn_preference",
+            "matched",
+            "game",
+            "created_at",
+        ]
+        read_only_fields = ["queue_id", "player"]

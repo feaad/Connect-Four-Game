@@ -16,7 +16,19 @@ game_patterns = (
     "game",
 )
 
+match_patterns = (
+    [
+        path(
+            "request",
+            views.RequestMatchMakingView.as_view(),
+            name="match-request",
+        ),
+    ],
+    "match",
+)
+
 urlpatterns = [
     path("game", include(game_patterns)),
     path("", include(game_router.urls)),
+    path("match", include(match_patterns)),
 ]

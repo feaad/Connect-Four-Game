@@ -10,26 +10,22 @@ from core.constants import (
     PLAYER_TWO,
     RANDOM,
 )
-from core.models import Game, Status
-from core.permissions import IsAuthenticatedGuest
+from core.models import Game, Status, TurnPreference
 from core.utils import get_player
-from game.serializers import CreateGameSerializer, GameSerializer
+from game.mixins import PermissionMixin
+from game.serializers import (
+    CreateGameSerializer,
+    GameSerializer,
+    MatchMakingQueueSerializer,
+)
 from rest_framework import status, viewsets
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 
-class CreateGameView(GenericAPIView):
+class CreateGameView(PermissionMixin, GenericAPIView):
     serializer_class = CreateGameSerializer
-
-    def get_permissions(self):
-        user = self.request.user
-        if hasattr(user, "guest_id"):
-            return [IsAuthenticatedGuest()]
-        else:
-            return [IsAuthenticated()]
 
     def _error_response(self, message, code=status.HTTP_400_BAD_REQUEST):
         return Response({"error": message}, status=code)
@@ -84,7 +80,7 @@ class CreateGameView(GenericAPIView):
         return self._create_game(player, rows, columns, turn)
 
 
-class GameViewSet(viewsets.ModelViewSet):
+class GameViewSet(PermissionMixin, viewsets.ModelViewSet):
     """
     ViewSet for the Game model.
     """
@@ -132,13 +128,6 @@ class GameViewSet(viewsets.ModelViewSet):
     ]
     ordering_fields = filterset_fields
 
-    def get_permissions(self):
-        user = self.request.user
-        if hasattr(user, "guest_id"):
-            return [IsAuthenticatedGuest()]
-        else:
-            return [IsAuthenticated()]
-
     def get_queryset(self):
         """
         Return all games ordered by game_id.
@@ -147,15 +136,8 @@ class GameViewSet(viewsets.ModelViewSet):
         return self.queryset.order_by("game_id")
 
 
-class GameHistoryView(GenericAPIView):
+class GameHistoryView(PermissionMixin, GenericAPIView):
     serializer_class = GameSerializer
-
-    def get_permissions(self):
-        user = self.request.user
-        if hasattr(user, "guest_id"):
-            return [IsAuthenticatedGuest()]
-        else:
-            return [IsAuthenticated()]
 
     def get(self, request: Request) -> Response:
         player = get_player(request.user)
@@ -173,3 +155,49 @@ class GameHistoryView(GenericAPIView):
         game_serializer = GameSerializer(games, many=True)
 
         return Response(game_serializer.data, status=status.HTTP_200_OK)
+
+
+class RequestMatchMakingView(PermissionMixin, GenericAPIView):
+    serializer_class = MatchMakingQueueSerializer
+
+    def post(self, request: Request) -> Response:
+        """
+        Add the player to the matchmaking queue.
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+        """
+        player = get_player(request.user)
+        if not player:
+            return Response(
+                {"error": "Player does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        turn_preference = request.data.get("turn_preference", "random")
+
+        if turn_preference not in TurnPreference.values:
+            return Response(
+                {"error": "Invalid turn preference"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = self.get_serializer(
+            data={"player": player, "turn_preference": turn_preference}
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
