@@ -222,3 +222,4 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(match_making.player.guest.username, "test_guest")
         self.assertEqual(match_making.turn_preference, "random")
         self.assertEqual(match_making.matched, False)
+        self.assertIsNone(match_making.game)

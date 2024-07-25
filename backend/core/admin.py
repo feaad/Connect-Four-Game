@@ -180,7 +180,8 @@ class MatchMakingQueueAdmin(admin.ModelAdmin):
         "player",
         "turn_preference",
         "matched",
+        "game",
         "created_at",
         "updated_at",
     ]
-    list_filter = ["turn_preference", "matched"]
+    list_filter = ["turn_preference", "matched", "game"]

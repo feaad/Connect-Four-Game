@@ -409,6 +409,9 @@ class MatchMakingQueue(models.Model):
         default=TurnPreference.RANDOM,
     )
     matched = models.BooleanField(default=False)
+    game = models.ForeignKey(
+        Game, on_delete=models.CASCADE, null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
