@@ -10,6 +10,11 @@ services:
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_USER=${DB_USER}
 
+  redis:
+    container_name: connect-four-redis
+    image: redis:7.2.5-alpine
+    restart: always
+
   backend:
     container_name: connect-four-backend
     build:
@@ -34,6 +39,7 @@ services:
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME}
     depends_on:
       - db
+      - redis
 
   proxy:
     container_name: connect-four-proxy
