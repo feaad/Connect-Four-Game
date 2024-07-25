@@ -15,7 +15,6 @@ Copyright ©2024 feaad
 
 import uuid
 
-from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -27,6 +26,9 @@ from django.core.validators import (
     RegexValidator,
 )
 from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 
 username_validator = RegexValidator(
     regex="^[a-zA-Z0-9_]*$",
@@ -38,6 +40,12 @@ def default_board():
     return [
         [EMPTY for _ in range(DEFAULT_ROWS)] for _ in range(DEFAULT_COLUMNS)
     ]
+
+
+class TurnPreference(models.TextChoices):
+    FIRST = "first", _("First")
+    SECOND = "second", _("Second")
+    RANDOM = "random", _("Random")
 
 
 class UserManager(BaseUserManager):
@@ -378,3 +386,42 @@ class Game(models.Model):
 
     def __str__(self) -> str:
         return f"{self.game_id}"
+
+
+class MatchMakingQueue(models.Model):
+    """
+    Represents the Match Making Queue within the system.
+    """
+
+    queue_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    player = models.ForeignKey(
+        Player, on_delete=models.CASCADE, null=True, blank=True
+    )
+    turn_preference = models.CharField(
+        max_length=6,
+        choices=TurnPreference.choices,
+        default=TurnPreference.RANDOM,
+    )
+    matched = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for
+        MatchMakingQueue.
+
+        """
+
+        ordering = ["queue_id"]
+        verbose_name = "Match Making Queue"
+        verbose_name_plural = "Match Making Queues"
+
+    def __str__(self) -> str:
+        return f"{self.queue_id}"

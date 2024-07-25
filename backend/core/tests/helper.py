@@ -1,5 +1,6 @@
-from core import models
 from django.contrib.auth import get_user_model
+
+from core import models
 
 
 def create_user(
@@ -72,5 +73,18 @@ def create_game() -> models.Game:
         current_turn=models.Player.objects.get(user=player_one),
         created_by=models.Player.objects.get(user=player_one),
     )
+
+    return instance
+
+
+def create_match_making() -> models.MatchMakingQueue:
+    """
+    Helper function to create a match making.
+
+    """
+    guest = create_guest()
+    player = models.Player.objects.get(guest=guest)
+
+    instance, _ = models.MatchMakingQueue.objects.get_or_create(player=player)
 
     return instance

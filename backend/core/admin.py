@@ -13,11 +13,10 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from core import models
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-
-from core import models
 
 admin.site.site_header = "Connect Four"
 admin.site.index_title = "Connect Four Admin Panel"
@@ -167,3 +166,21 @@ class GameAdmin(admin.ModelAdmin):
     ]
 
     list_filter = ["rows", "columns", "status"]
+
+
+@admin.register(models.MatchMakingQueue)
+class MatchMakingQueueAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for MatchMakingQueue.
+
+    """
+
+    list_display = [
+        "queue_id",
+        "player",
+        "turn_preference",
+        "matched",
+        "created_at",
+        "updated_at",
+    ]
+    list_filter = ["turn_preference", "matched"]

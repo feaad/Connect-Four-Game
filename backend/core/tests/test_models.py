@@ -14,12 +14,11 @@ Copyright ©2024 feaad
 """
 
 
-from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase
-
 import core.tests.helper as hp
 from core import models
 from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS
+from django.contrib.auth import get_user_model
+from django.test import TransactionTestCase
 
 SAMPLE_USERNAMES = [
     ["tesT1", "test1"],
@@ -210,3 +209,16 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(game.status.name, "test_status")
         self.assertEqual(game.rows, DEFAULT_ROWS)
         self.assertEqual(game.columns, DEFAULT_COLUMNS)
+
+    def test_create_match_making(self) -> None:
+        """
+        Test Case for creating a match making.
+
+        """
+
+        match_making = hp.create_match_making()
+
+        self.assertIsNotNone(match_making)
+        self.assertEqual(match_making.player.guest.username, "test_guest")
+        self.assertEqual(match_making.turn_preference, "random")
+        self.assertEqual(match_making.matched, False)
