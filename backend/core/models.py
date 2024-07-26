@@ -15,6 +15,7 @@ Copyright ©2024 feaad
 
 import uuid
 
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -26,9 +27,6 @@ from django.core.validators import (
     RegexValidator,
 )
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 
 username_validator = RegexValidator(
     regex="^[a-zA-Z0-9_]*$",
@@ -40,12 +38,6 @@ def default_board():
     return [
         [EMPTY for _ in range(DEFAULT_ROWS)] for _ in range(DEFAULT_COLUMNS)
     ]
-
-
-class TurnPreference(models.TextChoices):
-    FIRST = "first", _("First")
-    SECOND = "second", _("Second")
-    RANDOM = "random", _("Random")
 
 
 class UserManager(BaseUserManager):
@@ -266,6 +258,7 @@ class Player(models.Model):
     losses = models.IntegerField(default=0)
     draws = models.IntegerField(default=0)
     total_games = models.IntegerField(default=0)
+    elo = models.IntegerField(default=1200)
     last_activity = models.DateTimeField(null=True, blank=True)
 
     # Timestamps
@@ -403,12 +396,9 @@ class MatchMakingQueue(models.Model):
     player = models.ForeignKey(
         Player, on_delete=models.CASCADE, null=True, blank=True
     )
-    turn_preference = models.CharField(
-        max_length=6,
-        choices=TurnPreference.choices,
-        default=TurnPreference.RANDOM,
+    status = models.ForeignKey(
+        Status, on_delete=models.RESTRICT, null=True, blank=True
     )
-    matched = models.BooleanField(default=False)
     game = models.ForeignKey(
         Game, on_delete=models.CASCADE, null=True, blank=True
     )

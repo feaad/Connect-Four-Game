@@ -9,11 +9,23 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_USER=${DB_USER}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   redis:
     container_name: connect-four-redis
     image: redis:7.2.5-alpine
     restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   backend:
     container_name: connect-four-backend
@@ -27,6 +39,7 @@ services:
     environment:
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
       - API_PORT=${API_PORT}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
       - DB_PASS=${DB_PASS}
@@ -38,8 +51,27 @@ services:
       - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD}
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME}
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery:
+    container_name: connect-four-celery
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-Celery
+      args:
+        - DEV=${DEBUG}
+    volumes:
+      - ./backend:/app
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
 
   proxy:
     container_name: connect-four-proxy
@@ -51,7 +83,8 @@ services:
     ports:
       - ${API_PORT}:8000
     depends_on:
-      - backend
+      backend:
+        condition: service_started
 
 volumes:
   dev-db-data:

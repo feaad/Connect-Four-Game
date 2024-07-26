@@ -57,5 +57,5 @@ USER cfu
 # Set environment path
 ENV PATH="/scripts:/venv/bin:$PATH"
 
-# Define the command to run the application
-CMD ["entrypoint.sh"]
+# Run the application
+CMD ["celery.sh"]

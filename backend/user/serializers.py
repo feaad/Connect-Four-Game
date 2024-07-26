@@ -109,6 +109,7 @@ class PlayerSerializer(serializers.ModelSerializer):
             "losses",
             "draws",
             "total_games",
+            "elo",
             "last_activity",
         ]
         read_only_fields = [
@@ -117,6 +118,7 @@ class PlayerSerializer(serializers.ModelSerializer):
             "losses",
             "draws",
             "total_games",
+            "elo",
             "last_activity",
         ]
 

@@ -278,6 +278,8 @@ class UserDetailView(GenericAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # TODO: Delete user
+
 
 class RegisterGuestView(GenericAPIView, AuthMixin):
     """
@@ -443,6 +445,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
         "losses",
         "draws",
         "total_games",
+        "elo",
     ]
     search_fields = [
         "player_id",
@@ -452,6 +455,7 @@ class PlayerViewSet(viewsets.ModelViewSet):
         "losses",
         "draws",
         "total_games",
+        "elo",
     ]
     ordering_fields = filterset_fields
 

@@ -119,6 +119,7 @@ class PlayerAdmin(admin.ModelAdmin):
         "losses",
         "draws",
         "total_games",
+        "elo",
         "last_activity",
     ]
 
@@ -178,10 +179,9 @@ class MatchMakingQueueAdmin(admin.ModelAdmin):
     list_display = [
         "queue_id",
         "player",
-        "turn_preference",
-        "matched",
+        "status",
         "game",
         "created_at",
         "updated_at",
     ]
-    list_filter = ["turn_preference", "matched", "game"]
+    list_filter = ["status", "game"]

@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     "user",
     "algorithm",
     "game",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -201,3 +203,18 @@ if DEBUG:
     SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"] = timedelta(minutes=1)
 
 APPEND_SLASH = False
+
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://redis:6379/0")
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_EXTENDED = True
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+REDIS_HOST = config("REDIS_HOST", default="redis")
+REDIS_PORT = config("REDIS_PORT", default=6379, cast=int)
+REDIS_DB = config("REDIS_DB", default=0, cast=int)

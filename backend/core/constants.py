@@ -34,3 +34,5 @@ BACKENDS = [
     filters.SearchFilter,
     filters.OrderingFilter,
 ]
+
+MATCHMAKING_QUEUE = "matchmaking_queue"

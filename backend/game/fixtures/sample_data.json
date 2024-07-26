@@ -58,5 +58,35 @@
 			"created_at": "2024-07-23T00:00:00Z",
 			"updated_at": "2024-07-23T00:00:00Z"
 		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "f1b3b3b4-4b3b-4b3b-4b3b-4b3b4b3b4b3b",
+		"fields": {
+			"name": "Cancelled",
+			"description": "The request has been cancelled.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "2577807e-8ea7-4757-a26d-e3daffb699dc",
+		"fields": {
+			"name": "Queued",
+			"description": "The request has been queued.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
+	},
+	{
+		"model": "core.Status",
+		"pk": "593ead1a-a1d6-441c-bc9c-67efa00a1d71",
+		"fields": {
+			"name": "Matched",
+			"description": "A game has been matched.",
+			"created_at": "2024-07-23T00:00:00Z",
+			"updated_at": "2024-07-23T00:00:00Z"
+		}
 	}
 ]

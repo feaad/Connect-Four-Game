@@ -1,6 +1,5 @@
-from django.contrib.auth import get_user_model
-
 from core import models
+from django.contrib.auth import get_user_model
 
 
 def create_user(
@@ -83,8 +82,11 @@ def create_match_making() -> models.MatchMakingQueue:
 
     """
     guest = create_guest()
+    status = create_status("Queued", "The player is in the queue.")
     player = models.Player.objects.get(guest=guest)
 
-    instance, _ = models.MatchMakingQueue.objects.get_or_create(player=player)
+    instance, _ = models.MatchMakingQueue.objects.get_or_create(
+        player=player, status=status
+    )
 
     return instance
