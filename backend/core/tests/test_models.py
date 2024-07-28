@@ -222,3 +222,23 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(match_making.player.guest.username, "test_guest")
         self.assertEqual(match_making.status.name, "Queued")
         self.assertIsNone(match_making.game)
+
+    def test_create_move(self) -> None:
+        """
+        Test Case for creating a move.
+
+        """
+
+        game = hp.create_game()
+        move = models.Move.objects.create(
+            game=game,
+            player=game.player_one,
+            row=0,
+            column=0,
+        )
+
+        self.assertIsNotNone(move)
+        self.assertEqual(move.game, game)
+        self.assertEqual(move.player, game.player_one)
+        self.assertEqual(move.row, 0)
+        self.assertEqual(move.column, 0)

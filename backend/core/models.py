@@ -34,9 +34,9 @@ username_validator = RegexValidator(
 )
 
 PLAY_PREFERENCE_CHOICES = [
-    ('first', 'First'),
-    ('second', 'Second'),
-    ('random', 'Random'),
+    ("first", "First"),
+    ("second", "Second"),
+    ("random", "Random"),
 ]
 
 
@@ -471,3 +471,41 @@ class GameInvitation(models.Model):
 
     def __str__(self) -> str:
         return f"{self.invitation_id}"
+
+
+class Move(models.Model):
+    """
+    Represents the Move within the system.
+    """
+
+    move_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    game = models.ForeignKey(
+        Game, on_delete=models.CASCADE, null=True, blank=True
+    )
+    player = models.ForeignKey(
+        Player, on_delete=models.RESTRICT, null=True, blank=True
+    )
+    column = models.IntegerField()
+    row = models.IntegerField()
+    is_undone = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for Move.
+
+        """
+
+        ordering = ["move_id"]
+        verbose_name = "Move"
+        verbose_name_plural = "Moves"
+
+    def __str__(self) -> str:
+        return f"{self.move_id}"

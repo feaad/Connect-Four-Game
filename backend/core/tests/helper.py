@@ -1,9 +1,10 @@
 from random import choice
 from typing import Optional, Union
 
+from django.contrib.auth import get_user_model
+
 from core import models
 from core.utils import get_player_by_username
-from django.contrib.auth import get_user_model
 
 
 def create_user(
@@ -113,6 +114,30 @@ def create_game_invitation(
         receiver=get_player_by_username(player_two.username),
         play_preference=choice(["first", "second", "random"]),
         status=status,
+    )
+
+    return instance
+
+
+def create_move(
+    game: Optional[models.Game] = None,
+    player: Optional[models.Player] = None,
+    row: Optional[int] = 0,
+    column: Optional[int] = 0,
+) -> models.Move:
+    """
+    Helper function to create a move.
+
+    """
+    game = create_game() if game is None else game
+    player = (
+        models.Player.objects.get(user=create_user())
+        if player is None
+        else player
+    )
+
+    instance, _ = models.Move.objects.get_or_create(
+        game=game, player=player, row=row, column=column
     )
 
     return instance

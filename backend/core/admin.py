@@ -185,3 +185,21 @@ class MatchMakingQueueAdmin(admin.ModelAdmin):
         "updated_at",
     ]
     list_filter = ["status", "game"]
+
+
+@admin.register(models.Move)
+class MoveAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for Move.
+
+    """
+
+    list_display = [
+        "move_id",
+        "game",
+        "player",
+        "column",
+        "row",
+        "created_at",
+    ]
+    list_filter = ["column", "row"]
