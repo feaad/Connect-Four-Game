@@ -1,10 +1,14 @@
 from core.models import Game, Player, User
-from core.tests.helper import create_guest, create_status, create_user
+from core.tests.helper import (
+    create_algorithm,
+    create_guest,
+    create_status,
+    create_user,
+)
 from django.urls import reverse
+from game.serializers import GameSerializer
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
-
-from game.serializers import GameSerializer
 
 
 def create_game(user: User) -> Game:
@@ -34,6 +38,8 @@ class PrivateUserAPITests(APITestCase):
         self.user = create_user()
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
+        create_status("Created")
+        create_algorithm("Neural Networks")
 
     def test_create_game(self):
         """
@@ -41,9 +47,11 @@ class PrivateUserAPITests(APITestCase):
 
         """
 
-        create_status("Created")
+        payload = {
+            "algorithm": "NN",
+        }
 
-        response = self.client.post(reverse("game:game:game-create"))
+        response = self.client.post(reverse("game:game:game-create"), payload)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Game.objects.count(), 1)
@@ -103,6 +111,11 @@ class PrivateUserAPITests(APITestCase):
 
         create_game(self.user)
         create_game(self.user)
+
+        response = self.client.get(reverse("game:game:game-history"))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
         response = self.client.get(reverse("game:game:game-history"))
 

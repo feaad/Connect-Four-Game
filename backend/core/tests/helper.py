@@ -1,4 +1,8 @@
+from random import choice
+from typing import Optional, Union
+
 from core import models
+from core.utils import get_player_by_username
 from django.contrib.auth import get_user_model
 
 
@@ -87,6 +91,28 @@ def create_match_making() -> models.MatchMakingQueue:
 
     instance, _ = models.MatchMakingQueue.objects.get_or_create(
         player=player, status=status
+    )
+
+    return instance
+
+
+def create_game_invitation(
+    player_one: Optional[Union[models.Guest, models.User]] = None,
+    player_two: Optional[Union[models.Guest, models.User]] = None,
+) -> models.GameInvitation:
+    """
+    Helper function to create a game invitation.
+
+    """
+    player_one = create_user() if player_one is None else player_one
+    player_two = create_guest() if player_two is None else player_two
+    status = create_status("Pending")
+
+    instance, _ = models.GameInvitation.objects.get_or_create(
+        sender=get_player_by_username(player_one.username),
+        receiver=get_player_by_username(player_two.username),
+        play_preference=choice(["first", "second", "random"]),
+        status=status,
     )
 
     return instance

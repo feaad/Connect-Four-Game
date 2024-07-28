@@ -1,3 +1,4 @@
+from core.dataclasses import Status as cfs
 from core.models import MatchMakingQueue, Player
 from core.tests.helper import create_match_making, create_status, create_user
 from django.urls import reverse
@@ -21,13 +22,13 @@ class PrivateUserAPITests(APITestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         self.queued_status = create_status(
-            "Queued", "The player is in the queue."
+            cfs.QUEUED.value, "The player is in the queue."
         )
         self.cancelled_status = create_status(
-            "Cancelled", "The player has cancelled the match."
+            cfs.CANCELLED.value, "The player has cancelled the match."
         )
         self.matched_status = create_status(
-            "Matched", "The player has been matched."
+            cfs.MATCHED.value, "The player has been matched."
         )
 
     def test_request_match(self) -> None:

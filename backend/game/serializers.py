@@ -1,32 +1,18 @@
 from core import models
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
+from core.dataclasses import Status as cfs
+from core.utils import get_username_or_name
 from rest_framework import serializers
-
-
-def get_username_or_name(player: models.Player) -> str:
-    """
-    Helper method to get the username or name from a Player object.
-    """
-    if player is None:
-        return None
-    if player.user:
-        return player.user.username
-    elif player.guest:
-        return player.guest.username
-    elif player.algorithm:
-        return player.algorithm.name
-    return ""
 
 
 class CreateGameSerializer(serializers.ModelSerializer):
     """
     Serializer for the Create Game Object
-
     """
 
     class Meta:
         """
         Meta class for the CreateGameSerializer
-
         """
 
         model = models.Game
@@ -36,15 +22,23 @@ class CreateGameSerializer(serializers.ModelSerializer):
             "player_two",
             "rows",
             "columns",
-            "board",
-            "status",
-            "current_turn",
-            "start_time",
-            "end_time",
-            "winner",
             "created_by",
         ]
         read_only_fields = ["game_id"]
+
+    def create(self, validated_data):
+        """
+        Create a new game instance with an initialized board.
+        """
+        rows = validated_data.get("rows", DEFAULT_ROWS)
+        columns = validated_data.get("columns", DEFAULT_COLUMNS)
+        board = [[EMPTY for _ in range(columns)] for _ in range(rows)]
+        validated_data["board"] = board
+
+        validated_data["status"] = models.Status.objects.get(name=cfs.CREATED)
+        validated_data["current_turn"] = validated_data["player_one"]
+
+        return super().create(validated_data)
 
 
 class GameSerializer(serializers.ModelSerializer):
@@ -172,3 +166,51 @@ class MatchmakingResponseSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         pass
+
+
+class GameInvitationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Game Invitation
+    """
+
+    sender_username = serializers.SerializerMethodField()
+    receiver_username = serializers.SerializerMethodField()
+    status_name = serializers.SerializerMethodField()
+
+    class Meta:
+        """
+        Meta class for the GameInvitationSerializer
+
+        """
+
+        model = models.GameInvitation
+        fields = [
+            "invitation_id",
+            "sender_username",
+            "receiver_username",
+            "status_name",
+            "game",
+            "play_preference",
+            "rows",
+            "columns",
+            "created_at",
+        ]
+        read_only_fields = ["game_id"]
+
+    def get_sender_username(self, obj: models.GameInvitation) -> str:
+        """
+        Get the username of the sender
+        """
+        return get_username_or_name(obj.sender)
+
+    def get_receiver_username(self, obj: models.GameInvitation) -> str:
+        """
+        Get the username of the receiver
+        """
+        return get_username_or_name(obj.receiver)
+
+    def get_status_name(self, obj: models.GameInvitation) -> str:
+        """
+        Get the name of the status
+        """
+        return obj.status.name if obj.status else None

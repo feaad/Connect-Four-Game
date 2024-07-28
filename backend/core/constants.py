@@ -22,7 +22,6 @@ DEFAULT_COLUMNS = 7
 # The number associated with each player.
 PLAYER_ONE = 1
 PLAYER_TWO = 2
-RANDOM = 3
 EMPTY = 0
 
 # The number of connections needed to win the game.

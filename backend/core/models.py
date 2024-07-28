@@ -29,9 +29,15 @@ from django.core.validators import (
 from django.db import models
 
 username_validator = RegexValidator(
-    regex="^[a-zA-Z0-9_]*$",
-    message="Username must be alphanumeric or contain underscores only.",
+    regex="^[a-z0-9_]*$",
+    message="Username must contain only lowercase alphanumeric & underscores.",
 )
+
+PLAY_PREFERENCE_CHOICES = [
+    ('first', 'First'),
+    ('second', 'Second'),
+    ('random', 'Random'),
+]
 
 
 def default_board():
@@ -418,3 +424,50 @@ class MatchMakingQueue(models.Model):
 
     def __str__(self) -> str:
         return f"{self.queue_id}"
+
+
+class GameInvitation(models.Model):
+    """
+    Represents the Game Invitation within the system.
+    """
+
+    invitation_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    sender = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name="sender"
+    )
+    receiver = models.ForeignKey(
+        Player, on_delete=models.CASCADE, related_name="receiver"
+    )
+    status = models.ForeignKey(
+        Status, on_delete=models.RESTRICT, null=True, blank=True
+    )
+    game = models.ForeignKey(
+        Game, on_delete=models.CASCADE, null=True, blank=True
+    )
+    play_preference = models.CharField(
+        max_length=10, choices=PLAY_PREFERENCE_CHOICES, default="random"
+    )
+    rows = models.IntegerField(default=DEFAULT_ROWS)
+    columns = models.IntegerField(default=DEFAULT_COLUMNS)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for
+        GameInvitation.
+
+        """
+
+        ordering = ["invitation_id"]
+        verbose_name = "Game Invitation"
+        verbose_name_plural = "Game Invitations"
+
+    def __str__(self) -> str:
+        return f"{self.invitation_id}"

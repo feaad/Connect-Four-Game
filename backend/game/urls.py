@@ -5,12 +5,15 @@ from . import views
 
 app_name = "game"
 
-game_router = DefaultRouter(trailing_slash=False)
-game_router.register("game", views.GameViewSet)
-
-match_making_router = DefaultRouter(trailing_slash=False)
-match_making_router.register(
-    "match", views.GetMatchMakingQueueViewSet, basename="match"
+router = DefaultRouter(trailing_slash=False)
+router.register("game", views.GameViewSet)
+router.register(
+    "match",
+    views.GetMatchMakingQueueViewSet,
+    basename="match",
+)
+router.register(
+    "invitation", views.GameInvitationViewSet, basename="invitation"
 )
 
 
@@ -40,7 +43,6 @@ match_patterns = (
 
 urlpatterns = [
     path("game", include(game_patterns)),
-    path("", include(game_router.urls)),
     path("match/", include(match_patterns)),
-    path("", include(match_making_router.urls)),
+    path("", include(router.urls)),
 ]
