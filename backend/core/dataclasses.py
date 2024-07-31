@@ -28,6 +28,9 @@ class Status(Enum):
     ACCEPTED = "Accepted"
     PENDING = "Pending"
     REJECTED = "Rejected"
+    P1W = "Player 1 Wins"
+    P2W = "Player 2 Wins"
+    DRAW = "Draw"
 
     def __str__(self) -> str:
         return self.value

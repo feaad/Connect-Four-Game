@@ -15,6 +15,7 @@ router.register(
 router.register(
     "invitation", views.GameInvitationViewSet, basename="invitation"
 )
+router.register("move", views.MoveViewSet, basename="move")
 
 
 game_patterns = (
@@ -45,4 +46,9 @@ urlpatterns = [
     path("game", include(game_patterns)),
     path("match/", include(match_patterns)),
     path("", include(router.urls)),
+    path(
+        "api/move/<int:game_id>/undo",
+        views.MoveViewSet.as_view({"post": "undo"}),
+        name="move-undo",
+    ),
 ]

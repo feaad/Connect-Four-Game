@@ -214,3 +214,57 @@ class GameInvitationSerializer(serializers.ModelSerializer):
         Get the name of the status
         """
         return obj.status.name if obj.status else None
+
+
+class CreateMoveSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Move
+    """
+
+    class Meta:
+        """
+        Meta class for the MoveSerializer
+
+        """
+
+        model = models.Move
+        fields = [
+            "move_id",
+            "game",
+            "player",
+            "column",
+            "row",
+            "is_undone",
+        ]
+        read_only_fields = ["move_id"]
+
+
+class MoveSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Move
+    """
+
+    player_username = serializers.SerializerMethodField()
+
+    class Meta:
+        """
+        Meta class for the MoveSerializer
+
+        """
+
+        model = models.Move
+        fields = [
+            "move_id",
+            "game",
+            "player_username",
+            "column",
+            "row",
+            "is_undone",
+        ]
+        read_only_fields = ["move_id"]
+
+    def get_player_username(self, obj: models.Move) -> str:
+        """
+        Get the username of the player
+        """
+        return get_username_or_name(obj.player)

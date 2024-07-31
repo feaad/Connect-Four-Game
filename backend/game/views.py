@@ -10,26 +10,31 @@ from core.models import (
     Game,
     GameInvitation,
     MatchMakingQueue,
+    Move,
     Player,
     Status,
 )
 from core.utils import get_player, get_player_by_username
 from django.db.models import Q
-from game.match_making import add_player_to_queue, remove_player_from_queue
-from game.mixins import PermissionMixin
-from game.serializers import (
-    CreateGameSerializer,
-    GameInvitationSerializer,
-    GameSerializer,
-    MatchMakingQueueSerializer,
-    MatchmakingResponseSerializer,
-)
-from game.tasks import process_matchmaking
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
+
+import game.utils as utils
+from game.match_making import add_player_to_queue, remove_player_from_queue
+from game.mixins import PermissionMixin
+from game.serializers import (
+    CreateGameSerializer,
+    CreateMoveSerializer,
+    GameInvitationSerializer,
+    GameSerializer,
+    MatchMakingQueueSerializer,
+    MatchmakingResponseSerializer,
+    MoveSerializer,
+)
+from game.tasks import process_matchmaking
 
 PLAY_PREFERENCE_KEYS = [choice[0] for choice in PLAY_PREFERENCE_CHOICES]
 
@@ -492,5 +497,147 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
 
         return Response(
             GameInvitationSerializer(invitation).data,
+            status=status.HTTP_200_OK,
+        )
+
+
+class MoveViewSet(PermissionMixin, viewsets.ModelViewSet):
+    """
+    ViewSet for the Move model.
+    """
+
+    serializer_class = MoveSerializer
+    queryset = Move.objects.all()
+    http_method_names = ["get", "post"]
+    filter_backends = BACKENDS
+
+    filterset_fields = [
+        "move_id",
+        "game",
+        "player",
+        "column",
+        "row",
+        "is_undone",
+    ]
+    search_fields = [
+        "move_id",
+        "game__game_id",
+        "player__user__username",
+        "player__guest__username",
+        "player__algorithm__name",
+        "column",
+        "row",
+        "is_undone",
+    ]
+    ordering_fields = filterset_fields
+
+    def get_queryset(self):
+        """
+        Return all games ordered by move_id.
+
+        """
+        if player := get_player(self.request.user):
+            return self.queryset.filter(
+                Q(player=player.player_id)
+                | Q(game__player_one=player.player_id)
+                | Q(game__player_two=player.player_id)
+            ).order_by("updated_at")
+        else:
+            return self.queryset.none()
+
+    def create(self, request: Request) -> Response:
+        player = get_player(request.user)
+        if not player:
+            return error_response(
+                "Not a valid user", status.HTTP_404_NOT_FOUND
+            )
+
+        game_id = request.data.get("game_id")
+
+        #  TODO: check all int inputs for try except
+        try:
+            column = int(request.data.get("column", -1))
+            row = int(request.data.get("row", -1))
+        except ValueError:
+            return error_response("Column and Row must be integers")
+
+        game = Game.objects.filter(game_id=game_id).first()
+
+        if not game:
+            return error_response(
+                "Game does not exist", status.HTTP_404_NOT_FOUND
+            )
+
+        if game.player_one != player and game.player_two != player:
+            return error_response(
+                "You are not a player in this game",
+            )
+
+        if game.status.name not in [cfs.IN_PROGRESS.value, cfs.CREATED.value]:
+            return error_response("Game is not in progress")
+
+        if game.current_turn != player:
+            return error_response("It is not your turn")
+
+        if utils.is_board_full(game.board):
+            return error_response("Board is full")
+
+        if column < 0 or row < 0:
+            return error_response("Column and Row are required")
+
+        if column >= game.columns or row >= game.rows:
+            return error_response(
+                f"(Column,Row) must be less than ({game.columns},{game.rows})"
+            )
+
+        if not utils.is_valid_move(game.board, column, row):
+            return error_response("Invalid move")
+
+        move_data = {
+            "game": game.game_id,
+            "player": player.player_id,
+            "column": column,
+            "row": row,
+        }
+
+        serializer = CreateMoveSerializer(data=move_data)
+
+        if serializer.is_valid():
+            move = serializer.save()
+            move_reponse = MoveSerializer(move)
+            return Response(
+                move_reponse.data,
+                status=status.HTTP_201_CREATED,
+            )
+
+        return error_response(serializer.errors)
+
+    @action(
+        detail=False, methods=["post"], url_path="(?P<game_id>[^/.]+)/undo"
+    )
+    def undo(self, request: Request, game_id=None) -> Response:
+        player = get_player(request.user)
+        if not player:
+            return error_response(
+                "Not a valid user", status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            move: Move = Move.objects.filter(
+                game_id=UUID(game_id), player=player, is_undone=False
+            ).latest("created_at")
+        except (ValueError, Move.DoesNotExist):
+            return error_response("No moves to undo")
+
+        if not utils.can_undo_move(move):
+            return error_response("You cannot undo this move")
+
+        move.is_undone = True
+        move.save()
+
+        serializer = MoveSerializer(move)
+
+        return Response(
+            serializer.data,
             status=status.HTTP_200_OK,
         )

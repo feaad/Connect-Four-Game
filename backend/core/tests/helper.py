@@ -1,10 +1,9 @@
 from random import choice
 from typing import Optional, Union
 
-from django.contrib.auth import get_user_model
-
 from core import models
 from core.utils import get_player_by_username
+from django.contrib.auth import get_user_model
 
 
 def create_user(
@@ -61,21 +60,25 @@ def create_status(
     return instance
 
 
-def create_game() -> models.Game:
+def create_game(
+    player_one: Optional[Union[models.Guest, models.User]] = None,
+    player_two: Optional[Union[models.Guest, models.User]] = None,
+    status: Optional[models.Status] = None,
+) -> models.Game:
     """
     Helper function to create a game.
 
     """
-    player_one = create_user()
-    player_two = create_guest()
-    status = create_status()
+    player_one = create_user() if player_one is None else player_one
+    player_two = create_guest() if player_two is None else player_two
+    status = create_status() if status is None else status
 
     instance, _ = models.Game.objects.get_or_create(
-        player_one=models.Player.objects.get(user=player_one),
-        player_two=models.Player.objects.get(guest=player_two),
+        player_one=get_player_by_username(player_one.username),
+        player_two=get_player_by_username(player_two.username),
         status=status,
-        current_turn=models.Player.objects.get(user=player_one),
-        created_by=models.Player.objects.get(user=player_one),
+        current_turn=get_player_by_username(player_one.username),
+        created_by=get_player_by_username(player_one.username),
     )
 
     return instance

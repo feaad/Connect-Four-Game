@@ -15,7 +15,6 @@ Copyright ©2024 feaad
 
 import uuid
 
-from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -27,6 +26,8 @@ from django.core.validators import (
     RegexValidator,
 )
 from django.db import models
+
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 
 username_validator = RegexValidator(
     regex="^[a-z0-9_]*$",
@@ -42,7 +43,7 @@ PLAY_PREFERENCE_CHOICES = [
 
 def default_board():
     return [
-        [EMPTY for _ in range(DEFAULT_ROWS)] for _ in range(DEFAULT_COLUMNS)
+        [EMPTY for _ in range(DEFAULT_COLUMNS)] for _ in range(DEFAULT_ROWS)
     ]
 
 
@@ -485,11 +486,10 @@ class Move(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
-    game = models.ForeignKey(
-        Game, on_delete=models.CASCADE, null=True, blank=True
-    )
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     player = models.ForeignKey(
-        Player, on_delete=models.RESTRICT, null=True, blank=True
+        Player,
+        on_delete=models.RESTRICT,
     )
     column = models.IntegerField()
     row = models.IntegerField()
@@ -509,3 +509,6 @@ class Move(models.Model):
 
     def __str__(self) -> str:
         return f"{self.move_id}"
+
+
+# TODO: Check nullable constraints for all fields
