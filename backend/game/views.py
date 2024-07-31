@@ -84,8 +84,12 @@ class CreateGameView(PermissionMixin, GenericAPIView):
                 "Not a valid user", status.HTTP_404_NOT_FOUND
             )
 
-        rows = int(request.data.get("rows", DEFAULT_ROWS))
-        columns = int(request.data.get("columns", DEFAULT_COLUMNS))
+        try:
+            rows = int(request.data.get("rows", DEFAULT_ROWS))
+            columns = int(request.data.get("columns", DEFAULT_COLUMNS))
+        except ValueError:
+            return error_response("Column and Row must be integers")
+
         if rows < CONNECT or columns < CONNECT:
             return error_response(
                 f"Rows and Columns must be at least {CONNECT}"
@@ -380,8 +384,11 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         if receiver == sender:
             return error_response("You can't invite yourself.")
 
-        rows = int(request.data.get("rows", DEFAULT_ROWS))
-        columns = int(request.data.get("columns", DEFAULT_COLUMNS))
+        try:
+            rows = int(request.data.get("rows", DEFAULT_ROWS))
+            columns = int(request.data.get("columns", DEFAULT_COLUMNS))
+        except ValueError:
+            return error_response("Column and Row must be integers")
 
         if rows < CONNECT or columns < CONNECT:
             return error_response(
@@ -554,7 +561,6 @@ class MoveViewSet(PermissionMixin, viewsets.ModelViewSet):
 
         game_id = request.data.get("game_id")
 
-        #  TODO: check all int inputs for try except
         try:
             column = int(request.data.get("column", -1))
             row = int(request.data.get("row", -1))
