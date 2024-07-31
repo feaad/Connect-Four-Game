@@ -15,6 +15,7 @@ Copyright ©2024 feaad
 
 import uuid
 
+from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -26,8 +27,6 @@ from django.core.validators import (
     RegexValidator,
 )
 from django.db import models
-
-from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 
 username_validator = RegexValidator(
     regex="^[a-z0-9_]*$",
@@ -332,21 +331,18 @@ class Game(models.Model):
         Player,
         on_delete=models.RESTRICT,
         related_name="player_one",
-        null=True,
-        blank=True,
     )
     player_two = models.ForeignKey(
         Player,
         on_delete=models.RESTRICT,
         related_name="player_two",
-        null=True,
-        blank=True,
     )
     rows = models.IntegerField(default=DEFAULT_ROWS)
     columns = models.IntegerField(default=DEFAULT_COLUMNS)
     board = models.JSONField(default=default_board)
     status = models.ForeignKey(
-        Status, on_delete=models.RESTRICT, null=True, blank=True
+        Status,
+        on_delete=models.RESTRICT,
     )
     current_turn = models.ForeignKey(
         Player,
@@ -401,10 +397,12 @@ class MatchMakingQueue(models.Model):
         editable=False,
     )
     player = models.ForeignKey(
-        Player, on_delete=models.CASCADE, null=True, blank=True
+        Player,
+        on_delete=models.CASCADE,
     )
     status = models.ForeignKey(
-        Status, on_delete=models.RESTRICT, null=True, blank=True
+        Status,
+        on_delete=models.RESTRICT,
     )
     game = models.ForeignKey(
         Game, on_delete=models.CASCADE, null=True, blank=True
@@ -446,7 +444,8 @@ class GameInvitation(models.Model):
         Player, on_delete=models.CASCADE, related_name="receiver"
     )
     status = models.ForeignKey(
-        Status, on_delete=models.RESTRICT, null=True, blank=True
+        Status,
+        on_delete=models.RESTRICT,
     )
     game = models.ForeignKey(
         Game, on_delete=models.CASCADE, null=True, blank=True
@@ -491,8 +490,8 @@ class Move(models.Model):
         Player,
         on_delete=models.RESTRICT,
     )
-    column = models.IntegerField()
     row = models.IntegerField()
+    column = models.IntegerField()
     is_undone = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -509,6 +508,3 @@ class Move(models.Model):
 
     def __str__(self) -> str:
         return f"{self.move_id}"
-
-
-# TODO: Check nullable constraints for all fields
