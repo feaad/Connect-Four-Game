@@ -91,5 +91,3 @@ class EloRating:
         player_two.elo = cls.update_rating(
             player_two.elo, expected_score_b, actual_score_b
         )
-
-    # TODO: Implement Elo rating history

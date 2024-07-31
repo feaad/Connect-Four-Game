@@ -13,9 +13,9 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from core.models import Algorithm, Guest, Player, User
+from core.models import Algorithm, EloHistory, Guest, Player, User
 from django.db import transaction
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
@@ -117,3 +117,21 @@ def create_player_for_algorithm(
         except Exception as e:
             instance.delete()
             raise e
+
+
+@receiver(pre_save, sender=Player)
+def create_elo_history(sender: Player, instance: Player, **kwargs) -> None:
+    if not instance.pk:
+        return
+
+    try:
+        previous_instance = Player.objects.get(pk=instance.pk)
+    except Player.DoesNotExist:
+        return
+
+    if previous_instance.elo != instance.elo:
+        EloHistory.objects.create(
+            player=instance,
+            old_elo=previous_instance.elo,
+            new_elo=instance.elo,
+        )

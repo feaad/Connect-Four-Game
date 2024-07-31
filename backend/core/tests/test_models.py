@@ -14,11 +14,12 @@ Copyright ©2024 feaad
 """
 
 
+from django.contrib.auth import get_user_model
+from django.test import TransactionTestCase
+
 import core.tests.helper as hp
 from core import models
 from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS
-from django.contrib.auth import get_user_model
-from django.test import TransactionTestCase
 
 SAMPLE_USERNAMES = [
     ["tesT1", "test1"],
@@ -242,3 +243,37 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(move.player, game.player_one)
         self.assertEqual(move.row, 0)
         self.assertEqual(move.column, 0)
+
+    def test_create_elo_history(self) -> None:
+        """
+        Test Case for creating an elo history.
+
+        """
+
+        default_elo = 1200
+        user = hp.create_user()
+        player = models.Player.objects.get(user=user)
+
+        elo_history = models.EloHistory.objects.all()
+
+        self.assertEqual(len(elo_history), 0)
+        self.assertEqual(player.elo, default_elo)
+
+        old_elo = player.elo
+        new_elo = 1000
+
+        delta = new_elo - default_elo
+
+        player.elo = new_elo
+        player.save()
+
+        player.refresh_from_db()
+        elo_history = models.EloHistory.objects.all().first()
+
+        self.assertIsNotNone(elo_history)
+        self.assertEqual(elo_history.player, player)
+        self.assertEqual(player.elo, new_elo)
+        self.assertEqual(elo_history.old_elo, default_elo)
+        self.assertEqual(elo_history.new_elo, new_elo)
+        self.assertEqual(elo_history.delta, delta)
+        self.assertEqual(str(elo_history), f"{new_elo}-{old_elo}=({delta})")

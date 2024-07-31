@@ -144,3 +144,28 @@ def create_move(
     )
 
     return instance
+
+
+def create_elo_history(
+    player: Optional[models.Player] = None,
+    new_elo: Optional[int] = 1000,
+) -> models.EloHistory:
+    """
+    Helper function to create a move.
+
+    """
+    player = (
+        models.Player.objects.get(user=create_user())
+        if player is None
+        else player
+    )
+
+    old_elo = player.elo
+
+    instance, _ = models.EloHistory.objects.get_or_create(
+        player=player,
+        old_elo=old_elo,
+        new_elo=new_elo,
+    )
+
+    return instance

@@ -508,3 +508,41 @@ class Move(models.Model):
 
     def __str__(self) -> str:
         return f"{self.move_id}"
+
+
+class EloHistory(models.Model):
+    """
+    Represents the Elo History within the system.
+    """
+
+    elo_history_id = models.UUIDField(
+        auto_created=True,
+        primary_key=True,
+        serialize=False,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    old_elo = models.IntegerField()
+    new_elo = models.IntegerField()
+    delta = models.IntegerField(editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        """
+        Define the parameters to display on the admin page for EloHistory.
+
+        """
+
+        ordering = ["elo_history_id"]
+        verbose_name = "Elo History"
+        verbose_name_plural = "Elo Histories"
+
+    def __str__(self) -> str:
+        return f"{self.new_elo}-{self.old_elo}=({self.delta})"
+
+    def save(self, *args, **kwargs):
+        # Calculate the change in ELO before saving
+        self.delta = self.new_elo - self.old_elo
+        super().save(*args, **kwargs)

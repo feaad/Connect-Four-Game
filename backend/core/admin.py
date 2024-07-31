@@ -13,11 +13,10 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
+from core import models
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-
-from core import models
 
 admin.site.site_header = "Connect Four"
 admin.site.index_title = "Connect Four Admin Panel"
@@ -204,3 +203,20 @@ class MoveAdmin(admin.ModelAdmin):
         "created_at",
     ]
     list_filter = ["column", "row"]
+
+
+@admin.register(models.EloHistory)
+class EloHistoryAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for EloHistory.
+
+    """
+
+    list_display = [
+        "elo_history_id",
+        "player",
+        "old_elo",
+        "new_elo",
+        "delta",
+        "created_at",
+    ]
