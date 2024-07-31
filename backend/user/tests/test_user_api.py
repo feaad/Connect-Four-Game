@@ -364,3 +364,17 @@ class PrivateUserAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_205_RESET_CONTENT)
         self.assertIsNotNone(token_blacklist)
+
+    def test_delete_user(self):
+        """
+        Test deleting a user
+
+        """
+
+        response = self.client.delete(USER_DETAIL_URL)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data["message"], "User deleted")
+        self.assertFalse(self.user.is_active)

@@ -15,7 +15,7 @@ Copyright ©2024 feaad
 
 
 from core.constants import BACKENDS
-from core.models import Guest, Player, User, EloHistory
+from core.models import EloHistory, Guest, Player, User
 from core.permissions import IsAuthenticatedGuest
 from core.utils import get_player
 from django.contrib.auth import authenticate, login, logout
@@ -31,7 +31,6 @@ from rest_framework_simplejwt.token_blacklist.models import (
     OutstandingToken,
 )
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from user.serializers import (
     EloHistorySerializer,
     GuestSerializer,
@@ -279,7 +278,28 @@ class UserDetailView(GenericAPIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: Delete user
+    def delete(self, request: Request) -> Response:
+        """
+        Delete user.
+
+        Parameters
+        ----------
+        request : Request
+            The request object.
+
+        Returns
+        -------
+        Response
+            The response object.
+        """
+        user = request.user
+        user.is_active = False
+        user.save()
+
+        return Response(
+            {"message": "User deleted"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class RegisterGuestView(GenericAPIView, AuthMixin):
