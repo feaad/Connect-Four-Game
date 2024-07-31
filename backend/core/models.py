@@ -535,7 +535,7 @@ class EloHistory(models.Model):
 
         """
 
-        ordering = ["elo_history_id"]
+        ordering = ["-created_at"]
         verbose_name = "Elo History"
         verbose_name_plural = "Elo Histories"
 

@@ -14,6 +14,7 @@ Copyright ©2024 feaad
 """
 
 from core import models
+from core.utils import get_username_or_name
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -138,4 +139,40 @@ class UpdateActivitySerializer(serializers.Serializer):
     Serializer for the UpdateActivityView
     """
 
-    pass
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
+
+
+class EloHistorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for the EloHistory Object
+
+    """
+
+    player_username = serializers.SerializerMethodField()
+
+    class Meta:
+        """
+        Meta class for the EloHistorySerializer
+
+        """
+
+        model = models.EloHistory
+        fields = [
+            "elo_history_id",
+            "player_username",
+            "old_elo",
+            "new_elo",
+            "delta",
+            "created_at",
+        ]
+        read_only_fields = ["queue_id", "player"]
+
+    def get_player_username(self, obj: models.EloHistory) -> str:
+        """
+        Get the username of the winner
+        """
+        return get_username_or_name(obj.player)

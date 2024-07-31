@@ -15,7 +15,7 @@ Copyright ©2024 feaad
 
 
 from core.constants import BACKENDS
-from core.models import Guest, Player, User
+from core.models import Guest, Player, User, EloHistory
 from core.permissions import IsAuthenticatedGuest
 from core.utils import get_player
 from django.contrib.auth import authenticate, login, logout
@@ -33,6 +33,7 @@ from rest_framework_simplejwt.token_blacklist.models import (
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from user.serializers import (
+    EloHistorySerializer,
     GuestSerializer,
     PlayerSerializer,
     UpdateActivitySerializer,
@@ -428,7 +429,7 @@ class GuestToUserView(GenericAPIView, AuthMixin):
 
 class PlayerViewSet(viewsets.ModelViewSet):
     """
-    View for the Guest model
+    View for the Player model
     """
 
     serializer_class = PlayerSerializer
@@ -513,3 +514,38 @@ class UpdateActivityView(GenericAPIView):
             {"message": "Activity updated"},
             status=status.HTTP_200_OK,
         )
+
+
+class EloHistoryViewSet(viewsets.ModelViewSet):
+    """
+    View for the EloHistory model
+    """
+
+    serializer_class = EloHistorySerializer
+    http_method_names = ["get"]
+    authentication_classes = []
+    queryset = EloHistory.objects.all()
+
+    filter_backends = BACKENDS
+    filterset_fields = [
+        "elo_history_id",
+        "player",
+        "old_elo",
+        "new_elo",
+        "delta",
+    ]
+    search_fields = [
+        "elo_history_id",
+        "player__user__username",
+        "player__user__user_id",
+        "player__guest__username",
+        "player__guest__guest_id",
+        "player__algorithm__name",
+        "player__algorithm__algorithm_id",
+        "player__player_id",
+        "old_elo",
+        "new_elo",
+        "delta",
+        "created_at",
+    ]
+    ordering_fields = filterset_fields
