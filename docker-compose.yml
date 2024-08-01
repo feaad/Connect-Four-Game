@@ -66,11 +66,13 @@ services:
     restart: always
     volumes:
       - ${ROOT_FOLDER}/static:/vol/web
-    environment:
-      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
     depends_on:
+      db:
+        condition: service_healthy
       redis:
         condition: service_healthy
+      backend:
+        condition: service_started
 
   proxy:
     container_name: connect-four-proxy

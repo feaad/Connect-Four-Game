@@ -65,9 +65,9 @@ services:
         - DEV=${DEBUG}
     volumes:
       - ./backend:/app
-    environment:
-      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
     depends_on:
+      db:
+        condition: service_healthy
       redis:
         condition: service_healthy
       backend:

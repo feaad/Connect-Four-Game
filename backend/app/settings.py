@@ -48,12 +48,12 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_spectacular",
     "django_filters",
+    "django_celery_beat",
+    "django_celery_results",
     "core",
     "user",
     "algorithm",
     "game",
-    "django_celery_results",
-    "django_celery_beat",
 ]
 
 MIDDLEWARE = [

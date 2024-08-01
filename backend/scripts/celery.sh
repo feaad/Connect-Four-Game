@@ -2,9 +2,6 @@
 
 set -e
 
-# pkill -f 'celery worker'
-# pkill -f 'celery beat'
-
 # Start Celery worker
 celery -A app worker -E &
 
