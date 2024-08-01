@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "django_celery_results",
     "core",
     "user",
-    "algorithm",
+    "ai",
     "game",
 ]
 

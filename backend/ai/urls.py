@@ -13,11 +13,11 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from algorithm import views
+from ai import views
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-app_name = "algorithm"
+app_name = "ai"
 
 router = DefaultRouter(trailing_slash=False)
 router.register("algorithm", views.AlgorithmViewSet)

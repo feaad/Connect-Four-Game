@@ -36,6 +36,6 @@ urlpatterns = [
     ),
     path("api/", include("user.urls")),
     path("api/", include("core.urls")),
-    path("api/", include("algorithm.urls")),
+    path("api/", include("ai.urls")),
     path("api/", include("game.urls")),
 ]

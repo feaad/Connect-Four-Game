@@ -2,7 +2,7 @@ from core.constants import BACKENDS
 from core.models import Algorithm
 from rest_framework import viewsets
 
-from algorithm.serializers import (
+from ai.serializers import (
     AlgorithmDetailSerializer,
     AlgorithmSerializer,
 )

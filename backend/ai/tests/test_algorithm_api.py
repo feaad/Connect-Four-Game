@@ -13,7 +13,7 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from algorithm.serializers import (
+from ai.serializers import (
     AlgorithmDetailSerializer,
     AlgorithmSerializer,
 )
@@ -22,7 +22,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITransactionTestCase
 
-ALGO_URL = reverse("algorithm:algorithm-list")
+ALGO_URL = reverse("ai:algorithm-list")
 
 
 def create_algorithm(
@@ -43,7 +43,7 @@ def detail_url(algo_algorithm_id: str) -> str:
 
     """
 
-    return reverse("algorithm:algorithm-detail", args=[algo_algorithm_id])
+    return reverse("ai:algorithm-detail", args=[algo_algorithm_id])
 
 
 class PublicUserAPITests(APITransactionTestCase):
