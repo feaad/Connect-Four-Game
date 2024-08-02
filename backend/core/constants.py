@@ -35,3 +35,9 @@ BACKENDS = [
 ]
 
 MATCHMAKING_QUEUE = "matchmaking_queue"
+
+# Minmax algorithm depth
+MM_DEPTH = 4
+
+# Alpha-beta pruning depth
+AB_DEPTH = 6

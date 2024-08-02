@@ -44,9 +44,9 @@ class Algorithm(Enum):
 
     MINIMAX = "Minimax"
     ALPHA_BETA = "Alpha Beta Pruning"
-    MCTS = "Monte Carlo Tree Search"
-    NN = "Neural Networks"
-    RL = "Reinforcement Learning"
+    # MCTS = "Monte Carlo Tree Search"
+    # NN = "Neural Networks"
+    # RL = "Reinforcement Learning"
     RANDOM = "Random"
 
     def __str__(self) -> str:
@@ -56,3 +56,10 @@ class Algorithm(Enum):
             ]
             return choice(choices)
         return self.value
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            self.value == other.value
+            if isinstance(other, Algorithm)
+            else False
+        )
