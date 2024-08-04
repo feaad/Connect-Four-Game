@@ -23,6 +23,8 @@ redis = "^5.0.7"
 django-celery-beat = "^2.6.0"
 django-celery-results = "^2.5.1"
 numpy = "^2.0.1"
+channels = {extras = ["daphne"], version = "^4.1.0"}
+channels-redis = "^4.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

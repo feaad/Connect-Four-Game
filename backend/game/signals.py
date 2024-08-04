@@ -8,8 +8,18 @@ from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+
 from game.elo import EloRating as elo
+from game.tasks import process_ai_move, process_game_update
 from game.utils import is_board_full, is_winner
+
+
+@receiver(post_save, sender=Game)
+def ai_play_first_move(
+    sender: Game, instance: Game, created: bool, **kwargs
+) -> None:
+    if created and instance.current_turn.algorithm:
+        process_ai_move.delay(instance.game_id)
 
 
 @receiver(post_save, sender=Move)
@@ -18,7 +28,6 @@ def update_game(sender: Move, instance: Move, created: bool, **kwargs) -> None:
         return
     try:
         with transaction.atomic():
-
             game = Game.objects.select_for_update().get(
                 game_id=UUID(str(instance.game.game_id))
             )
@@ -26,7 +35,8 @@ def update_game(sender: Move, instance: Move, created: bool, **kwargs) -> None:
             update_board_and_status(game, instance)
             game.save()
 
-            notify_players()
+            if game.current_turn.algorithm:
+                process_ai_move.delay(game.game_id)
 
     except Exception as e:
         if not created:
@@ -45,27 +55,38 @@ def update_board_and_status(game: Game, move: Move) -> None:
         game.board[move.row][move.column] = token
 
         if is_winner(token, game.board, move.column, move.row):
-            game.winner = move.player
-            game.status = get_status_by_player(move.player, game)
-            game.end_time = timezone.now()
-            update_players_stats(game)
+            handle_winner(game, move.player)
+
         elif is_board_full(game.board):
-            game.status = Status.objects.get(name=cfs.DRAW)
-            game.end_time = timezone.now()
-            update_players_stats(game)
+            handle_draw(game)
         else:
             game.current_turn = get_next_turn(game, token)
 
         if game.status.name == cfs.CREATED.value:
-            game.status = Status.objects.get(name=cfs.IN_PROGRESS)
+            game.status = Status.objects.get(name=cfs.IN_PROGRESS.value)
             game.start_time = timezone.now()
 
     game.board[move.row][move.column] = token
 
 
+def handle_winner(game: Game, player: Player) -> None:
+    game.winner = player
+    game.status = get_status_by_player(player, game)
+    game.end_time = timezone.now()
+    update_players_stats(game)
+    process_game_update.delay(game.game_id)
+
+
+def handle_draw(game: Game) -> None:
+    game.status = Status.objects.get(name=cfs.DRAW.value)
+    game.end_time = timezone.now()
+    update_players_stats(game)
+    process_game_update.delay(game.game_id)
+
+
 def get_status_by_player(player: Player, game: Game) -> Status:
     return Status.objects.get(
-        name=cfs.P1W if player == game.player_one else cfs.P2W
+        name=cfs.P1W.value if player == game.player_one else cfs.P2W.value
     )
 
 
@@ -98,8 +119,3 @@ def update_players_stats(game: Game) -> None:
 
     player_one.save()
     player_two.save()
-
-
-def notify_players() -> None:
-    # TODO: Implement notification
-    pass

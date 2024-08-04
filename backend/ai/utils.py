@@ -3,8 +3,9 @@ from typing import List, Tuple
 
 import numpy as np
 import numpy.typing as npt
-from ai.board import Board
 from core.constants import EMPTY, PLAYER_ONE, PLAYER_TWO
+
+from ai.board import Board
 
 
 def get_score(board: npt.NDArray[np.int32], player: int) -> int:

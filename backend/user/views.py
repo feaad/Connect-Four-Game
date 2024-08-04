@@ -79,6 +79,7 @@ class RegisterView(GenericAPIView, AuthMixin):
         if serializer.is_valid():
             user = serializer.save()
             tokens = self.get_tokens_for_user(user)
+            # TODO: Send welcome email with custom template with celery
             return Response(tokens, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

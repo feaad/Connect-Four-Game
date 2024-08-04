@@ -36,6 +36,7 @@ if ALLOWED_HOSTS_ENV := config("ALLOWED_HOSTS", default="127.0.0.1,localhost"):
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -94,7 +95,21 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "app.wsgi.application"
+REDIS_HOST = config("REDIS_HOST", default="redis")
+REDIS_PORT = config("REDIS_PORT", default=6379, cast=int)
+REDIS_DB = config("REDIS_DB", default=0, cast=int)
+
+# WSGI_APPLICATION = "app.wsgi.application"
+ASGI_APPLICATION = "app.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+        },
+    },
+}
 
 
 # Database
@@ -198,14 +213,15 @@ SIMPLE_JWT = {
 }
 
 
-if DEBUG:
-    SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"] = timedelta(seconds=30)
-    SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"] = timedelta(minutes=1)
+# if DEBUG:
+#     SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"] = timedelta(seconds=30)
+#     SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"] = timedelta(minutes=1)
 
 APPEND_SLASH = False
 
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://redis:6379/0")
 CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "django-cache"
 CELERY_RESULT_EXTENDED = True
 
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -215,6 +231,3 @@ CELERY_TIMEZONE = "UTC"
 
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
-REDIS_HOST = config("REDIS_HOST", default="redis")
-REDIS_PORT = config("REDIS_PORT", default=6379, cast=int)
-REDIS_DB = config("REDIS_DB", default=0, cast=int)

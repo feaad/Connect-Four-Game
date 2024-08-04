@@ -75,6 +75,11 @@ class Board:
 
         return open_columns.tolist()
 
+    def get_open_row(self, column: int) -> int:
+        empty_rows = np.where(self.board[:, column] == EMPTY)[0]
+
+        return int(empty_rows[-1]) if empty_rows.size > 0 else -1
+
     @property
     def raw(self) -> List[List[int]]:
         return self.board.tolist()

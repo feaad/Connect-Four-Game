@@ -43,10 +43,7 @@ class Algorithm(Enum):
     """
 
     MINIMAX = "Minimax"
-    ALPHA_BETA = "Alpha Beta Pruning"
-    # MCTS = "Monte Carlo Tree Search"
-    # NN = "Neural Networks"
-    # RL = "Reinforcement Learning"
+    ALPHA_BETA = "Alpha-Beta Pruning"
     RANDOM = "Random"
 
     def __str__(self) -> str:
@@ -63,3 +60,6 @@ class Algorithm(Enum):
             if isinstance(other, Algorithm)
             else False
         )
+
+    def __hash__(self) -> int:
+        return hash(self.value)

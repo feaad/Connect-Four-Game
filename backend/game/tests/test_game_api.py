@@ -6,9 +6,10 @@ from core.tests.helper import (
     create_user,
 )
 from django.urls import reverse
-from game.serializers import GameSerializer
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
+
+from game.serializers import GameSerializer
 
 
 def create_game(user: User) -> Game:
@@ -39,7 +40,7 @@ class PrivateUserAPITests(APITestCase):
         self.client = APIClient()
         self.client.force_authenticate(user=self.user)
         create_status("Created")
-        create_algorithm("Neural Networks")
+        create_algorithm("Minimax")
 
     def test_create_game(self):
         """
@@ -47,12 +48,10 @@ class PrivateUserAPITests(APITestCase):
 
         """
 
-        payload = {
-            "algorithm": "NN",
-        }
+        payload = {"algorithm": "Minimax", "play_preference": "first"}
 
         response = self.client.post(reverse("game:game:game-create"), payload)
-
+        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Game.objects.count(), 1)
 

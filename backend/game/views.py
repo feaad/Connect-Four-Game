@@ -100,12 +100,11 @@ class CreateGameView(PermissionMixin, GenericAPIView):
         if play_preference not in PLAY_PREFERENCE_KEYS:
             return error_response(f"Choose from {PLAY_PREFERENCE_KEYS}")
 
-        algorithm = request.data.get("algorithm", cfa.RANDOM)
+        algorithm = request.data.get("algorithm", str(cfa.RANDOM))
 
-        if algorithm not in cfa.__members__:
-            return error_response(f"Choose from {cfa.__members__}")
-
-        algorithm = cfa[algorithm].value
+        if algorithm not in [alg.value for alg in cfa]:
+            valid_options = ", ".join([alg.value for alg in cfa])
+            return error_response(f"Choose from {valid_options}")
 
         return self._create_game(
             player, algorithm, rows, columns, play_preference
@@ -219,7 +218,7 @@ class RequestMatchMakingView(PermissionMixin, GenericAPIView):
 
         if player_matches := MatchMakingQueue.objects.filter(
             player=player.player_id,
-            status=Status.objects.get(name=cfs.QUEUED),
+            status=Status.objects.get(name=cfs.QUEUED.value),
         ):
             response_data = {
                 "status": "Player already in matchmaking queue",
@@ -406,7 +405,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
             play_preference=play_preference,
             rows=rows,
             columns=columns,
-            status=Status.objects.get(name=cfs.PENDING),
+            status=Status.objects.get(name=cfs.PENDING.value),
         )
 
         return Response(
@@ -425,7 +424,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         try:
             invitation: GameInvitation = GameInvitation.objects.get(
                 invitation_id=UUID(pk),
-                status=Status.objects.get(name=cfs.PENDING),
+                status=Status.objects.get(name=cfs.PENDING.value),
             )
         except (ValueError, GameInvitation.DoesNotExist):
             return error_response(
@@ -438,7 +437,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
                 "You are not the receiver of this invitation"
             )
 
-        invitation.status = Status.objects.get(name=cfs.ACCEPTED)
+        invitation.status = Status.objects.get(name=cfs.ACCEPTED.value)
 
         # Determine who plays first based on the sender's play preference
         if invitation.play_preference == "first":
@@ -486,7 +485,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         try:
             invitation: GameInvitation = GameInvitation.objects.get(
                 invitation_id=UUID(pk),
-                status=Status.objects.get(name=cfs.PENDING),
+                status=Status.objects.get(name=cfs.PENDING.value),
             )
         except (ValueError, GameInvitation.DoesNotExist):
             return error_response(
@@ -499,7 +498,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
                 "You are not the receiver of this invitation"
             )
 
-        invitation.status = Status.objects.get(name=cfs.REJECTED)
+        invitation.status = Status.objects.get(name=cfs.REJECTED.value)
         invitation.save()
 
         return Response(

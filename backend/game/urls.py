@@ -47,7 +47,7 @@ urlpatterns = [
     path("match/", include(match_patterns)),
     path("", include(router.urls)),
     path(
-        "api/move/<int:game_id>/undo",
+        "move/<uuid:game_id>/undo",
         views.MoveViewSet.as_view({"post": "undo"}),
         name="move-undo",
     ),

@@ -1,6 +1,7 @@
 from math import inf
-from typing import Tuple
 from random import choice
+from typing import List, Tuple
+
 from ai.board import Board
 from ai.utils import evaluate_board
 from core.constants import MM_DEPTH
@@ -10,19 +11,19 @@ from .algorithm import Algorithm
 
 
 class Minimax(Algorithm):
-    def __init__(self, player: int, board: Board) -> None:
+    def __init__(self, player: int, board: List[List[int]]) -> None:
         super().__init__(player, board)
         self.name = cfa.MINIMAX.value
 
-    def get_move(self) -> int:
+    def get_move(self) -> Tuple[int, int]:
         column, _ = self._minimax(self.board, MM_DEPTH)
+        row = self.board.get_open_row(column)
 
-        return column
+        return row, column
 
     def _minimax(
         self, board: Board, depth: int, is_maximizing: bool = True
     ) -> Tuple[int, float]:
-
         if depth == 0 or board.game_over():
             return evaluate_board(board, self.player)
 

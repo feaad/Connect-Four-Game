@@ -3,7 +3,7 @@
 		"model": "core.Algorithm",
 		"pk": "744eefee-8be1-47db-b133-0c1bf1965955",
 		"fields": {
-			"name": "Minimax Algorithm",
+			"name": "Minimax",
 			"description": "A recursive algorithm used to minimize the possible loss for a worst-case scenario. It plays optimally against an optimal opponent by evaluating the minimization of the maximum possible loss.",
 			"created_at": "2024-07-23T00:00:00Z",
 			"updated_at": "2024-07-23T00:00:00Z"
@@ -15,36 +15,6 @@
 		"fields": {
 			"name": "Alpha-Beta Pruning",
 			"description": "An optimization technique for the Minimax algorithm that reduces the number of nodes evaluated in the game tree by eliminating branches that cannot affect the final decision.",
-			"created_at": "2024-07-23T00:00:00Z",
-			"updated_at": "2024-07-23T00:00:00Z"
-		}
-	},
-	{
-		"model": "core.Algorithm",
-		"pk": "ec8db9f2-2c43-4e6c-9f6d-1c71f5489ef7",
-		"fields": {
-			"name": "Monte Carlo Tree Search",
-			"description": "A heuristic search algorithm for decision processes, which uses random sampling in the decision tree to find optimal moves by balancing exploration and exploitation.",
-			"created_at": "2024-07-23T00:00:00Z",
-			"updated_at": "2024-07-23T00:00:00Z"
-		}
-	},
-	{
-		"model": "core.Algorithm",
-		"pk": "afb7d13e-5f79-482d-b3e2-92e3a8f528db",
-		"fields": {
-			"name": "Neural Networks",
-			"description": "Machine learning models that can learn to evaluate game positions and make decisions by training on large datasets of Connect Four games.",
-			"created_at": "2024-07-23T00:00:00Z",
-			"updated_at": "2024-07-23T00:00:00Z"
-		}
-	},
-	{
-		"model": "core.Algorithm",
-		"pk": "f2395b3e-6f38-4cfd-b2a1-9f24f535d66d",
-		"fields": {
-			"name": "Reinforcement Learning",
-			"description": "An area of machine learning where an agent learns to make decisions by performing actions and receiving feedback from the environment, aiming to maximize cumulative reward.",
 			"created_at": "2024-07-23T00:00:00Z",
 			"updated_at": "2024-07-23T00:00:00Z"
 		}

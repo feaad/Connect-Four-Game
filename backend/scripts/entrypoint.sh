@@ -17,4 +17,8 @@ if [[ ! -z "${SUPERUSER_USERNAME}" ]]; then
 	python manage.py init_su
 fi
 
+# Start Daphne
+daphne -b 0.0.0.0 -p 9001 app.asgi:application &
+
+# Start uWSGI
 uwsgi --socket :9000 --workers 4 --master --enable-threads --module app.wsgi
