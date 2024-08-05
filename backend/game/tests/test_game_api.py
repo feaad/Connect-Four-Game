@@ -51,7 +51,7 @@ class PrivateUserAPITests(APITestCase):
         payload = {"algorithm": "Minimax", "play_preference": "first"}
 
         response = self.client.post(reverse("game:game:game-create"), payload)
-        print(response.data)
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Game.objects.count(), 1)
 

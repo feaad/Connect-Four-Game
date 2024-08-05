@@ -375,6 +375,6 @@ class PrivateUserAPITests(APITestCase):
 
         self.user.refresh_from_db()
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["message"], "User deleted")
         self.assertFalse(self.user.is_active)

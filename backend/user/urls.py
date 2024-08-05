@@ -22,8 +22,10 @@ app_name = "user"
 
 
 player_router = DefaultRouter(trailing_slash=False)
-player_router.register("", views.PlayerViewSet)
-player_router.register("/elo-history", views.EloHistoryViewSet)
+player_router.register(
+    "player/elo-history", views.EloHistoryViewSet, basename="elohistory"
+)
+player_router.register("player", views.PlayerViewSet, basename="player")
 
 
 user_patterns = (
@@ -53,7 +55,7 @@ guest_patterns = (
 urlpatterns = [
     path("user", include(user_patterns)),
     path("guest", include(guest_patterns)),
-    path("player", include(player_router.urls)),
+    path("", include(player_router.urls)),
     path(
         "update-activity",
         views.UpdateActivityView.as_view(),

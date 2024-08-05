@@ -49,9 +49,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add additional data to the response
         if isinstance(user, Guest):
-            data["guest_id"] = user.id
+            data["guest_id"] = user.guest_id
         elif isinstance(user, User):
-            data["user_id"] = user.id
+            data["user_id"] = user.user_id
 
         return data
 
