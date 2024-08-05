@@ -211,7 +211,7 @@ class LogoutAllView(GenericAPIView):
             user = request.user
             tokens = OutstandingToken.objects.filter(user_id=user.user_id)
             for token in tokens:
-                t, _ = BlacklistedToken.objects.get_or_create(token=token)
+                BlacklistedToken.objects.get_or_create(token=token)
             return Response(
                 {"message": "Logged out from all devices"},
                 status=status.HTTP_205_RESET_CONTENT,
@@ -296,6 +296,11 @@ class UserDetailView(GenericAPIView):
         user = request.user
         user.is_active = False
         user.save()
+
+        user = request.user
+        tokens = OutstandingToken.objects.filter(user_id=user.user_id)
+        for token in tokens:
+            BlacklistedToken.objects.get_or_create(token=token)
 
         return Response(
             {"message": "User deleted"},
