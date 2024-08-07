@@ -1,7 +1,14 @@
 from random import sample
 from uuid import UUID
 
-from core.constants import BACKENDS, CONNECT, DEFAULT_COLUMNS, DEFAULT_ROWS
+import game.utils as utils
+from core.constants import (
+    BACKENDS,
+    CONNECT,
+    DEFAULT_COLUMNS,
+    DEFAULT_ROWS,
+    DIFFICULTY_LEVELS,
+)
 from core.dataclasses import Algorithm as cfa
 from core.dataclasses import Status as cfs
 from core.models import (
@@ -16,13 +23,6 @@ from core.models import (
 )
 from core.utils import get_player, get_player_by_username
 from django.db.models import Q
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.generics import GenericAPIView
-from rest_framework.request import Request
-from rest_framework.response import Response
-
-import game.utils as utils
 from game.match_making import add_player_to_queue, remove_player_from_queue
 from game.mixins import PermissionMixin
 from game.serializers import (
@@ -35,6 +35,11 @@ from game.serializers import (
     MoveSerializer,
 )
 from game.tasks import process_matchmaking
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 PLAY_PREFERENCE_KEYS = [choice[0] for choice in PLAY_PREFERENCE_CHOICES]
 
@@ -46,9 +51,17 @@ def error_response(message, code=status.HTTP_400_BAD_REQUEST):
 class CreateGameView(PermissionMixin, GenericAPIView):
     serializer_class = CreateGameSerializer
 
-    def _create_game(self, player, algorithm, rows, columns, play_preference):
+    def _create_game(
+        self,
+        player,
+        algorithm,
+        rows,
+        columns,
+        difficulty_level,
+        play_preference,
+    ):
         ai_player = Player.objects.get(
-            algorithm=Algorithm.objects.get(name=algorithm)
+            algorithm=Algorithm.objects.get(code_name=algorithm)
         )
 
         if play_preference == "first":
@@ -65,6 +78,7 @@ class CreateGameView(PermissionMixin, GenericAPIView):
             "player_two": player_two.player_id,
             "rows": rows,
             "columns": columns,
+            "difficulty_level": difficulty_level,
             "created_by": player.player_id,
         }
         serializer = self.get_serializer(data=game_data)
@@ -100,6 +114,23 @@ class CreateGameView(PermissionMixin, GenericAPIView):
         if play_preference not in PLAY_PREFERENCE_KEYS:
             return error_response(f"Choose from {PLAY_PREFERENCE_KEYS}")
 
+        try:
+            difficulty_level = int(
+                request.data.get("difficulty_level", DIFFICULTY_LEVELS["min"])
+            )
+        except ValueError:
+            return error_response("Difficulty level must be an integer")
+
+        if not (
+            DIFFICULTY_LEVELS["min"]
+            <= difficulty_level
+            <= DIFFICULTY_LEVELS["max"]
+        ):
+            return error_response(
+                f"Difficulty level must be between {DIFFICULTY_LEVELS['min']}"
+                + f" and {DIFFICULTY_LEVELS['max']} inclusive"
+            )
+
         algorithm = request.data.get("algorithm", str(cfa.RANDOM))
 
         if algorithm not in [alg.value for alg in cfa]:
@@ -107,7 +138,7 @@ class CreateGameView(PermissionMixin, GenericAPIView):
             return error_response(f"Choose from {valid_options}")
 
         return self._create_game(
-            player, algorithm, rows, columns, play_preference
+            player, algorithm, rows, columns, difficulty_level, play_preference
         )
 
 
@@ -127,6 +158,8 @@ class GameViewSet(PermissionMixin, viewsets.ModelViewSet):
         "player_two",
         "rows",
         "columns",
+        "difficulty_level",
+        "depth",
         "status",
         "current_turn",
         "start_time",
@@ -142,20 +175,25 @@ class GameViewSet(PermissionMixin, viewsets.ModelViewSet):
         "player_two__guest__username",
         "player_one__algorithm__name",
         "player_two__algorithm__name",
+        "player_one__algorithm__code_name",
+        "player_two__algorithm__code_name",
         "rows",
         "columns",
+        "difficulty_level",
+        "depth",
         "status__name",
         "current_turn__user__username",
         "current_turn__guest__username",
         "current_turn__algorithm__name",
+        "current_turn__algorithm__code_name",
         "start_time",
         "end_time",
         "winner__user__username",
         "winner__guest__username",
         "winner__algorithm__name",
+        "winner__algorithm__code_name",
         "created_by__user__username",
         "created_by__guest__username",
-        "created_by__algorithm__name",
     ]
     ordering_fields = filterset_fields
 
@@ -407,6 +445,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
             columns=columns,
             status=Status.objects.get(name=cfs.PENDING.value),
         )
+        # TODO: Send User Notification
 
         return Response(
             GameInvitationSerializer(invitation).data,
@@ -469,6 +508,8 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         invitation.game = game
         invitation.save()
 
+        # TODO: Send User Notification
+
         return Response(
             GameInvitationSerializer(invitation).data,
             status=status.HTTP_200_OK,
@@ -500,6 +541,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
 
         invitation.status = Status.objects.get(name=cfs.REJECTED.value)
         invitation.save()
+        # TODO: Send User Notification
 
         return Response(
             GameInvitationSerializer(invitation).data,
@@ -531,6 +573,7 @@ class MoveViewSet(PermissionMixin, viewsets.ModelViewSet):
         "player__user__username",
         "player__guest__username",
         "player__algorithm__name",
+        "player__algorithm__code_name",
         "column",
         "row",
         "is_undone",

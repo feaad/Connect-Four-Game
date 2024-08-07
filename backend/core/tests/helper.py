@@ -35,7 +35,7 @@ def create_algorithm(
     name: str = "test_algorithm",
     code_name: str = "cca",
     description: str = "This is a test algorithm.",
-    depth: int = 1,
+    depth: int = 2,
 ) -> models.Algorithm:
     """
     Helper function to create an algorithm.

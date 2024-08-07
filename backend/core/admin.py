@@ -157,6 +157,8 @@ class GameAdmin(admin.ModelAdmin):
         "player_two",
         "rows",
         "columns",
+        "difficulty_level",
+        "depth",
         "board",
         "status",
         "current_turn",
@@ -168,7 +170,7 @@ class GameAdmin(admin.ModelAdmin):
         "updated_at",
     ]
 
-    list_filter = ["rows", "columns", "status"]
+    list_filter = ["rows", "columns", "status", "difficulty_level", "depth"]
 
 
 @admin.register(models.MatchMakingQueue)

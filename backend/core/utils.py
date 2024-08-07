@@ -28,7 +28,7 @@ def get_username_or_name(player: Player) -> str:
     elif player.guest:
         return player.guest.username
     elif player.algorithm:
-        return player.algorithm.name
+        return player.algorithm.code_name
     return ""
 
 

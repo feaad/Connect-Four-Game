@@ -6,7 +6,7 @@
 			"name": "Minimax",
 			"code_name": "mystic",
 			"description": "A recursive algorithm used to minimize the possible loss for a worst-case scenario. It plays optimally against an optimal opponent by evaluating the minimization of the maximum possible loss.",
-			"depth": 4,
+			"depth": 2,
 			"created_at": "2024-07-23T00:00:00Z",
 			"updated_at": "2024-07-23T00:00:00Z"
 		}
@@ -18,7 +18,7 @@
 			"name": "Alpha-Beta Pruning",
 			"code_name": "sphinx",
 			"description": "An optimization technique for the Minimax algorithm that reduces the number of nodes evaluated in the game tree by eliminating branches that cannot affect the final decision.",
-			"depth": 6,
+			"depth": 4,
 			"created_at": "2024-07-23T00:00:00Z",
 			"updated_at": "2024-07-23T00:00:00Z"
 		}

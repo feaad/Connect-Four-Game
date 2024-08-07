@@ -12,6 +12,8 @@ Modified By: feaad
 -----
 Copyright ©2024 feaad
 """
+from typing import Dict
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
@@ -41,3 +43,11 @@ MM_DEPTH = 4
 
 # Alpha-beta pruning depth
 AB_DEPTH = 6
+
+DIFFICULTY_LEVELS: Dict[str, int] = {
+    "min": 1,
+    "max": 5,
+}
+
+# Constant that determines how much the ELO rating affects the depth
+K_DEPTH = 2

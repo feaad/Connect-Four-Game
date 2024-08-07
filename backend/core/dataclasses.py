@@ -42,8 +42,8 @@ class Algorithm(Enum):
 
     """
 
-    MINIMAX = "Minimax"
-    ALPHA_BETA = "Alpha-Beta Pruning"
+    MINIMAX = "mystic"
+    ALPHA_BETA = "sphinx"
     RANDOM = "Random"
 
     def __str__(self) -> str:

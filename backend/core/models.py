@@ -15,7 +15,12 @@ Copyright ©2024 feaad
 
 import uuid
 
-from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
+from core.constants import (
+    DEFAULT_COLUMNS,
+    DEFAULT_ROWS,
+    EMPTY,
+    DIFFICULTY_LEVELS,
+)
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -23,7 +28,9 @@ from django.contrib.auth.models import (
 )
 from django.core.validators import (
     EmailValidator,
+    MaxValueValidator,
     MinLengthValidator,
+    MinValueValidator,
     RegexValidator,
 )
 from django.db import models
@@ -341,6 +348,15 @@ class Game(models.Model):
     )
     rows = models.IntegerField(default=DEFAULT_ROWS)
     columns = models.IntegerField(default=DEFAULT_COLUMNS)
+    difficulty_level = models.IntegerField(
+        validators=[
+            MinValueValidator(DIFFICULTY_LEVELS["min"]),
+            MaxValueValidator(DIFFICULTY_LEVELS["max"]),
+        ],
+        null=True,
+        blank=True,
+    )
+    depth = models.IntegerField(null=True, blank=True)
     board = models.JSONField(default=default_board)
     status = models.ForeignKey(
         Status,

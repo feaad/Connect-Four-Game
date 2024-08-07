@@ -2,6 +2,7 @@ from core import models
 from core.constants import DEFAULT_COLUMNS, DEFAULT_ROWS, EMPTY
 from core.dataclasses import Status as cfs
 from core.utils import get_username_or_name
+from game.utils import compute_depth
 from rest_framework import serializers
 
 
@@ -22,6 +23,7 @@ class CreateGameSerializer(serializers.ModelSerializer):
             "player_two",
             "rows",
             "columns",
+            "difficulty_level",
             "created_by",
         ]
         read_only_fields = ["game_id"]
@@ -34,9 +36,16 @@ class CreateGameSerializer(serializers.ModelSerializer):
         columns = validated_data.get("columns", DEFAULT_COLUMNS)
         board = [[EMPTY for _ in range(columns)] for _ in range(rows)]
         validated_data["board"] = board
-
         validated_data["status"] = models.Status.objects.get(name=cfs.CREATED)
         validated_data["current_turn"] = validated_data["player_one"]
+
+        if validated_data.get("difficulty_level"):
+            if depth := compute_depth(
+                validated_data["difficulty_level"],
+                validated_data["player_one"],
+                validated_data["player_two"],
+            ):
+                validated_data["depth"] = depth
 
         return super().create(validated_data)
 
@@ -68,6 +77,8 @@ class GameSerializer(serializers.ModelSerializer):
             "rows",
             "columns",
             "board",
+            "difficulty_level",
+            "depth",
             "status_name",
             "current_turn_username",
             "start_time",

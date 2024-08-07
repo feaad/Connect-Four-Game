@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Optional
 
-from core.constants import CONNECT, EMPTY
+from core.constants import CONNECT, EMPTY, K_DEPTH
 from core.dataclasses import Status as cfs
-from core.models import Move
+from core.models import Move, Player
 
 
 def is_valid_move(board: List[List[int]], column: int, row: int) -> bool:
@@ -158,3 +158,28 @@ def _check_diagonal_win(
                     return True
 
     return False
+
+
+def compute_depth(
+    difficulty_level: int, player_one: Player, player_two: Player
+) -> Optional[int]:
+    if player_one.algorithm:
+        algo_depth = player_one.algorithm.depth
+        elo = player_two.elo
+    else:
+        algo_depth = player_two.algorithm.depth
+        elo = player_one.elo
+
+    if not algo_depth:
+        return None
+
+    min_elo = Player.objects.filter(is_human=True).order_by("elo").first().elo
+    max_elo = Player.objects.filter(is_human=True).order_by("elo").last().elo
+
+    norm_elo = (
+        (elo - min_elo) / (max_elo - min_elo) if max_elo != min_elo else 0
+    )
+
+    depth = (2 * difficulty_level) + algo_depth + (K_DEPTH * norm_elo)
+
+    return round(depth)
