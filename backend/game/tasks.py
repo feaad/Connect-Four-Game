@@ -1,9 +1,12 @@
+import contextlib
+
 from asgiref.sync import async_to_sync
 from celery import shared_task
 from channels.layers import get_channel_layer
 from core.constants import MATCHMAKING_QUEUE
+from core.models import GameInvitation
 from core.redis import redis_client
-
+from core.utils import get_username_or_name
 from game.match_making import find_match_for_player, notify_players
 from game.move import compute_ai_move, get_game_status
 
@@ -68,5 +71,49 @@ def process_game_update(game_id):
             {
                 "type": "game_update",
                 "message": {"status": status},
+            },
+        )
+
+
+@shared_task(name="game.tasks.send_invitation")
+def process_send_invitation(invitation_id):
+    with contextlib.suppress(GameInvitation.DoesNotExist):
+        invitation = GameInvitation.objects.get(invitation_id=invitation_id)
+        sender_name = get_username_or_name(invitation.sender)
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"player_{invitation.receiver.player_id}",
+            {
+                "type": "notification",
+                "message": {
+                    "event_type": "game invitation",
+                    "invitation_id": str(invitation_id),
+                    "sender": sender_name,
+                },
+            },
+        )
+
+
+@shared_task(name="game.tasks.invitation_update")
+def process_invitation_update(invitation_id):
+    with contextlib.suppress(GameInvitation.DoesNotExist):
+        invitation = GameInvitation.objects.get(invitation_id=invitation_id)
+        receiver_name = get_username_or_name(invitation.receiver)
+
+        game = str(invitation.game.game_id) if invitation.game else ""
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"player_{invitation.sender.player_id}",
+            {
+                "type": "notification",
+                "message": {
+                    "event_type": "invitation update",
+                    "invitation_id": str(invitation_id),
+                    "receiver": receiver_name,
+                    "status": invitation.status.name,
+                    "game_id": game,
+                },
             },
         )

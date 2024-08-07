@@ -34,7 +34,11 @@ from game.serializers import (
     MatchmakingResponseSerializer,
     MoveSerializer,
 )
-from game.tasks import process_matchmaking
+from game.tasks import (
+    process_invitation_update,
+    process_matchmaking,
+    process_send_invitation,
+)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import GenericAPIView
@@ -445,7 +449,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
             columns=columns,
             status=Status.objects.get(name=cfs.PENDING.value),
         )
-        # TODO: Send User Notification
+        process_send_invitation.delay(invitation.invitation_id)
 
         return Response(
             GameInvitationSerializer(invitation).data,
@@ -508,7 +512,7 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         invitation.game = game
         invitation.save()
 
-        # TODO: Send User Notification
+        process_invitation_update.delay(invitation.invitation_id)
 
         return Response(
             GameInvitationSerializer(invitation).data,
@@ -541,7 +545,8 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
 
         invitation.status = Status.objects.get(name=cfs.REJECTED.value)
         invitation.save()
-        # TODO: Send User Notification
+
+        process_invitation_update.delay(invitation.invitation_id)
 
         return Response(
             GameInvitationSerializer(invitation).data,
