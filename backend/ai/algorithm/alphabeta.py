@@ -4,9 +4,7 @@ from typing import List, Tuple
 
 from ai.board import Board
 from ai.utils import evaluate_board
-from core.constants import AB_DEPTH
 from core.dataclasses import Algorithm as cfa
-
 
 from .algorithm import Algorithm
 
@@ -15,12 +13,12 @@ BETA = inf
 
 
 class AlphaBeta(Algorithm):
-    def __init__(self, player: int, board: List[List[int]]) -> None:
-        super().__init__(player, board)
+    def __init__(self, player: int, board: List[List[int]], depth) -> None:
+        super().__init__(player, board, depth)
         self.name = cfa.ALPHA_BETA.value
 
     def get_move(self) -> Tuple[int, int]:
-        column, _ = self._alpha_beta(self.board, AB_DEPTH, ALPHA, BETA)
+        column, _ = self._alpha_beta(self.board, self.depth, ALPHA, BETA)
         row = self.board.get_open_row(column)
 
         return row, column

@@ -4,19 +4,18 @@ from typing import List, Tuple
 
 from ai.board import Board
 from ai.utils import evaluate_board
-from core.constants import MM_DEPTH
 from core.dataclasses import Algorithm as cfa
 
 from .algorithm import Algorithm
 
 
 class Minimax(Algorithm):
-    def __init__(self, player: int, board: List[List[int]]) -> None:
-        super().__init__(player, board)
+    def __init__(self, player: int, board: List[List[int]], depth) -> None:
+        super().__init__(player, board, depth)
         self.name = cfa.MINIMAX.value
 
     def get_move(self) -> Tuple[int, int]:
-        column, _ = self._minimax(self.board, MM_DEPTH)
+        column, _ = self._minimax(self.board, self.depth)
         row = self.board.get_open_row(column)
 
         return row, column

@@ -38,12 +38,6 @@ BACKENDS = [
 
 MATCHMAKING_QUEUE = "matchmaking_queue"
 
-# Minmax algorithm depth
-MM_DEPTH = 4
-
-# Alpha-beta pruning depth
-AB_DEPTH = 6
-
 DIFFICULTY_LEVELS: Dict[str, int] = {
     "min": 1,
     "max": 5,

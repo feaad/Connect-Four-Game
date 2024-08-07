@@ -286,7 +286,7 @@ class Player(models.Model):
             if self.user
             else self.guest.username
             if self.guest
-            else self.algorithm.name
+            else self.algorithm.code_name
             if self.algorithm
             else str(self.player_id)
         )

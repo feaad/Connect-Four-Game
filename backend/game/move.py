@@ -28,7 +28,7 @@ def compute_ai_move(game_id) -> Optional[Tuple[int, int, int]]:
         if game.current_turn.algorithm is None:
             return
 
-        current_turn = game.current_turn.algorithm.name
+        current_turn = game.current_turn.algorithm.code_name
 
         player = (
             PLAYER_ONE if game.current_turn == game.player_one else PLAYER_TWO
@@ -36,9 +36,9 @@ def compute_ai_move(game_id) -> Optional[Tuple[int, int, int]]:
 
         match current_turn:
             case cfa.MINIMAX.value:
-                algorithm = Minimax(player, game.board)
+                algorithm = Minimax(player, game.board, game.depth)
             case cfa.ALPHA_BETA.value:
-                algorithm = AlphaBeta(player, game.board)
+                algorithm = AlphaBeta(player, game.board, game.depth)
             case _:
                 return
         row, column = algorithm.get_move()
@@ -51,7 +51,6 @@ def compute_ai_move(game_id) -> Optional[Tuple[int, int, int]]:
         )
 
         return player, row, column
-
     raise ValueError("Game does not exist")
 
 

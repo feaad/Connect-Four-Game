@@ -6,11 +6,14 @@ from core.constants import PLAYER_ONE, PLAYER_TWO
 
 
 class Algorithm:
-    def __init__(self, player: int, board: List[List[int]]) -> None:
+    def __init__(
+        self, player: int, board: List[List[int]], depth: int
+    ) -> None:
         self.name = "Algorithm"
         self.player = player
         self.opponent = PLAYER_ONE if player == PLAYER_TWO else PLAYER_TWO
         self.board: Board = Board(np.array(board), player)
+        self.depth = depth
 
     def get_move(self) -> Tuple[int, int]:
         raise NotImplementedError(
