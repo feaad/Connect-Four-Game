@@ -29,7 +29,7 @@ class AlgorithmSerializer(serializers.ModelSerializer):
         """
 
         model = Algorithm
-        fields = ["algorithm_id", "name"]
+        fields = ["algorithm_id", "name", "code_name"]
         read_only_fields = ["algorithm_id"]
 
 
@@ -44,4 +44,4 @@ class AlgorithmDetailSerializer(AlgorithmSerializer):
 
         """
 
-        fields = AlgorithmSerializer.Meta.fields + ["description"]
+        fields = AlgorithmSerializer.Meta.fields + ["description", "depth"]

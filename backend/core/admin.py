@@ -98,7 +98,9 @@ class AlgorithmAdmin(admin.ModelAdmin):
     list_display = [
         "algorithm_id",
         "name",
+        "code_name",
         "description",
+        "depth",
     ]
 
 

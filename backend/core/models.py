@@ -216,7 +216,9 @@ class Algorithm(models.Model):
         editable=False,
     )
     name = models.CharField(max_length=100, unique=True)
+    code_name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
+    depth = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

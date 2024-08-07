@@ -13,10 +13,7 @@ Modified By: feaad
 Copyright ©2024 feaad
 """
 
-from ai.serializers import (
-    AlgorithmDetailSerializer,
-    AlgorithmSerializer,
-)
+from ai.serializers import AlgorithmDetailSerializer, AlgorithmSerializer
 from core.models import Algorithm
 from django.urls import reverse
 from rest_framework import status
@@ -27,14 +24,18 @@ ALGO_URL = reverse("ai:algorithm-list")
 
 def create_algorithm(
     name: str = "test_algorithm",
+    code_name: str = "test_code_name",
     description: str = "This is a test algorithm.",
+    depth: int = 1,
 ) -> Algorithm:
     """
     Create and return a new algorithm.
 
     """
 
-    return Algorithm.objects.create(name=name, description=description)
+    return Algorithm.objects.create(
+        name=name, code_name=code_name, description=description, depth=depth
+    )
 
 
 def detail_url(algo_algorithm_id: str) -> str:
@@ -63,7 +64,7 @@ class PublicUserAPITests(APITransactionTestCase):
         """
 
         create_algorithm("test_1")
-        create_algorithm("test_2")
+        create_algorithm("test_2", "test_code_name_2")
 
         response = self.client.get(ALGO_URL)
 
@@ -95,7 +96,7 @@ class PublicUserAPITests(APITransactionTestCase):
 
         """
         create_algorithm("test_1")
-        create_algorithm("test_2")
+        create_algorithm("test_2", "test_code_name_2")
 
         response = self.client.get(ALGO_URL, {"search": "test_1"})
 
@@ -104,5 +105,6 @@ class PublicUserAPITests(APITransactionTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
+        self.assertEqual(len(response.data), 1)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(len(response.data), 1)

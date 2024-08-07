@@ -33,14 +33,19 @@ def create_guest(username: str = "test_guest") -> models.Guest:
 
 def create_algorithm(
     name: str = "test_algorithm",
+    code_name: str = "cca",
     description: str = "This is a test algorithm.",
+    depth: int = 1,
 ) -> models.Algorithm:
     """
     Helper function to create an algorithm.
 
     """
     instance, _ = models.Algorithm.objects.get_or_create(
-        name=name, description=description
+        name=name,
+        code_name=code_name,
+        description=description,
+        depth=depth,
     )
 
     return instance

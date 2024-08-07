@@ -1,11 +1,7 @@
+from ai.serializers import AlgorithmDetailSerializer, AlgorithmSerializer
 from core.constants import BACKENDS
 from core.models import Algorithm
 from rest_framework import viewsets
-
-from ai.serializers import (
-    AlgorithmDetailSerializer,
-    AlgorithmSerializer,
-)
 
 
 class AlgorithmViewSet(viewsets.ModelViewSet):
@@ -19,8 +15,20 @@ class AlgorithmViewSet(viewsets.ModelViewSet):
     authentication_classes = []
 
     filter_backends = BACKENDS
-    filterset_fields = ["algorithm_id", "name", "description"]
-    search_fields = ["algorithm_id", "name", "description"]
+    filterset_fields = [
+        "algorithm_id",
+        "name",
+        "code_name",
+        "description",
+        "depth",
+    ]
+    search_fields = [
+        "algorithm_id",
+        "name",
+        "code_name",
+        "description",
+        "depth",
+    ]
     ordering_fields = filterset_fields
 
     def get_queryset(self):
