@@ -544,6 +544,7 @@ class EloHistory(models.Model):
     old_elo = models.IntegerField()
     new_elo = models.IntegerField()
     delta = models.IntegerField(editable=False)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

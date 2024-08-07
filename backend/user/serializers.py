@@ -167,6 +167,7 @@ class EloHistorySerializer(serializers.ModelSerializer):
             "old_elo",
             "new_elo",
             "delta",
+            "game",
             "created_at",
         ]
         read_only_fields = ["queue_id", "player"]

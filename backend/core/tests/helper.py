@@ -152,25 +152,27 @@ def create_move(
 
 
 def create_elo_history(
-    player: Optional[models.Player] = None,
+    player_one: Optional[Union[models.Guest, models.User]] = None,
     new_elo: Optional[int] = 1000,
 ) -> models.EloHistory:
     """
     Helper function to create a move.
 
     """
-    player = (
-        models.Player.objects.get(user=create_user())
-        if player is None
-        else player
-    )
+    player = get_player_by_username(player_one.username)
+
+    game = create_game(player_one)
 
     old_elo = player.elo
+
+    player.elo = new_elo
+    player.save()
 
     instance, _ = models.EloHistory.objects.get_or_create(
         player=player,
         old_elo=old_elo,
         new_elo=new_elo,
+        game=game,
     )
 
     return instance

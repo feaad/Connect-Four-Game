@@ -3,12 +3,11 @@ from uuid import UUID
 from core.constants import EMPTY, PLAYER_ONE, PLAYER_TWO
 from core.dataclasses import GameResult
 from core.dataclasses import Status as cfs
-from core.models import Game, Move, Player, Status
+from core.models import EloHistory, Game, Move, Player, Status
 from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-
 from game.elo import EloRating as elo
 from game.tasks import process_ai_move, process_game_update
 from game.utils import is_board_full, is_winner
@@ -115,7 +114,22 @@ def update_players_stats(game: Game) -> None:
     player_one.total_games += 1
     player_two.total_games += 1
 
+    old_elo_one = player_one.elo
+    old_elo_two = player_two.elo
+
     elo.update_player_elo(player_one, player_two, result)
 
     player_one.save()
     player_two.save()
+
+    create_elo_history(player_one, game, old_elo_one)
+    create_elo_history(player_two, game, old_elo_two)
+
+
+def create_elo_history(player: Player, game: Game, old_elo: int) -> None:
+    EloHistory.objects.create(
+        player=player,
+        old_elo=old_elo,
+        new_elo=player.elo,
+        game=game,
+    )

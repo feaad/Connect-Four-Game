@@ -250,25 +250,16 @@ class ModelTests(TransactionTestCase):
 
         """
 
-        default_elo = 1200
         user = hp.create_user()
         player = models.Player.objects.get(user=user)
+        default_elo = player.elo
 
-        elo_history = models.EloHistory.objects.all()
-
-        self.assertEqual(len(elo_history), 0)
-        self.assertEqual(player.elo, default_elo)
-
-        old_elo = player.elo
-        new_elo = 1000
+        elo_history = hp.create_elo_history(user)
+        new_elo = elo_history.new_elo
 
         delta = new_elo - default_elo
 
-        player.elo = new_elo
-        player.save()
-
         player.refresh_from_db()
-        elo_history = models.EloHistory.objects.all().first()
 
         self.assertIsNotNone(elo_history)
         self.assertEqual(elo_history.player, player)
@@ -276,4 +267,6 @@ class ModelTests(TransactionTestCase):
         self.assertEqual(elo_history.old_elo, default_elo)
         self.assertEqual(elo_history.new_elo, new_elo)
         self.assertEqual(elo_history.delta, delta)
-        self.assertEqual(str(elo_history), f"{new_elo}-{old_elo}=({delta})")
+        self.assertEqual(
+            str(elo_history), f"{new_elo}-{default_elo}=({delta})"
+        )

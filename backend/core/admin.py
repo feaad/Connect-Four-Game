@@ -222,5 +222,6 @@ class EloHistoryAdmin(admin.ModelAdmin):
         "old_elo",
         "new_elo",
         "delta",
+        "game",
         "created_at",
     ]

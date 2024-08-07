@@ -559,6 +559,7 @@ class EloHistoryViewSet(viewsets.ModelViewSet):
         "old_elo",
         "new_elo",
         "delta",
+        "game",
     ]
     search_fields = [
         "elo_history_id",
@@ -572,6 +573,7 @@ class EloHistoryViewSet(viewsets.ModelViewSet):
         "old_elo",
         "new_elo",
         "delta",
+        "game__game_id",
         "created_at",
     ]
     ordering_fields = filterset_fields

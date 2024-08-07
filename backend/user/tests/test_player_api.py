@@ -1,8 +1,8 @@
 from core.models import Algorithm, EloHistory, Guest, Player, User
+from core.tests.helper import create_elo_history
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITransactionTestCase
-
 from user.serializers import EloHistorySerializer, PlayerSerializer
 
 PLAYER_URL = reverse("user:player-list")
@@ -21,18 +21,11 @@ class PublicUserAPITests(APITransactionTestCase):
         Algorithm.objects.create(
             name="test_algorithm", description="This is a test algorithm."
         )
-        guest = Guest.objects.create(username="test_guest")
+        self.guest = Guest.objects.create(username="test_guest")
         self.user = User.objects.create(
             username="test_user", password="test_password"
         )
         self.user_player = Player.objects.get(user=self.user)
-        self.guest_player = Player.objects.get(guest=guest)
-
-        self.user_player.elo = 1500
-        self.user_player.save()
-
-        self.guest_player.elo = 1000
-        self.guest_player.save()
 
     def test_retrieve_player(self) -> None:
         """
@@ -86,10 +79,12 @@ class PublicUserAPITests(APITransactionTestCase):
         Test retrieving a list of elo histories.
 
         """
+        create_elo_history(self.user, 1500)
+        create_elo_history(self.guest, 1500)
+
         response = self.client.get(ELO_URL)
 
         elo_histories = EloHistory.objects.all()
-
         serializer = EloHistorySerializer(elo_histories, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -101,7 +96,7 @@ class PublicUserAPITests(APITransactionTestCase):
         Test retrieving an elo history by id.
 
         """
-        elo_history = EloHistory.objects.get(player=self.user_player)
+        elo_history = create_elo_history(self.user, 1500)
 
         response = self.client.get(
             reverse(
@@ -120,12 +115,14 @@ class PublicUserAPITests(APITransactionTestCase):
 
         """
 
-        elo_history = EloHistory.objects.get(player=self.user_player)
+        create_elo_history(self.user, 1500)
+        create_elo_history(self.guest, 1500)
 
         response = self.client.get(
             ELO_URL, {"search": self.user_player.player_id}
         )
 
+        elo_history = EloHistory.objects.get(player=self.user_player)
         serializer = EloHistorySerializer(elo_history)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
