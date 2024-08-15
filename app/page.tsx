@@ -8,7 +8,7 @@ import Banner from "@/components/Banner";
 export default function Home() {
   return (
     <main>
-      <div className="grid h-screen grid-cols-2 gap-8">
+      <div className="grid h-screen grid-cols-2 gap-16">
         <Banner />
 
         <div className="gridRight">
@@ -25,14 +25,14 @@ export default function Home() {
             <Buttons />
           </div>
           <br />
-          <div className="text-btn-colour link-hover link font-bold leading-loose">
+          <div className="text-btn-colour link-hover link font-semibold leading-loose">
             <a href="/signup">Sign up</a>
           </div>
           <div className="link-hover link font-medium">
             <a className="font-medium text-slate-400" href="/signin">
               Already have an account?
             </a>
-            <a className="text-btn-colour font-medium" href="/signin">
+            <a className="text-btn-colour font-semibold" href="/signin">
               {" "}
               Sign in
             </a>

@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import Banner from "@/components/Banner";
 
 const signup = () => {
-  return (
-    <div>Sign up now!</div>
-  )
-}
+    return (
+      <div className="grid h-screen grid-cols-2 gap-8">
+        <Banner />
+      </div>
+    );
+};
 
-export default signup
+export default signup;

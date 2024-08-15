@@ -16,8 +16,8 @@ const Banner = () => {
             <Image
               src={cfLogo}
               alt="Connect Four"
-              width={400}
-              height={500}
+              width={517.77}
+              height={433}
               className="my-auto"
             />
           </div>
