@@ -6,7 +6,7 @@ const Banner = () => {
     <div>
       <div className="m-auto flex h-[90vh] w-full">
         <div className="bg-bgc m-auto flex h-full w-full flex-col rounded-2xl pl-9">
-          <div className="h-1/4 w-full flex-col text-balance pt-14 text-left font-sans text-5xl leading-normal text-black">
+          <div className="h-1/4 w-full flex-col text-balance pb-52 pt-14 text-left font-sans text-5xl leading-normal text-black">
             <h1 className="m-auto h-full w-full">
               The <br /> Connect Four <br />
               Game

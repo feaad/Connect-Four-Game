@@ -1,10 +1,8 @@
 import React from "react";
-import Image from "next/image";
-import cfLogo from "@/assets/images/connect_four_logo.svg";
-import Buttons from "@/components/Buttons";
+import Button from "@/components/Button";
 
 import Banner from "@/components/Banner";
-
+import Link from "next/link";
 export default function Home() {
   return (
     <main>
@@ -18,15 +16,21 @@ export default function Home() {
             send an invitation link to a friend or play a game with the
             different types of AI!
           </p>
-          <br />
-          <br />
-          <br />
-          <div>
-            <Buttons />
+          
+          <div className="pt-12">
+            <Button
+              label="Play online with other players"
+              link="/play-online"
+            />
+            <Button
+              label="Send a link to play with a friend"
+              link="/send-link"
+            />
+            <Button label="Play with our AI" link="/play-ai" />
           </div>
           <br />
           <div className="text-btn-colour link-hover link font-semibold leading-loose">
-            <a href="/signup">Sign up</a>
+            <Link href="/signup">Sign up</Link>
           </div>
           <div className="link-hover link font-medium">
             <a className="font-medium text-slate-400" href="/signin">
