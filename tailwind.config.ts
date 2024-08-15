@@ -18,7 +18,8 @@ const config: Config = {
       },
       colors: {
         bgc: "#E0F0F3",
-        "btn-colour": "#224146"
+        "btn-colour": "#224146",
+        "btn-colour-hover": "#1E8190"
       }
     },
   },
@@ -26,6 +27,6 @@ const config: Config = {
   daisyui: {
     themes: ["light", "dark"],
   },
-} 
+}
 
 export default config;

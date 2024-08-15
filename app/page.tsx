@@ -19,8 +19,23 @@ export default function Home() {
             different types of AI!
           </p>
           <br />
+          <br />
+          <br />
           <div>
             <Buttons />
+          </div>
+          <br />
+          <div className="text-btn-colour link-hover link font-bold leading-loose">
+            <a href="/sign-up">Sign up</a>
+          </div>
+          <div className="link-hover link font-medium">
+            <a className="font-medium text-slate-400" href="/sign-up">
+              Already have an account?
+            </a>
+            <a className="text-btn-colour font-medium" href="/sign-up">
+              {" "}
+              Sign in
+            </a>
           </div>
         </div>
       </div>

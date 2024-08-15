@@ -11,8 +11,8 @@ const Buttons = () => {
       <div>
         {buttons.map((button, index) => (
           <button
-            key={index}
-            className="bg-btn-colour btn btn-block mb-6 h-20 justify-start rounded font-normal text-white text-base"
+            key={button.link}
+            className="bg-btn-colour hover:bg-btn-colour-hover btn btn-block mb-6 h-20 justify-start rounded-lg text-base font-normal text-white"
           >
             {button.label}
           </button>
