@@ -16,11 +16,16 @@ const config: Config = {
       fontFamily: {
         'sans': ['Helvetica Neue']
       },
+      colors: {
+        bgc: "#E0F0F3",
+        "btn-colour": "#224146"
+      }
     },
   },
   plugins: [require("tailwindcss-animate"), require("daisyui")],
   daisyui: {
     themes: ["light", "dark"],
   },
-}
-export default config
+} 
+
+export default config;
