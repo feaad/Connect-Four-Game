@@ -21,13 +21,6 @@ body {
   overflow: hidden;
 }
 
-.gridLeft{
-  background: #E0F0F3;
-  height: 90vh;
-  padding-top: 52px;
-  padding-left: 39px;
-  border-radius: 14px;
-}
 
 .gridRight{
   padding-top: 52px;
