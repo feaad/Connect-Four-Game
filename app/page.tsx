@@ -26,13 +26,13 @@ export default function Home() {
           </div>
           <br />
           <div className="text-btn-colour link-hover link font-bold leading-loose">
-            <a href="/sign-up">Sign up</a>
+            <a href="/signup">Sign up</a>
           </div>
           <div className="link-hover link font-medium">
-            <a className="font-medium text-slate-400" href="/sign-up">
+            <a className="font-medium text-slate-400" href="/signin">
               Already have an account?
             </a>
-            <a className="text-btn-colour font-medium" href="/sign-up">
+            <a className="text-btn-colour font-medium" href="/signin">
               {" "}
               Sign in
             </a>
