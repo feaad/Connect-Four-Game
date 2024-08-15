@@ -16,7 +16,7 @@
 
 body {
   /* color: rgb(var(--foreground-rgb)); */
-  padding: 48px;
+  padding: 45px ;
   margin: 0;
   overflow: hidden;
 }
@@ -27,4 +27,8 @@ body {
   padding-top: 52px;
   padding-left: 39px;
   border-radius: 14px;
+}
+
+.gridRight{
+  padding-top: 52px;
 }
