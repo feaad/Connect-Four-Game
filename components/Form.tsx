@@ -1,3 +1,4 @@
+'use client';
 import {
   faArrowRight,
   faFaceSmile,
@@ -6,14 +7,23 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import React from "react";
+import React, {useState} from "react";
 
 interface FormProps {
   title: string;
   description: string;
+  onClick?: () => void;
 }
 
+
 const Form = ({ title, description }: FormProps) => {
+  const [loading, setLoading] = useState(false);
+
+  function saveData() {
+    // Send data to server
+    setLoading(true);
+    console.log("Data saved");
+  }
   return (
     <div className="gridRight relative">
       <Link
@@ -33,7 +43,7 @@ const Form = ({ title, description }: FormProps) => {
           <label className="input input-bordered flex h-16 w-[40rem] items-center gap-2 rounded border-btn-colour">
             <FontAwesomeIcon
               icon={faFaceSmile}
-              className="h-10 w-10"
+              className="h-6 w-6"
               style={{ color: "#224146" }}
             />
             <FontAwesomeIcon
@@ -49,11 +59,17 @@ const Form = ({ title, description }: FormProps) => {
             <div className="relative w-full">
               <div className="flex flex-row justify-end">
                 <Link href="">
-                  <FontAwesomeIcon
-                    icon={faArrowRight}
-                    className="h-5 w-5"
-                    style={{ color: "#224146" }}
-                  />
+                  <button onClick={saveData}>
+                    {loading ? (
+                      "Saving..."
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faArrowRight}
+                        className="h-5 w-5"
+                        style={{ color: "#224146" }}
+                      />
+                    )}
+                  </button>
                 </Link>
               </div>
             </div>
