@@ -20,7 +20,7 @@ export default function Home() {
           <div className="pt-12">
             <Button
               label="Play online with other players"
-              link="/play-online"
+              link="/online"
             />
             <Button
               label="Send a link to play with a friend"
