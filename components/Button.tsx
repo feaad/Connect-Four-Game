@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 interface ButtonProps {
-  label: string;
-  link: string;
+    label: string;
+    link: string;
 }
 
 const Button = ({ label, link }: ButtonProps) => {

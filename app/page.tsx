@@ -33,13 +33,13 @@ export default function Home() {
             <Link href="/signup">Sign up</Link>
           </div>
           <div className="link-hover link font-medium">
-            <a className="font-medium text-slate-400" href="/signin">
+            <Link className="font-medium text-slate-400" href="/signin">
               Already have an account?
-            </a>
-            <a className="text-btn-colour font-semibold" href="/signin">
+            </Link>
+            <Link className="text-btn-colour font-semibold" href="/signin">
               {" "}
               Sign in
-            </a>
+            </Link>
           </div>
         </div>
       </div>
