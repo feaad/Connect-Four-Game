@@ -1,9 +1,14 @@
-import Banner from '@/components/Banner';
-import Loading from '@/components/Loading';
-import { faEnvelope, faGripLinesVertical, faHouse, faLock } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Link from 'next/link';
-import React from 'react'
+import Banner from "@/components/Banner";
+import Loading from "@/components/Loading";
+import {
+  faEnvelope,
+  faGripLinesVertical,
+  faHouse,
+  faLock,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Link from "next/link";
+import React from "react";
 
 const signin = () => {
   return (
@@ -76,7 +81,7 @@ const signin = () => {
                 className="flex flex-row justify-center font-medium text-slate-400"
                 href="/signup"
               >
-                Don't have an account?
+                New here?
                 <p className="pl-1 text-btn-colour">Sign Up</p>
               </Link>
               <div>
@@ -93,6 +98,6 @@ const signin = () => {
       </div>
     </main>
   );
-}
+};
 
-export default signin
+export default signin;

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+
 interface ButtonProps {
     label: string;
     link: string;
