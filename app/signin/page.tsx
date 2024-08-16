@@ -1,6 +1,6 @@
 import Banner from '@/components/Banner';
 import Loading from '@/components/Loading';
-import { faEnvelope, faGripLinesVertical, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faGripLinesVertical, faHouse, faLock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React from 'react'
@@ -12,6 +12,13 @@ const signin = () => {
         <Banner />
         <div className="gridRight relative">
           <h1 className="text-2xl font-medium leading-loose">Log In</h1>
+          <Link
+            href="/"
+            className="absolute right-0 top-0 m-auto flex flex-row text-slate-400 hover:text-btn-colour"
+          >
+            <FontAwesomeIcon className="h-5 w-5" icon={faHouse} />
+            <p className="pl-2 font-sans">Homepage</p>
+          </Link>
           <p className="font-light">Welcome to Connect Four Games</p>
           <div className="pt-12">
             <label className="form-control w-full max-w-xs">
