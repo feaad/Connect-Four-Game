@@ -7,7 +7,7 @@ import Link from "next/link";
 import { faGripLinesVertical } from "@fortawesome/free-solid-svg-icons";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
-import Loading from "@/components/Loading";
+import SignupData from "@/components/SignupData";
 
 const signup = () => {
   return (
@@ -100,12 +100,12 @@ const signup = () => {
               </label>
             </label>
           </div>
-          <Loading label={"Sign Up"} />
+          <SignupData label={"Sign Up"} />
           <div className="relative h-[13rem] w-[40rem]">
             <div className="insert-x-0 absolute bottom-0 w-[40rem]">
               <Link
                 className="flex flex-row justify-center font-medium text-slate-400"
-                href="/signin"
+                href="/signIn"
               >
                 Already have an account?{" "}
                 <p className="pl-1 text-btn-colour">Sign In</p>

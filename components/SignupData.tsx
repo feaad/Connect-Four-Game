@@ -7,7 +7,7 @@ interface LoadingProps {
   onClick?: () => void;
 }
 
-const Loading = ({ label }: LoadingProps) => {
+const SignupData = ({ label }: LoadingProps) => {
   const [loading, setLoading] = useState(false);
 
   function handleClick() {
@@ -34,4 +34,4 @@ const Loading = ({ label }: LoadingProps) => {
   );
 };
 
-export default Loading;
+export default SignupData;
