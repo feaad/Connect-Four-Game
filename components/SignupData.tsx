@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
+import Modal from "./Modal";
 
 interface LoadingProps {
   label: string;
@@ -29,7 +30,7 @@ const SignupData = ({ label }: LoadingProps) => {
             )}
           </button>
         </Link>
-      </div>
+  </div>
     </div>
   );
 };

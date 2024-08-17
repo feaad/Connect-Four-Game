@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   faArrowRight,
   faFaceSmile,
@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 interface FormProps {
   title: string;
@@ -15,13 +15,16 @@ interface FormProps {
   onClick?: () => void;
 }
 
-
 const Form = ({ title, description }: FormProps) => {
   const [loading, setLoading] = useState(false);
 
   function saveData() {
     // Send data to server
     setLoading(true);
+    // <div className="alert alert-success">Data saved</div>
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
     console.log("Data saved");
   }
   return (
@@ -40,7 +43,7 @@ const Form = ({ title, description }: FormProps) => {
           <div className="label">
             <span className="label-text text-base">Nickname</span>
           </div>
-          <label className="input input-bordered flex h-16 w-[40rem] items-center gap-2 rounded border-btn-colour">
+          <label className="input input-bordered flex h-16 w-[41rem] items-center gap-2 rounded border-btn-colour">
             <FontAwesomeIcon
               icon={faFaceSmile}
               className="h-6 w-6"
