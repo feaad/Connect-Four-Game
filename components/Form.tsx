@@ -19,6 +19,11 @@ const Form = ({ title, description }: FormProps) => {
   const [loading, setLoading] = useState(false);
 
   function saveData() {
+    // Send data to server for Guest Registration
+
+    // Open A websocket Connection
+
+
     // Send data to server
     setLoading(true);
     // <div className="alert alert-success">Data saved</div>
@@ -38,12 +43,12 @@ const Form = ({ title, description }: FormProps) => {
       </Link>
       <h1 className="text-2xl font-medium leading-loose">{title}</h1>
       <p className="font-light">{description}</p>
-      <div className="pt-12">
-        <label className="form-control w-full max-w-xs">
+      <div className="pt-12 w-full flex">
+        <label className="form-control w-full flex">
           <div className="label">
             <span className="label-text text-base">Nickname</span>
           </div>
-          <label className="input input-bordered flex h-16 w-[41rem] items-center gap-2 rounded border-btn-colour">
+          <label className="input input-bordered flex h-16 items-center gap-2 rounded border-btn-colour">
             <FontAwesomeIcon
               icon={faFaceSmile}
               className="h-6 w-6"
@@ -61,7 +66,6 @@ const Form = ({ title, description }: FormProps) => {
             />
             <div className="relative w-full">
               <div className="flex flex-row justify-end">
-                <Link href="">
                   <button onClick={saveData}>
                     {loading ? (
                       "Saving..."
@@ -73,7 +77,7 @@ const Form = ({ title, description }: FormProps) => {
                       />
                     )}
                   </button>
-                </Link>
+
               </div>
             </div>
           </label>

@@ -2,7 +2,7 @@ import Form from "@/components/Form";
 import React from "react";
 import Banner from "@/components/Banner";
 import Button from "@/components/Button";
-import Modal from "@/components/Modal";
+import Modal from "./components/Modal";
 
 const page = () => {
   return (
@@ -13,7 +13,8 @@ const page = () => {
           title="Play with other Players"
           description="First pick a nickname"
         />
-        <Modal />
+
+        <Modal title="Find an opponent" />
       </div>
     </div>
   );
