@@ -3,6 +3,7 @@ import Form from '@/components/Form';
 import Link from 'next/link';
 import React from 'react'
 import Button from '@/components/Button';
+import Modal from '@/components/GenericModal';
 
 const AIPage = () => {
   return (
@@ -15,8 +16,9 @@ const AIPage = () => {
           <h1 className="font sans pb-2 font-medium">
             Which Game Master do you want to play against?
           </h1>
-          <Button label="Mystic" link="" />
-          <Button label="Sphinx" link="" />
+          <Modal title="Mystic" />
+          <Modal title="Sphinx" />
+          
         </div>
       </div>
     </div>
