@@ -24,7 +24,7 @@ export default function Home() {
               label="Send a link to play with a friend"
               link="/sharelink"
             />
-            <Button label="Play with our AI" link="/play-ai" />
+            <Button label="Play with our AI" link="/ai" />
           </div>
           <br />
           <div className="link-hover link font-semibold leading-loose text-btn-colour">
