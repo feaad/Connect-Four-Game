@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import React from "react";
 
-const signin = () => {
+const SignIn = () => {
   return (
     <main>
       <div className="grid h-screen grid-cols-2 gap-8">
@@ -100,4 +100,4 @@ const signin = () => {
   );
 };
 
-export default signin;
+export default SignIn;

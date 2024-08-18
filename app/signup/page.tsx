@@ -9,7 +9,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import SignupData from "@/components/SignupData";
 
-const signup = () => {
+const SignUp = () => {
   return (
     <main>
       <div className="grid h-screen grid-cols-2 gap-8">
@@ -126,4 +126,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default SignUp;
