@@ -19,7 +19,10 @@ const config: Config = {
       colors: {
         bgc: "#E0F0F3",
         "btn-colour": "#224146",
-        "btn-colour-hover": "#1E8190"
+        "btn-colour-hover": "#1E8190",
+        "grid-colour": "#C2D2D4",
+        "player1": "#B91372",
+        "player2": "#FF7F11"
       }
     },
   },

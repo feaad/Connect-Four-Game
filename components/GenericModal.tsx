@@ -25,10 +25,10 @@ const GenericModal = ({ title }: GenericModalProps) => {
       </button>
       <dialog id="modal" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h3 className="text-lg font-sans pb-5">Pick a level</h3>
-          <Button label="Level 1 - Beginner" link="" />
-          <Button label="Level 2 - Intermediate" link="" />
-          <Button label="Level 3 - Advanced" link="" />
+          <h3 className="pb-5 font-sans text-lg">Pick a level</h3>
+          <Button label="Level 1 - Beginner" link="/gamepage" />
+          <Button label="Level 2 - Intermediate" link="/gamepage" />
+          <Button label="Level 3 - Advanced" link="/gamepage" />
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
