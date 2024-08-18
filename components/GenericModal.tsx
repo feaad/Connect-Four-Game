@@ -26,9 +26,11 @@ const GenericModal = ({ title }: GenericModalProps) => {
       <dialog id="modal" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
           <h3 className="pb-5 font-sans text-lg">Pick a level</h3>
-          <Button label="Level 1 - Beginner" link="/gamepage" />
-          <Button label="Level 2 - Intermediate" link="/gamepage" />
-          <Button label="Level 3 - Advanced" link="/gamepage" />
+          <Button label="Level 1 - Rookie" link="/game" />
+          <Button label="Level 2 - Scout" link="/game" />
+          <Button label="Level 3 - Explorer" link="/game" />
+          <Button label="Level 4 - Champion" link="/game" />
+          <Button label="Level 5 - Legend" link="/game" />
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
