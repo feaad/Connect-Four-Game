@@ -14,7 +14,8 @@ const config: Config = {
       //     'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       // },
       fontFamily: {
-        'sans': ['Helvetica Neue', 'Arial', 'sans-serif', 'Helvetica'],
+        'sans': ['Helvetica Neue', 'Arial', 'sans', 'Helvetica'],
+        'akshar': ['Akshar', 'sans-serif'],
       },
       colors: {
         bgc: "#E0F0F3",

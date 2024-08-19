@@ -56,7 +56,9 @@ export default observer(function Grid() {
         }}
         disabled={columnState}
       >
-        <div className={`${colour} m-auto flex h-16 w-16 shadow-inner shadow-gray-700 rounded-full `} />
+        <div
+          className={`${colour} m-auto flex h-16 w-16 rounded-full shadow-inner shadow-gray-700`}
+        />
       </button>
     );
 
@@ -78,7 +80,7 @@ export default observer(function Grid() {
   }
 
   return (
-    <div className="m-auto flex h-full w-full">
+    <div className="m-auto flex w-full pt-[5rem]">
       <div className="m-auto h-fit w-fit">
         <div className="flex flex-col justify-items-center gap-1">
           {store.data.map((rowData, index) => {
