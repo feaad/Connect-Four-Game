@@ -63,27 +63,27 @@ const Modal = ({ title }: ModalProps) => {
         {title}
       </button>
       <dialog id="modal" className="modal">
-        <div className="modal-box h-[10rem] w-11/12 max-w-3xl">
-          <div className="relative h-[3rem] w-[30rem]">
-            <div className="absolute flex h-[3rem] w-[30rem] justify-center">
+        <div className="modal-box h-[10rem] w-11/12 max-w-xl">
+          <div className="relative m-auto flex h-[3rem] w-[30rem]">
+            <div className="absolute">
               {isVisible ? (
-                <div>
-                  <h3 className="font-sans text-lg">
+                <div className="relative float-right h-[3rem] w-[30rem]">
+                  <span className="label-text flex justify-center text-base">
                     Searching for opponent...
-                  </h3>
+                  </span>
                   <div className="absolute flex h-[3rem] w-[30rem] justify-center">
-                    <span className="loading loading-ring loading-lg bottom-0 pt-2"></span>
+                    <span className="loading loading-ring loading-lg bottom-0 pt-20"></span>
                   </div>
                 </div>
               ) : (
                 <div>
                   <label className="form-control w-full max-w-xs">
                     <div className="label">
-                      <span className="label-text text-base">
+                      <span className="label-text flex justify-center text-base">
                         Your Opponent
                       </span>
                     </div>
-                    <label className="input input-bordered flex h-16 w-[35rem] items-center gap-2 rounded border-btn-colour">
+                    <label className="input input-bordered flex h-16 w-[30rem] items-center gap-2 rounded border-btn-colour">
                       <FontAwesomeIcon
                         icon={faFaceSmile}
                         className="h-6 w-6"

@@ -15,6 +15,10 @@ const GenericModal = ({ title }: GenericModalProps) => {
       modal.showModal();
     }
   }
+  // TODO: Add Game ID from backend
+  const gameID = "fc3c0944-4643-4502-a1d9-bd1c25446134";
+  const gameUrl = `/game/${gameID}`;
+
   return (
     <div>
       <button
@@ -25,12 +29,15 @@ const GenericModal = ({ title }: GenericModalProps) => {
       </button>
       <dialog id="modal" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h3 className="pb-5 font-sans text-lg">Pick a level</h3>
-          <Button label="Level 1 - Rookie" link="/game" />
-          <Button label="Level 2 - Scout" link="/game" />
-          <Button label="Level 3 - Explorer" link="/game" />
-          <Button label="Level 4 - Champion" link="/game" />
-          <Button label="Level 5 - Legend" link="/game" />
+          <h3 className="flex justify-center pb-5 font-sans text-lg">
+            Pick a level
+          </h3>
+
+          <Button label="Level 1 - Rookie" link={gameUrl} />
+          <Button label="Level 2 - Scout" link={gameUrl} />
+          <Button label="Level 3 - Explorer" link={gameUrl} />
+          <Button label="Level 4 - Champion" link={gameUrl} />
+          <Button label="Level 5 - Legend" link={gameUrl} />
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
