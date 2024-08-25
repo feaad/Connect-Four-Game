@@ -3,8 +3,11 @@ import Button from "@/components/Button";
 
 import Banner from "@/components/Banner";
 import Link from "next/link";
+import { getCurrentUser } from "@/actions/getCurrentUser";
 
-export default function Home() {
+export default async function Home() {
+  const {playerId} = await getCurrentUser();
+
   return (
     <main>
       <div className="grid h-screen grid-cols-2 gap-16">
@@ -26,19 +29,30 @@ export default function Home() {
             />
             <Button label="Play with our AI" link="/ai" />
           </div>
-          <br />
-          <div className="link-hover link font-semibold leading-loose text-btn-colour">
-            <Link href="/signup">Sign up</Link>
-          </div>
-          <div className="link-hover link font-medium">
-            <Link className="font-medium text-slate-400" href="/signin">
-              Already have an account?
-            </Link>
-            <Link className="font-semibold text-btn-colour" href="/signin">
-              {" "}
-              Sign in
-            </Link>
-          </div>
+
+          {!playerId && (
+            <>
+              <br />
+              <div className="link-hover link font-semibold leading-loose text-btn-colour">
+                <Link href="/auth/signup">Sign up</Link>
+              </div>
+              <div className="link-hover link font-medium">
+                <Link
+                  className="font-medium text-slate-400"
+                  href="/auth/signin"
+                >
+                  Already have an account?
+                </Link>
+                <Link
+                  className="font-semibold text-btn-colour"
+                  href="/auth/signin"
+                >
+                  {" "}
+                  Log in
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </main>

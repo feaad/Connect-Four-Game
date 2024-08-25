@@ -75,6 +75,9 @@ const gridStore: GridStore = {
     }
     return true;
   },
+
+  // Check if player has won, then return the player details
+ 
 };
 
 export default gridStore;

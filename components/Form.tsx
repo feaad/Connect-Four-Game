@@ -46,7 +46,7 @@ const Form = ({ title, description }: FormProps) => {
       <div className="pt-12 w-full flex">
         <label className="form-control w-full flex">
           <div className="label">
-            <span className="label-text text-base">Nickname</span>
+            <span className="label-text text-base">Username</span>
           </div>
           <label className="input input-bordered flex h-16 items-center gap-2 rounded border-btn-colour">
             <FontAwesomeIcon
@@ -62,7 +62,7 @@ const Form = ({ title, description }: FormProps) => {
             <input
               type="text"
               className="rounded-lg"
-              placeholder="Enter your nickname"
+              placeholder="Enter your username"
             />
             <div className="relative w-full">
               <div className="flex flex-row justify-end">
