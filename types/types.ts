@@ -11,13 +11,15 @@ export interface Token {
 export interface UserToken extends Token {
   email?: string;
 }
-export interface Game{
-	gameId: string;
-	playerOne: string;
-	playerTwo: string;
-	rows: number;
-	cols: number;
-	board: number[][];
+export interface Game {
+  gameId: string;
+  playerOne: string;
+  playerTwo: string;
+  rows: number;
+  cols: number;
+  board: number[][];
+  startTime: Date | null;
+  endTime: Date | null;
   currentTurn: string;
   username: string;
 }

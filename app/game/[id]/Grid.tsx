@@ -25,7 +25,6 @@ export default observer(function Grid({ gameId }: GridProps) {
     if (receivedMessage) {
       const message = JSON.parse(receivedMessage);
 
- 
       if (message.event_type && message.event_type === "player_move") {
         const player = message.player_token;
 
@@ -39,7 +38,6 @@ export default observer(function Grid({ gameId }: GridProps) {
         // TODO: handle game over
         console.log("Game Over, Status: ", message.message.status);
       }
-      
     }
   }, [receivedMessage]);
 

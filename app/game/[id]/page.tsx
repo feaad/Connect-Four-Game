@@ -4,20 +4,36 @@ import Banner from "@/components/Banner";
 import Link from "next/link";
 import Timer from "./components/Timer";
 
+import { getGameData } from "@/actions/getGameData";
+
 interface GameProps {
   params: {
     id: string;
   };
 }
 
-function Game({ params: { id} }: GameProps) { 
+async function Game({ params: { id } }: GameProps) {
+  const game = await getGameData(id);
+
+  let startDate = null;
+  let endDate = null;
+
+  if (game) {
+    if (game.startTime) {
+      startDate = new Date(game.startTime);
+    }
+    if (game.endTime) {
+      endDate = new Date(game.endTime);
+    }
+  }
+
   return (
     <div className="grid h-screen grid-cols-2 gap-8">
       <div>
         <div className="m-auto flex h-[90vh] w-full">
           <div className="m-auto flex h-full w-full flex-col rounded-2xl bg-bgc pl-9 pr-9">
             <div className="h-1/4 w-full flex-col text-balance pb-52 pt-14 text-left font-sans text-5xl leading-normal text-black">
-              <Timer />
+              <Timer startDate={startDate} endDate={endDate} />
             </div>
             <div className="m-auto flex h-3/4 w-full flex-col"></div>
           </div>
@@ -43,6 +59,6 @@ function Game({ params: { id} }: GameProps) {
       </div>
     </div>
   );
-};
+}
 
 export default Game;

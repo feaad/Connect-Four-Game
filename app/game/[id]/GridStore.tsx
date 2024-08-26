@@ -12,7 +12,7 @@ interface GridStore {
 
   columnHighlight: number;
 
-  init: (gameId:string) => void;
+  init: (gameId: string) => void;
 
   onMouseOver: (col: number) => void;
 
@@ -30,15 +30,17 @@ interface GridStore {
 }
 
 const gridStore: GridStore = {
-  gameId: '',
+  gameId: "",
 
   game: {
-    gameId: '',
+    gameId: "",
     playerOne: "",
     playerTwo: "",
     rows: 0,
     cols: 0,
     board: [],
+    startTime: null,
+    endTime: null,
     currentTurn: "",
     username: "",
   },
@@ -80,9 +82,8 @@ const gridStore: GridStore = {
   },
 
   onMouseOver(col: number) {
-
     // this.columnHighlight = col;
-    if (this.isMyTurn()){
+    if (this.isMyTurn()) {
       this.columnHighlight = col;
     } else {
       this.columnHighlight = -1;
@@ -104,7 +105,10 @@ const gridStore: GridStore = {
 
     this.emptyRows[col]--;
 
-    this.game.currentTurn = this.game.currentTurn === this.game.playerOne ? this.game.playerTwo : this.game.playerOne;
+    this.game.currentTurn =
+      this.game.currentTurn === this.game.playerOne
+        ? this.game.playerTwo
+        : this.game.playerOne;
   },
 
   isColumnFull(col: number) {
@@ -121,14 +125,12 @@ const gridStore: GridStore = {
   updateGame(playerToken: number, row: number, col: number) {
     this.game.board[row][col] = playerToken;
 
-    if(playerToken !== this.token) {
+    if (playerToken !== this.token) {
       this.game.currentTurn = this.game.username;
     }
 
     this.emptyRows[col]--;
   },
-
- 
 };
 
 export default gridStore;

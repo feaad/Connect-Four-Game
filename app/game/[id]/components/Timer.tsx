@@ -1,38 +1,46 @@
 "use client";
-import { clear } from "console";
 import React, { useEffect } from "react";
-import { useState } from 'react';
+import { useState } from "react";
 
+interface TimerProps {
+  startDate: Date | null;
+  endDate: Date | null;
+}
 
-const Timer = () => {
+const Timer = ({ startDate, endDate }: TimerProps) => {
   const [time, setTime] = useState({ minutes: 0, seconds: 0 });
 
+  const calculateTimeDelta = (startTime: Date, endTime?: Date) => {
+    const currentTime = endTime || new Date();
+
+    const delta = currentTime.getTime() - startTime.getTime();
+    const hours = Math.floor(delta / 3600000);
+    const minutes = Math.floor(delta / 60000);
+    const seconds = Math.floor((delta % 60000) / 1000);
+
+    return { hours, minutes, seconds };
+  };
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime((prev) => {
-        const { minutes, seconds } = prev;
+    if (startDate && !endDate) {
+      const interval = setInterval(() => {
+        const { minutes, seconds } = calculateTimeDelta(startDate);
+        setTime({ minutes, seconds });
+      }, 1000);
 
-        if (seconds < 59) {
-          return { minutes, seconds: seconds + 1 };
-        }
-        else if (minutes < 59 && seconds === 59) {
-          return { minutes: minutes + 1, seconds: 0 };
-        } else {
-          clearInterval(interval);
-          return { minutes: 0, seconds: 0 };
-         }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+      return () => clearInterval(interval);
+    } else if (startDate && endDate) {
+      const { minutes, seconds } = calculateTimeDelta(startDate, endDate);
+      setTime({ minutes, seconds });
+    }
+  }, [startDate, endDate]);
 
   return (
     <div className="pt-20">
       <div className="flex justify-center font-sans text-2xl font-normal">
         Timer
       </div>
-      <div className="font-akshar flex justify-center text-[5rem]">
+      <div className="flex justify-center font-akshar text-[5rem]">
         <p>
           {String(time.minutes).padStart(2, "0")}:{" "}
           {String(time.seconds).padStart(2, "0")}

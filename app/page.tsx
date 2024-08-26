@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/actions/getCurrentUser";
 import NavBar from "@/components/NavBar";
 
 export default async function Home() {
-  const {playerId} = await getCurrentUser();
+  const { playerId } = await getCurrentUser();
 
   return (
     <main>

@@ -24,7 +24,6 @@ const Form = ({ title, description }: FormProps) => {
 
     // Open A websocket Connection
 
-
     // Send data to server
     setLoading(true);
     // <div className="alert alert-success">Data saved</div>
@@ -38,8 +37,8 @@ const Form = ({ title, description }: FormProps) => {
       <NavBar />
       <h1 className="text-2xl font-medium leading-loose">{title}</h1>
       <p className="font-light">{description}</p>
-      <div className="pt-12 w-full flex">
-        <label className="form-control w-full flex">
+      <div className="flex w-full pt-12">
+        <label className="form-control flex w-full">
           <div className="label">
             <span className="label-text text-base">Username</span>
           </div>
@@ -61,18 +60,17 @@ const Form = ({ title, description }: FormProps) => {
             />
             <div className="relative w-full">
               <div className="flex flex-row justify-end">
-                  <button onClick={saveData}>
-                    {loading ? (
-                      "Saving..."
-                    ) : (
-                      <FontAwesomeIcon
-                        icon={faArrowRight}
-                        className="h-5 w-5"
-                        style={{ color: "#224146" }}
-                      />
-                    )}
-                  </button>
-
+                <button onClick={saveData}>
+                  {loading ? (
+                    "Saving..."
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faArrowRight}
+                      className="h-5 w-5"
+                      style={{ color: "#224146" }}
+                    />
+                  )}
+                </button>
               </div>
             </div>
           </label>

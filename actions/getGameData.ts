@@ -26,8 +26,9 @@ export async function getGameData(gameId: string): Promise<Game | null> {
         );
 
         if (response.data) {
+            console.log(response.data);
 
-            const { game_id, player_one_username, player_two_username, rows, columns, board, current_turn_username } = response.data;
+            const { game_id, player_one_username, player_two_username, rows, columns, board, current_turn_username, start_time, end_time } = response.data;
 
             const game: Game = {
                 gameId: game_id,
@@ -35,7 +36,9 @@ export async function getGameData(gameId: string): Promise<Game | null> {
                 playerTwo: player_two_username,
                 rows: rows,
                 cols: columns,
-				board: board,
+                board: board,
+                startTime: start_time,
+                endTime: end_time,
                 currentTurn: current_turn_username,
                 username,
             };
