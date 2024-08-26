@@ -36,7 +36,7 @@ const SignIn = () => {
     setLoading(true);
     const result = await signIn("credentials", {
       redirect: false,
-      username: formData.username,
+      username: formData.username.toLowerCase(),
       password: formData.password,
     });
     setLoading(false);

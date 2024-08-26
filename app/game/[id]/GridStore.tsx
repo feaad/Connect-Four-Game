@@ -1,11 +1,18 @@
+import { Game } from "@/types/types";
+
+import { getGameData } from "@/actions/getGameData";
 interface GridStore {
-  data: number[][];
+  gameId: string;
+
+  game: Game;
 
   emptyRows: number[];
 
+  token: number;
+
   columnHighlight: number;
 
-  init: (data: number[][]) => void;
+  init: (gameId:string) => void;
 
   onMouseOver: (col: number) => void;
 
@@ -15,27 +22,51 @@ interface GridStore {
 
   isColumnFull: (col: number) => boolean;
 
+  isMyTurn: () => boolean;
+
   getToken: (row: number, col: number) => number;
+
+  updateGame: (playerToken: number, row: number, col: number) => void;
 }
 
 const gridStore: GridStore = {
-  data: [],
+  gameId: '',
+
+  game: {
+    gameId: '',
+    playerOne: "",
+    playerTwo: "",
+    rows: 0,
+    cols: 0,
+    board: [],
+    currentTurn: "",
+    username: "",
+  },
 
   emptyRows: [],
 
+  token: 0,
+
   columnHighlight: -1,
 
-  init(data: number[][]) {
-    if (this.data.length === 0) {
-      this.data = data;
+  async init(gameId: string) {
+    if (this.game.gameId === "") {
+      const game = (await getGameData(gameId)) as Game;
+
+      if (!game) {
+        return;
+      }
+      this.game = game;
+
+      this.token = this.game.username === this.game.playerOne ? 1 : 2;
 
       // Initialize emptyRows array to the length of the data array
-      this.emptyRows = new Array(this.data[0].length).fill(0);
+      this.emptyRows = new Array(this.game.cols).fill(0);
 
       // For each column find the first empty row from the bottom
-      for (let i = 0; i < this.data[0].length; i++) {
-        for (let j = this.data.length - 1; j >= 0; j--) {
-          if (this.data[j][i] === 0) {
+      for (let i = 0; i < this.game.cols; i++) {
+        for (let j = this.game.rows - 1; j >= 0; j--) {
+          if (this.game.board[j][i] === 0) {
             this.emptyRows[i] = j;
             break;
           }
@@ -45,11 +76,17 @@ const gridStore: GridStore = {
   },
 
   getToken(row: number, col: number) {
-    return this.data[row][col];
+    return this.game.board[row][col];
   },
 
   onMouseOver(col: number) {
-    this.columnHighlight = col;
+
+    // this.columnHighlight = col;
+    if (this.isMyTurn()){
+      this.columnHighlight = col;
+    } else {
+      this.columnHighlight = -1;
+    }
   },
 
   onMouseOut(col: number) {
@@ -63,20 +100,34 @@ const gridStore: GridStore = {
       return;
     }
 
-    // TODO: Change to backend call
-    this.data[row][col] = row % 2 === 0 ? 1 : 2;
+    this.game.board[row][col] = this.token;
 
     this.emptyRows[col]--;
+
+    this.game.currentTurn = this.game.currentTurn === this.game.playerOne ? this.game.playerTwo : this.game.playerOne;
   },
 
   isColumnFull(col: number) {
-    if (this.data[0][col] === 0) {
+    if (this.game.board[0][col] === 0) {
       return false;
     }
     return true;
   },
 
-  // Check if player has won, then return the player details
+  isMyTurn() {
+    return this.game.currentTurn === this.game.username;
+  },
+
+  updateGame(playerToken: number, row: number, col: number) {
+    this.game.board[row][col] = playerToken;
+
+    if(playerToken !== this.token) {
+      this.game.currentTurn = this.game.username;
+    }
+
+    this.emptyRows[col]--;
+  },
+
  
 };
 

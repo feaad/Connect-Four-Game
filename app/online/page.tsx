@@ -27,18 +27,6 @@ export default async function Online() {
 
   const title = "Play Online with Others";
 
-  async function handleClick() {
-    await axios.post(
-      `${env.API_URL}/match/request`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-  }
-
   return (
     <div className="grid h-screen grid-cols-2 gap-16">
       <Banner />
@@ -50,22 +38,12 @@ export default async function Online() {
             <p className="pt-2 font-light">
               To play online with others find an opponent{" "}
             </p>
-            {/* <div className="flex w-full flex-col pt-12">
-              <div className="text-2xl">Hello {capitalize(username)}!</div>
-              <p className="pt-4 font-light">
-                To play online with others find a worthy opponent{" "}
-              </p>
-            </div> */}
           </div>
         ) : (
-          <Form
-            title={title}
-            description="First pick a nickname"
-            onClick={handleClick}
-          />
+          <Form title={title} description="First pick a nickname" />
         )}
 
-        <Modal title="Find an opponent" />
+        {playerId && <Modal title="Find an opponent" playerId={playerId} />}
       </div>
     </div>
   );

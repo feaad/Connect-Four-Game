@@ -41,7 +41,7 @@ const useWebSocket = ({ path }: UseWebSocketProps): UseWebSocketReturn => {
         wsUrl.protocol = wsUrl.protocol === "https:" ? "wss:" : "ws:";
 
         // Await the token before creating the WebSocket
-        const {token} = await getCurrentUser();
+        const { token } = await getCurrentUser();
         if (token) {
           wsUrl.searchParams.append("token", token);
         }

@@ -4,7 +4,13 @@ import Banner from "@/components/Banner";
 import Link from "next/link";
 import Timer from "./components/Timer";
 
-const Game = () => {
+interface GameProps {
+  params: {
+    id: string;
+  };
+}
+
+function Game({ params: { id} }: GameProps) { 
   return (
     <div className="grid h-screen grid-cols-2 gap-8">
       <div>
@@ -21,7 +27,7 @@ const Game = () => {
         <h3 className="flex justify-center font-sans text-2xl font-medium leading-loose">
           Drop your token on your turn
         </h3>
-        <Grid />
+        <Grid gameId={id} />
         <div className="relative h-[5rem]">
           <div className="insert-x-0 absolute bottom-0 w-[40rem]">
             <div>
