@@ -8,6 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import React, { useState } from "react";
+import NavBar from "./NavBar";
 
 interface FormProps {
   title: string;
@@ -34,13 +35,7 @@ const Form = ({ title, description }: FormProps) => {
   }
   return (
     <div className="gridRight relative">
-      <Link
-        href="/"
-        className="absolute right-0 top-0 m-auto flex flex-row text-slate-400 hover:text-btn-colour"
-      >
-        <FontAwesomeIcon className="h-5 w-5" icon={faHouse} />
-        <p className="pl-2 font-sans">Homepage</p>
-      </Link>
+      <NavBar />
       <h1 className="text-2xl font-medium leading-loose">{title}</h1>
       <p className="font-light">{description}</p>
       <div className="pt-12 w-full flex">

@@ -10,6 +10,7 @@ import {
   faGripLinesVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { set } from "zod";
 
 interface ModalProps {
   title: string;
@@ -36,37 +37,37 @@ const Modal = ({ title }: ModalProps) => {
   //   token: token,
   //   onMessage: handleMessage,
   // });
+  // useEffect(() => {
+  //   setIsVisible(true);
 
-  useEffect(() => {
-    setIsVisible(true);
+  //   const timer = setTimeout(() => {
+  //     setIsVisible(false);
+  //   }, 5000);
+  // }, []);
 
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, 5000);
-  }, []);
-
-  function handleModalOnClick() {
-    const modal = document.getElementById("modal");
-
-    if (modal) {
-      const modal = document.getElementById("modal") as HTMLDialogElement;
-
-      modal.showModal();
-    }
-  }
   return (
-    <div className="flex w-full pt-12">
-      <button
-        className="btn btn-block mb-6 h-20 justify-start rounded-lg bg-btn-colour text-base font-normal text-white hover:bg-btn-colour-hover"
-        onClick={() => handleModalOnClick()}
-      >
-        {title}
-      </button>
-      <dialog id="modal" className="modal">
+    <div>
+      <div className="flex w-full pt-12">
+        <button
+          className="btn btn-block mb-6 h-20 justify-start rounded-lg bg-btn-colour text-base font-normal text-white hover:bg-btn-colour-hover"
+          onClick={() => setIsVisible(!isVisible)}
+        >
+          {isVisible ? "Searching for opponent..." : title}
+        </button>
+
+        {/* <dialog id="modal" className="modal">
         <div className="modal-box h-[10rem] w-11/12 max-w-xl">
           <div className="relative m-auto flex h-[3rem] w-[30rem]">
             <div className="absolute">
-              {isVisible ? (
+              <div className="relative float-right h-[3rem] w-[30rem]">
+                <span className="label-text flex justify-center text-base">
+                  Searching for opponent...
+                </span>
+                <div className="absolute flex h-[3rem] w-[30rem] justify-center">
+                  <span className="loading loading-ring loading-lg bottom-0 pt-20"></span>
+                </div>
+              </div> */}
+        {/* {isVisible ? (
                 <div className="relative float-right h-[3rem] w-[30rem]">
                   <span className="label-text flex justify-center text-base">
                     Searching for opponent...
@@ -76,41 +77,58 @@ const Modal = ({ title }: ModalProps) => {
                   </div>
                 </div>
               ) : (
-                <div>
-                  <label className="form-control w-full max-w-xs">
-                    <div className="label">
-                      <span className="label-text flex justify-center text-base">
-                        Your Opponent
-                      </span>
-                    </div>
-                    <label className="input input-bordered flex h-16 w-[30rem] items-center gap-2 rounded border-btn-colour">
-                      <FontAwesomeIcon
-                        icon={faFaceSmile}
-                        className="h-6 w-6"
-                        style={{ color: "#224146" }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faGripLinesVertical}
-                        className="h-5 w-5"
-                        style={{ color: "#939393" }}
-                      />
-                      <input
-                        type="text"
-                        className="rounded-lg"
-                        placeholder="Suka"
-                        disabled
-                      />
-                    </label>
-                  </label>
-                </div>
-              )}
-            </div>
+                // <div>
+                //   <label className="form-control w-full max-w-xs">
+                //     <div className="label">
+                //       <span className="label-text flex justify-center text-base">
+                //         Your Opponent
+                //       </span>
+                //     </div>
+                //     <label className="input input-bordered flex h-16 w-[30rem] items-center gap-2 rounded border-btn-colour">
+                //       <FontAwesomeIcon
+                //         icon={faFaceSmile}
+                //         className="h-6 w-6"
+                //         style={{ color: "#224146" }}
+                //       />
+                //       <FontAwesomeIcon
+                //         icon={faGripLinesVertical}
+                //         className="h-5 w-5"
+                //         style={{ color: "#939393" }}
+                //       />
+                //       <input
+                //         type="text"
+                //         className="rounded-lg"
+                //         placeholder="Suka"
+                //         disabled
+                //       />
+                //     </label>
+                //   </label>
+                // </div>
+              )} */}
+        {/* </div>
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
           <button>close</button>
         </form>
-      </dialog>
+      </dialog> */}
+      </div>
+      <div id="loading">
+        <div>
+          {isVisible && (
+            <div>
+              <div className="relative flex justify-center">
+                <div className="justify-center">
+                  <span className="loading loading-ring loading-lg bottom-0 pt-20"></span>
+                </div>
+              </div>
+            </div>
+            // ) : (
+            //   // "searching for opponent"
+            //   "no opponent found"
+          )}
+        </div>
+      </div>
     </div>
   );
 };

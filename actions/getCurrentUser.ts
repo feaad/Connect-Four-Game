@@ -8,5 +8,6 @@ export const getCurrentUser = async () => {
   return {
     username: session?.username,
     playerId: session?.player_id,
+    token: session?.accessToken,
   }
 };

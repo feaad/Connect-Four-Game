@@ -9,6 +9,8 @@ import { logout } from "@/actions/logout";
 
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import { env } from "@/lib/env";
 
 import {
   faArrowRight,
@@ -16,13 +18,26 @@ import {
   faGripLinesVertical,
   faHouse,
 } from "@fortawesome/free-solid-svg-icons";
-import { getCurrentUser } from "@/actions/getCurrentUser";
+
 import NavBar from "@/components/NavBar";
+import { getCurrentUser } from "@/actions/getCurrentUser";
 
 export default async function Online() {
-  const { username } = await getCurrentUser();
+  const { username, playerId, token } = await getCurrentUser();
 
-  const title = "Play with other Players";
+  const title = "Play Online with Others";
+
+  async function handleClick() {
+    await axios.post(
+      `${env.API_URL}/match/request`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+  }
 
   return (
     <div className="grid h-screen grid-cols-2 gap-16">
@@ -31,30 +46,23 @@ export default async function Online() {
         {username ? (
           <div className="gridRight relative">
             <NavBar />
-            <Link
-              href="/"
-              className="absolute right-0 top-0 m-auto flex flex-row text-slate-400 hover:text-btn-colour"
-            >
-              <FontAwesomeIcon className="h-5 w-5" icon={faHouse} />
-              <p className="pl-2 font-sans">Homepage</p>
-            </Link>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="tooltip tooltip-right"
-                data-tip="Sign Out"
-              >
-                Sign Out
-              </button>
-            </form>
             <h1 className="text-2xl font-medium leading-loose">{title}</h1>
-            <div className="flex w-full flex-col pt-12">
+            <p className="pt-2 font-light">
+              To play online with others find an opponent{" "}
+            </p>
+            {/* <div className="flex w-full flex-col pt-12">
               <div className="text-2xl">Hello {capitalize(username)}!</div>
-              <p className="pt-4 font-light">Let's find a worthy opponent </p>
-            </div>
+              <p className="pt-4 font-light">
+                To play online with others find a worthy opponent{" "}
+              </p>
+            </div> */}
           </div>
         ) : (
-          <Form title={title} description="First pick a nickname" />
+          <Form
+            title={title}
+            description="First pick a nickname"
+            onClick={handleClick}
+          />
         )}
 
         <Modal title="Find an opponent" />

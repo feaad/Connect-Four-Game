@@ -1,94 +1,98 @@
-import { useEffect, useRef, useState } from "react";
-import SockJS from "sockjs-client";
-import { Client, IMessage } from "@stomp/stompjs";
+import { getCurrentUser } from "@/actions/getCurrentUser";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-interface WebSocketOptions {
-  url: string;
-  token: string;
-  onMessage: (data: any) => void;
+import { getWSUrl } from "@/actions/getWSUrl";
+
+export interface UseWebSocketProps {
+  path: string;
 }
 
-interface WebSocketState {
-  sendMessage: (destination: string, message: any) => void;
-  isConnected: boolean;
+interface UseWebSocketReturn {
+  sendMessage: (message: string) => void;
+  receivedMessage: string | null;
+  connectionStatus: WebSocket["readyState"];
 }
 
-const useWebSocket = ({
-  url,
-  token,
-  onMessage,
-}: WebSocketOptions): WebSocketState => {
-  const [isConnected, setIsConnected] = useState(false);
-  const stompClientRef = useRef<Client | null>(null);
+let existingSocket: WebSocket | null = null;
+
+const useWebSocket = ({ path }: UseWebSocketProps): UseWebSocketReturn => {
+  const [receivedMessage, setReceivedMessage] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<
+    WebSocket["readyState"]
+  >(WebSocket.CONNECTING);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    if (stompClientRef.current) {
-      return;
-    }
+    const establishConnection = async () => {
+      if (existingSocket) {
+        // Use the existing WebSocket connection
+        socketRef.current = existingSocket;
+        setConnectionStatus(existingSocket.readyState);
+        console.log("Using existing WebSocket connection");
+      } else {
+        if (!path) {
+          console.error("WebSocket path is required");
+          return;
+        }
+        const url = (await getWSUrl()) + path;
+        // const url = "ws://localhost:9080/ws" + path;
 
-    console.log("Connecting to WebSocket...");
-    const socket = new SockJS(url);
+        const wsUrl = new URL(url);
+        wsUrl.protocol = wsUrl.protocol === "https:" ? "wss:" : "ws:";
 
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("Connected to WebSocket");
-        setIsConnected(true);
-      },
-      onStompError: (frame) => {
-        console.error("STOMP error:", frame);
-        setIsConnected(false);
-      },
-      onWebSocketError: (event) => {
-        console.error("WebSocket error:", event);
-        console.error("Error details:", {
-          message: event.message,
-          code: event.code,
-          reason: event.reason,
-          wasClean: event.wasClean,
-        });
-        setIsConnected(false);
-      },
-      onWebSocketClose: () => {
-        console.log("WebSocket closed");
-        setIsConnected(false);
-      },
-    });
+        // Await the token before creating the WebSocket
+        const {token} = await getCurrentUser();
+        if (token) {
+          wsUrl.searchParams.append("token", token);
+        }
 
-    stompClient.onUnhandledMessage = (message: IMessage) => {
-      onMessage(JSON.parse(message.body));
-    };
+        const socket = new WebSocket(wsUrl.toString());
 
-    stompClient.activate();
-    stompClientRef.current = stompClient;
+        socket.onopen = () => {
+          existingSocket = socket; // Save the connection globally
+          socketRef.current = socket;
+          setConnectionStatus(socket.readyState);
+          console.log("WebSocket connection established");
+        };
 
-    return () => {
-      if (stompClientRef.current) {
-        stompClientRef.current.deactivate();
-        stompClientRef.current = null;
+        socket.onmessage = (event) => {
+          setReceivedMessage(event.data.toString());
+        };
+
+        socket.onclose = () => {
+          setConnectionStatus(socket.readyState);
+          console.log("WebSocket connection closed");
+          existingSocket = null; // Reset the global reference on close
+        };
+
+        socket.onerror = (error) => {
+          console.error("WebSocket error", error);
+        };
       }
     };
-  }, [url, token, onMessage]);
 
-  const sendMessage = (destination: string, message: any) => {
-    if (stompClientRef.current && isConnected) {
-      stompClientRef.current.publish({
-        destination,
-        body: JSON.stringify(message),
-      });
+    establishConnection();
+
+    // Cleanup function to avoid memory leaks
+    return () => {
+      if (
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.CLOSED
+      ) {
+        existingSocket = null;
+      }
+    };
+  }, [path]);
+
+  const sendMessage = useCallback((message: string) => {
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(message);
     } else {
-      console.error("Cannot send message, not connected");
+      console.warn("WebSocket is not open. Cannot send message.");
     }
-  };
+  }, []);
 
-  return {
-    sendMessage,
-    isConnected,
-  };
+  return { sendMessage, receivedMessage, connectionStatus };
 };
 
 export default useWebSocket;
