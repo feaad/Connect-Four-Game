@@ -13,9 +13,8 @@ export default async function Home() {
     <main>
       <div className="grid h-screen grid-cols-2 gap-16">
         <Banner />
-        <div className="gridRight">
+        <div className="gridRight relative">
           <NavBar />
-
           <h1 className="text-2xl font-medium leading-loose">Get Started</h1>
           <p className="font-light">
             Play the Connect Four Game online with players around the world,
