@@ -5,6 +5,8 @@ import Link from "next/link";
 import Timer from "./components/Timer";
 
 import { getGameData } from "@/actions/getGameData";
+import { redirect } from "next/navigation";
+
 
 interface GameProps {
   params: {
@@ -14,6 +16,10 @@ interface GameProps {
 
 async function Game({ params: { id } }: GameProps) {
   const game = await getGameData(id);
+
+  if (!game) {
+    redirect("/");
+  }
 
   let startDate = null;
   let endDate = null;

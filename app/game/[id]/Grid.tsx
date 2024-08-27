@@ -8,9 +8,8 @@ export interface GridProps {
   gameId: string;
 }
 export default observer(function Grid({ gameId }: GridProps) {
-  // const chipColor = "bg-grid-colour";
-
   const store = useLocalObservable(() => GridStore);
+  const [connect, setConnect] = useState<boolean>(true);
 
   const [webSocketConfig, setWebSocketConfig] =
     useState<UseWebSocketProps | null>(null);
@@ -21,10 +20,22 @@ export default observer(function Grid({ gameId }: GridProps) {
 
   store.init(gameId);
 
+
+  useEffect(() => {
+    if (connectionStatus === 1 && !connect) {
+      setConnect(true);
+      store.setLoading(false);
+    }
+
+    if (connectionStatus === 3) {
+      setConnect(false);
+      store.setLoading(true);
+    }
+  }, [connectionStatus]);
+
   useEffect(() => {
     if (receivedMessage) {
       const message = JSON.parse(receivedMessage);
-
       if (message.event_type && message.event_type === "player_move") {
         const player = message.player_token;
 
@@ -34,9 +45,17 @@ export default observer(function Grid({ gameId }: GridProps) {
 
         const { row, column } = message.message;
         store.updateGame(player, row, column);
+      } else if (message.message && message.message.player) {
+        const { player, row, column } = message.message;
+
+        if (player === store.token) {
+          return;
+        }
+
+        store.updateGame(player, row, column);
       } else if (message.message && message.message.status) {
-        // TODO: handle game over
-        console.log("Game Over, Status: ", message.message.status);
+        store.setStatus(message.message.status);
+        store.setAllConnected();
       }
     }
   }, [receivedMessage]);
@@ -82,6 +101,14 @@ export default observer(function Grid({ gameId }: GridProps) {
       }
     }
 
+    // TODO: Make this Visually Pleasing
+    let border = "";
+
+    const key = `${row}-${col}`;
+    if (store.connectTokens.includes(key)) {
+      border = "border-4 border-blue-500";
+    }
+
     cell = (
       <button
         className={`m-auto flex h-20 w-20 ${columnHighlight} ${pointer}`}
@@ -97,7 +124,7 @@ export default observer(function Grid({ gameId }: GridProps) {
         disabled={columnState || !isMyTurn}
       >
         <div
-          className={`${colour} m-auto flex h-16 w-16 rounded-full shadow-inner shadow-gray-700`}
+          className={`${colour} ${border} m-auto flex h-16 w-16 rounded-full shadow-inner shadow-gray-700`}
         />
       </button>
     );
@@ -120,14 +147,23 @@ export default observer(function Grid({ gameId }: GridProps) {
   }
 
   return (
-    <div className="m-auto flex w-full pt-[5rem]">
-      <div className="m-auto h-fit w-fit">
-        <div className="flex flex-col justify-items-center gap-1">
-          {store.game.board.map((rowData, index) => {
-            return getRow(rowData, index);
-          })}
+    <>
+      {store.loading ? (
+        // TODO: Making your loading screen look better
+        <div className="flex h-full w-full">
+          <span className="loading loading-dots loading-lg m-auto"></span>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="m-auto flex w-full pt-[5rem]">
+          <div className="m-auto h-fit w-fit">
+            <div className="flex flex-col justify-items-center gap-1">
+              {store.game.board.map((rowData, index) => {
+                return getRow(rowData, index);
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 });

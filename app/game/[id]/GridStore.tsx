@@ -1,6 +1,8 @@
 import { Game } from "@/types/types";
 
 import { getGameData } from "@/actions/getGameData";
+
+import { findConnectedToken } from "./connected"
 interface GridStore {
   gameId: string;
 
@@ -11,6 +13,10 @@ interface GridStore {
   token: number;
 
   columnHighlight: number;
+
+  connectTokens: string[];
+
+  loading: boolean;
 
   init: (gameId: string) => void;
 
@@ -27,6 +33,12 @@ interface GridStore {
   getToken: (row: number, col: number) => number;
 
   updateGame: (playerToken: number, row: number, col: number) => void;
+
+  setStatus: (status: string) => void;
+
+  setAllConnected: () => void;
+
+  setLoading: (loading: boolean) => void;
 }
 
 const gridStore: GridStore = {
@@ -42,6 +54,7 @@ const gridStore: GridStore = {
     startTime: null,
     endTime: null,
     currentTurn: "",
+    status: "",
     username: "",
   },
 
@@ -51,8 +64,14 @@ const gridStore: GridStore = {
 
   columnHighlight: -1,
 
+  connectTokens: [],
+
+  loading: false,
+
   async init(gameId: string) {
     if (this.game.gameId === "") {
+
+      this.loading = true;
       const game = (await getGameData(gameId)) as Game;
 
       if (!game) {
@@ -74,6 +93,10 @@ const gridStore: GridStore = {
           }
         }
       }
+
+      this.setAllConnected();
+
+      this.loading = false;
     }
   },
 
@@ -123,14 +146,37 @@ const gridStore: GridStore = {
   },
 
   updateGame(playerToken: number, row: number, col: number) {
-    this.game.board[row][col] = playerToken;
+    if (row < this.game.rows && row >= 0 && col < this.game.cols && col >= 0) {
+      this.game.board[row][col] = playerToken;
 
-    if (playerToken !== this.token) {
-      this.game.currentTurn = this.game.username;
+      if (playerToken !== this.token) {
+        this.game.currentTurn = this.game.username;
+      }
+
+      this.emptyRows[col]--;
+    }
+  },
+
+  setStatus(status: string) {
+    this.game.status = status;
+  },
+
+  setAllConnected() {
+    const status = this.game.status.toLowerCase();
+
+    this.connectTokens = [];
+
+    if (!status.includes("wins")) {
+      return;
     }
 
-    this.emptyRows[col]--;
+    this.connectTokens = findConnectedToken(this.game.board);
+
   },
+
+  setLoading(loading: boolean) {
+    this.loading = loading;
+  }
 };
 
 export default gridStore;
