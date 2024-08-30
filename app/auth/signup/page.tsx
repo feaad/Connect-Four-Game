@@ -45,7 +45,7 @@ const SignUp = () => {
 
   return (
     <main>
-      <div className="grid h-screen grid-cols-2 gap-8">
+      <div className="grid h-screen grid-cols-2 gap-16">
         <Banner />
         <div className="gridRight relative">
           <Link
@@ -144,12 +144,8 @@ const SignUp = () => {
           </div>
           <div className="relative w-[40rem]">
             <div className="flex flex-row">
-              <div className="m-auto flex w-3/5 justify-start pt-4">
-                {error && (
-                  <div className="font-sans font-medium text-rose-600">
-                    {error}
-                  </div>
-                )}
+              <div className="pt-4 w-3/5 m-auto flex justify-start">
+                {error && <div className="font-sans font-medium text-rose-600">{error}</div>}
               </div>
               <div className="flex w-2/5 justify-end">
                 <div className="flex pt-4 font-sans font-medium">
