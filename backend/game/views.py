@@ -1,7 +1,6 @@
 from random import sample
 from uuid import UUID
 
-import game.utils as utils
 from core.constants import (
     BACKENDS,
     CONNECT,
@@ -23,6 +22,14 @@ from core.models import (
 )
 from core.utils import get_player, get_player_by_username
 from django.db.models import Q
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.generics import GenericAPIView
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
+
+import game.utils as utils
 from game.match_making import add_player_to_queue, remove_player_from_queue
 from game.mixins import PermissionMixin
 from game.serializers import (
@@ -39,11 +46,6 @@ from game.tasks import (
     process_matchmaking,
     process_send_invitation,
 )
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.generics import GenericAPIView
-from rest_framework.request import Request
-from rest_framework.response import Response
 
 PLAY_PREFERENCE_KEYS = [choice[0] for choice in PLAY_PREFERENCE_CHOICES]
 
@@ -75,7 +77,7 @@ class CreateGameView(PermissionMixin, GenericAPIView):
             player_one = ai_player
             player_two = player
         else:
-            player_one, player_two = sample([ai_player, ai_player], 2)
+            player_one, player_two = sample([player, ai_player], 2)
 
         game_data = {
             "player_one": player_one.player_id,
@@ -364,6 +366,33 @@ class GetMatchMakingQueueViewSet(PermissionMixin, viewsets.ModelViewSet):
             return self.queryset.none()
 
 
+class ShareInvitationView(PermissionMixin, GenericAPIView):
+    serializer_class = GameInvitationSerializer
+
+    def get(self, request: Request, invitation_id=None) -> Response:
+        if not get_player(self.request.user):
+            return Response(
+                {"error": "Player does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            invitation = GameInvitation.objects.get(
+                invitation_id=invitation_id
+            )
+            invitation_serializer = GameInvitationSerializer(invitation)
+
+            return Response(
+                invitation_serializer.data,
+                status=status.HTTP_200_OK,
+            )
+        except (ValueError, GameInvitation.DoesNotExist):
+            return error_response(
+                "Game Invitation does not exist",
+                status.HTTP_404_NOT_FOUND,
+            )
+
+
 class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
     serializer_class = GameInvitationSerializer
     http_method_names = ["get", "post"]
@@ -456,6 +485,43 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
         )
 
+    @action(detail=False, methods=["post"])
+    def generate(self, request: Request) -> Response:
+        sender = get_player(request.user)
+        if not sender:
+            return error_response(
+                "Not a valid user", status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            rows = int(request.data.get("rows", DEFAULT_ROWS))
+            columns = int(request.data.get("columns", DEFAULT_COLUMNS))
+        except ValueError:
+            return error_response("Column and Row must be integers")
+
+        if rows < CONNECT or columns < CONNECT:
+            return error_response(
+                f"Rows and Columns must be at least {CONNECT}"
+            )
+
+        play_preference = request.data.get("play_preference", "random")
+
+        if play_preference not in PLAY_PREFERENCE_KEYS:
+            return error_response(f"Choose from {PLAY_PREFERENCE_KEYS}")
+
+        invitation = GameInvitation.objects.create(
+            sender=sender,
+            play_preference=play_preference,
+            rows=rows,
+            columns=columns,
+            status=Status.objects.get(name=cfs.OPPONENT.value),
+        )
+
+        return Response(
+            GameInvitationSerializer(invitation).data,
+            status=status.HTTP_201_CREATED,
+        )
+
     @action(detail=True, methods=["post"])
     def accept(self, request: Request, pk=None) -> Response:
         player = get_player(request.user)
@@ -467,13 +533,22 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         try:
             invitation: GameInvitation = GameInvitation.objects.get(
                 invitation_id=UUID(pk),
-                status=Status.objects.get(name=cfs.PENDING.value),
             )
+            if invitation.status.name not in [
+                cfs.OPPONENT.value,
+                cfs.PENDING.value,
+            ]:
+                return error_response(
+                    "Game Invitation is not pending or waiting for opponent"
+                )
         except (ValueError, GameInvitation.DoesNotExist):
             return error_response(
                 "Game Invitation does not exist",
                 status.HTTP_404_NOT_FOUND,
             )
+
+        if invitation.status == Status.objects.get(name=cfs.OPPONENT.value):
+            invitation.receiver = player
 
         if invitation.receiver != player:
             return error_response(
@@ -530,13 +605,21 @@ class GameInvitationViewSet(PermissionMixin, viewsets.ModelViewSet):
         try:
             invitation: GameInvitation = GameInvitation.objects.get(
                 invitation_id=UUID(pk),
-                status=Status.objects.get(name=cfs.PENDING.value),
             )
+            if invitation.status.name not in [
+                cfs.OPPONENT.value,
+                cfs.PENDING.value,
+            ]:
+                return error_response(
+                    "Game Invitation is not pending or waiting for opponent"
+                )
         except (ValueError, GameInvitation.DoesNotExist):
             return error_response(
                 "Game Invitation does not exist",
                 status.HTTP_404_NOT_FOUND,
             )
+        if invitation.status == Status.objects.get(name=cfs.OPPONENT.value):
+            invitation.receiver = player
 
         if invitation.receiver != player:
             return error_response(

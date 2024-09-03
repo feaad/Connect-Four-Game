@@ -477,7 +477,9 @@ class PlayerViewSet(viewsets.ModelViewSet):
     search_fields = [
         "player_id",
         "user__username",
+        "user__user_id",
         "guest__username",
+        "guest__guest_id",
         "wins",
         "losses",
         "draws",

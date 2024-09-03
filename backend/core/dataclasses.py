@@ -31,6 +31,7 @@ class Status(Enum):
     P1W = "Player 1 Wins"
     P2W = "Player 2 Wins"
     DRAW = "Draw"
+    OPPONENT = "Waiting for Opponent"
 
     def __str__(self) -> str:
         return self.value

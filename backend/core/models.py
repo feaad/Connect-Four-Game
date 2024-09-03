@@ -459,7 +459,11 @@ class GameInvitation(models.Model):
         Player, on_delete=models.CASCADE, related_name="sender"
     )
     receiver = models.ForeignKey(
-        Player, on_delete=models.CASCADE, related_name="receiver"
+        Player,
+        on_delete=models.CASCADE,
+        related_name="receiver",
+        null=True,
+        blank=True,
     )
     status = models.ForeignKey(
         Status,

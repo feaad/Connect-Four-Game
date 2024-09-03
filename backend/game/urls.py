@@ -51,4 +51,9 @@ urlpatterns = [
         views.MoveViewSet.as_view({"post": "undo"}),
         name="move-undo",
     ),
+    path(
+        "invitation/share-invite/<uuid:invitation_id>",
+        views.ShareInvitationView.as_view(),
+        name="share-invite",
+    ),
 ]

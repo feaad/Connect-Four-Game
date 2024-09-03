@@ -225,3 +225,25 @@ class EloHistoryAdmin(admin.ModelAdmin):
         "game",
         "created_at",
     ]
+
+
+@admin.register(models.GameInvitation)
+class GameInvitationAdmin(admin.ModelAdmin):
+    """
+    Define the parameters to display on the admin page for GameInvitation.
+
+    """
+
+    list_display = [
+        "invitation_id",
+        "sender",
+        "receiver",
+        "status",
+        "game",
+        "play_preference",
+        "rows",
+        "columns",
+        "created_at",
+        "updated_at",
+    ]
+    list_filter = ["status"]
