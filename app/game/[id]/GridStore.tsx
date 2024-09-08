@@ -2,8 +2,8 @@ import { Game } from "@/types/types";
 
 import { getGameData } from "@/actions/getGameData";
 
-import { findConnectedToken } from "./connected"
-interface GridStore {
+import { findConnectedToken } from "./connected";
+export interface GridStoreProps {
   gameId: string;
 
   game: Game;
@@ -18,7 +18,9 @@ interface GridStore {
 
   loading: boolean;
 
-  init: (gameId: string) => void;
+  init: (gameData: Game, reinit?: boolean) => void;
+
+  setGameData: () => void;
 
   onMouseOver: (col: number) => void;
 
@@ -36,12 +38,12 @@ interface GridStore {
 
   setStatus: (status: string) => void;
 
-  setAllConnected: () => void;
+  setAllConnected: (init?: boolean) => void;
 
   setLoading: (loading: boolean) => void;
 }
 
-const gridStore: GridStore = {
+const gridStore: GridStoreProps = {
   gameId: "",
 
   game: {
@@ -66,18 +68,13 @@ const gridStore: GridStore = {
 
   connectTokens: [],
 
-  loading: false,
+  loading: true,
 
-  async init(gameId: string) {
-    if (this.game.gameId === "") {
-
+  init(gameData: Game, reinit = false) {
+    if (this.game.gameId === "" || reinit) {
       this.loading = true;
-      const game = (await getGameData(gameId)) as Game;
 
-      if (!game) {
-        return;
-      }
-      this.game = game;
+      this.game = gameData;
 
       this.token = this.game.username === this.game.playerOne ? 1 : 2;
 
@@ -94,10 +91,25 @@ const gridStore: GridStore = {
         }
       }
 
-      this.setAllConnected();
+      this.setAllConnected(true);
 
       this.loading = false;
     }
+  },
+
+  async setGameData() {
+    this.setLoading(true);
+
+    const gameData = await getGameData(this.gameId);
+
+    if (!gameData) {
+      this.setLoading(false);
+      return;
+    }
+
+    this.init(gameData, true);
+
+    this.setLoading(false);
   },
 
   getToken(row: number, col: number) {
@@ -105,7 +117,6 @@ const gridStore: GridStore = {
   },
 
   onMouseOver(col: number) {
-    // this.columnHighlight = col;
     if (this.isMyTurn()) {
       this.columnHighlight = col;
     } else {
@@ -122,6 +133,10 @@ const gridStore: GridStore = {
 
     if (row === -1) {
       return;
+    }
+
+    if (!this.game.startTime) {
+      this.game.startTime = new Date();
     }
 
     this.game.board[row][col] = this.token;
@@ -147,6 +162,10 @@ const gridStore: GridStore = {
 
   updateGame(playerToken: number, row: number, col: number) {
     if (row < this.game.rows && row >= 0 && col < this.game.cols && col >= 0) {
+      if (!this.game.startTime) {
+        this.game.startTime = new Date();
+      }
+
       this.game.board[row][col] = playerToken;
 
       if (playerToken !== this.token) {
@@ -161,22 +180,25 @@ const gridStore: GridStore = {
     this.game.status = status;
   },
 
-  setAllConnected() {
+  setAllConnected(init = false) {
     const status = this.game.status.toLowerCase();
 
     this.connectTokens = [];
+
+    if (!this.game.endTime && !init) {
+      this.game.endTime = new Date();
+    }
 
     if (!status.includes("wins")) {
       return;
     }
 
     this.connectTokens = findConnectedToken(this.game.board);
-
   },
 
   setLoading(loading: boolean) {
     this.loading = loading;
-  }
+  },
 };
 
 export default gridStore;

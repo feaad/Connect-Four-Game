@@ -1,83 +1,21 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import useWebSocket, { UseWebSocketProps } from "@/hooks/useWebSocket";
-import { observer, useLocalObservable } from "mobx-react-lite";
-import GridStore from "./GridStore";
+import { observer } from "mobx-react-lite";
+import { GridStoreProps } from "./GridStore";
+
+import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export interface GridProps {
-  gameId: string;
+  store: GridStoreProps;
+  onClick: (col: number) => void;
 }
-export default observer(function Grid({ gameId }: GridProps) {
-  const store = useLocalObservable(() => GridStore);
-  const [connect, setConnect] = useState<boolean>(true);
-
-  const [webSocketConfig, setWebSocketConfig] =
-    useState<UseWebSocketProps | null>(null);
-
-  const { sendMessage, receivedMessage, connectionStatus } = useWebSocket({
-    path: "/game/" + gameId,
-  });
-
-  store.init(gameId);
-
-
-  useEffect(() => {
-    if (connectionStatus === 1 && !connect) {
-      setConnect(true);
-      store.setLoading(false);
-    }
-
-    if (connectionStatus === 3) {
-      setConnect(false);
-      store.setLoading(true);
-    }
-  }, [connectionStatus]);
-
-  useEffect(() => {
-    if (receivedMessage) {
-      const message = JSON.parse(receivedMessage);
-      if (message.event_type && message.event_type === "player_move") {
-        const player = message.player_token;
-
-        if (player === store.token) {
-          return;
-        }
-
-        const { row, column } = message.message;
-        store.updateGame(player, row, column);
-      } else if (message.message && message.message.player) {
-        const { player, row, column } = message.message;
-
-        if (player === store.token) {
-          return;
-        }
-
-        store.updateGame(player, row, column);
-      } else if (message.message && message.message.status) {
-        store.setStatus(message.message.status);
-        store.setAllConnected();
-      }
-    }
-  }, [receivedMessage]);
-
-  function handleOnClick(col: number) {
-    if (!store.isMyTurn()) {
-      return;
-    }
-
-    const message = {
-      type: "player_move",
-      column: col,
-      row: store.emptyRows[col],
-    };
-    sendMessage(JSON.stringify(message));
-    store.onCellClick(col);
-  }
-
+export default observer(function Grid({ store, onClick }: GridProps) {
+  let winner: string = "";
   function getCell(row: number, col: number) {
     let cell: JSX.Element;
 
-    let colour: string = "bg-grid-colour";
+    let colour: string = "bg-opacity-50 bg-grid-colour";
 
     const columnState = store.isColumnFull(col);
     const isMyTurn = store.isMyTurn();
@@ -92,7 +30,7 @@ export default observer(function Grid({ gameId }: GridProps) {
     }
     let columnHighlight = "";
 
-    if (isMyTurn) {
+    if (isMyTurn && !store.game.endTime) {
       columnHighlight =
         col === store.columnHighlight ? "bg-[#B1DFE8] rounded-full" : "";
 
@@ -106,12 +44,20 @@ export default observer(function Grid({ gameId }: GridProps) {
 
     const key = `${row}-${col}`;
     if (store.connectTokens.includes(key)) {
-      border = "border-4 border-blue-500";
+      border = "border-8 border-[#EAE151]";
     }
+    // else if(!store.connectTokens.includes(key)) {
+    //   if (token === 1) {
+    //     colour = colour.replace("bg-player1", "bg-opacity-50 bg-player1");
+    //   } else if (token === 2) {
+    //     colour = colour.replace("bg-player2", "bg-opacity-50 bg-player2");
+    //   }
+    //  }
 
     cell = (
       <button
-        className={`m-auto flex h-20 w-20 ${columnHighlight} ${pointer}`}
+        key={`btn-${key}`}
+        className={`m-auto flex h-24 w-24 ${columnHighlight} ${pointer}`}
         onMouseOver={() => {
           store.onMouseOver(col);
         }}
@@ -119,12 +65,13 @@ export default observer(function Grid({ gameId }: GridProps) {
           store.onMouseOut(col);
         }}
         onClick={() => {
-          handleOnClick(col);
+          onClick(col);
         }}
-        disabled={columnState || !isMyTurn}
+        disabled={columnState || !isMyTurn || store.game.endTime === null}
       >
         <div
-          className={`${colour} ${border} m-auto flex h-16 w-16 rounded-full shadow-inner shadow-gray-700`}
+          key={`cell-${key}`}
+          className={`${colour} ${border} m-auto flex h-20 w-20 rounded-full`}
         />
       </button>
     );
@@ -136,7 +83,10 @@ export default observer(function Grid({ gameId }: GridProps) {
     let row: JSX.Element;
 
     row = (
-      <div className="flex flex-row justify-items-center gap-1">
+      <div
+        key={`row-${rowIndex}`}
+        className="flex flex-row justify-items-center gap-1"
+      >
         {rowData.map((_, index) => {
           return getCell(rowIndex, index);
         })}
@@ -146,24 +96,52 @@ export default observer(function Grid({ gameId }: GridProps) {
     return row;
   }
 
-  return (
-    <>
-      {store.loading ? (
-        // TODO: Making your loading screen look better
-        <div className="flex h-full w-full">
-          <span className="loading loading-dots loading-lg m-auto"></span>
-        </div>
-      ) : (
-        <div className="m-auto flex w-full pt-[5rem]">
-          <div className="m-auto h-fit w-fit">
-            <div className="flex flex-col justify-items-center gap-1">
-              {store.game.board.map((rowData, index) => {
-                return getRow(rowData, index);
-              })}
+  function dropIndicator() {
+    let row: JSX.Element;
+
+    row = (
+      <div className="flex h-8 w-full flex-row justify-items-center gap-1">
+        {store.game.board[0].map((_, index) => {
+          const cols = store.game.board[0].length;
+          const columnState = store.isColumnFull(index);
+
+          let columnHighlight = "";
+          if (store.isMyTurn()) {
+            columnHighlight =
+              index === store.columnHighlight ? "block" : "hidden";
+
+            if (columnState && store.columnHighlight === index) {
+              columnHighlight = "hidden";
+            }
+          }
+
+          return (
+            <div className="flex h-full w-full">
+              <FontAwesomeIcon
+                key={`drop-${index}`}
+                icon={faArrowDown}
+                size="xl"
+                className={`${columnHighlight} fa-bounce m-auto`}
+              />
             </div>
-          </div>
+          );
+        })}
+      </div>
+    );
+
+    return row;
+  }
+
+  return (
+    <div className="m-auto flex w-full pt-[3rem]">
+      <div className="m-auto h-fit w-fit">
+        <div className="flex flex-col justify-items-center gap-1">
+          {dropIndicator()}
+          {store.game.board.map((rowData, index) => {
+            return getRow(rowData, index);
+          })}
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 });

@@ -1,46 +1,64 @@
 "use client";
-import React, { useEffect } from "react";
-import { useState } from "react";
+
+import { observer } from "mobx-react-lite";
+
+import React, { useEffect, useState } from "react";
+import { GridStoreProps } from "../GridStore";
 
 interface TimerProps {
-  startDate: Date | null;
-  endDate: Date | null;
+  store: GridStoreProps;
 }
 
-const Timer = ({ startDate, endDate }: TimerProps) => {
+const Timer = observer(({ store }: TimerProps) => {
   const [time, setTime] = useState({ minutes: 0, seconds: 0 });
 
   const calculateTimeDelta = (startTime: Date, endTime?: Date) => {
     const currentTime = endTime || new Date();
-
     const delta = currentTime.getTime() - startTime.getTime();
-    const hours = Math.floor(delta / 3600000);
-    const minutes = Math.floor(delta / 60000);
-    const seconds = Math.floor((delta % 60000) / 1000);
-
+    const hours = Math.floor(
+      (delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
+    const minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((delta % (1000 * 60)) / 1000);
     return { hours, minutes, seconds };
   };
 
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    let startDate: Date | null = null;
+    let endDate: Date | null = null;
+
+    if (store.game.startTime) {
+      startDate = new Date(store.game.startTime);
+    }
+
+    if (store.game.endTime) {
+      endDate = new Date(store.game.endTime);
+    }
+
     if (startDate && !endDate) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         const { minutes, seconds } = calculateTimeDelta(startDate);
         setTime({ minutes, seconds });
       }, 1000);
-
-      return () => clearInterval(interval);
     } else if (startDate && endDate) {
       const { minutes, seconds } = calculateTimeDelta(startDate, endDate);
       setTime({ minutes, seconds });
     }
-  }, [startDate, endDate]);
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [store.game.startTime, store.game.endTime]);
 
   return (
     <div className="pt-20">
-      <div className="flex justify-center font-sans text-2xl font-normal">
+      <div className="flex justify-center font-sans text-3xl font-normal text-white">
         Timer
       </div>
-      <div className="flex justify-center font-akshar text-[5rem]">
+      <div className="flex justify-center font-akshar text-[13rem] text-white">
         <p>
           {String(time.minutes).padStart(2, "0")}:{" "}
           {String(time.seconds).padStart(2, "0")}
@@ -48,6 +66,6 @@ const Timer = ({ startDate, endDate }: TimerProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default Timer;
