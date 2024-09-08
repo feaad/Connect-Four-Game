@@ -78,17 +78,10 @@ const Waiting = ({ invitationId, playerId, shareLink }: WaitingProps) => {
     <div className="from indigo-500 from-bg-1 from-1% via-bg-2 via-1% to-bg-3 to-1% -m-11 h-screen w-screen bg-gradient-to-br">
       <div>
         {connectionStatus != 1 ? (
-          <div>
-            <div className="flex justify-center pt-60">
-              <span className="loading loading-dots w-[10rem] bg-white" />
-            </div>
-            <div className="flex justify-center">
-              <h1 className="font-sans text-xl text-white">Connecting</h1>
-            </div>
-          </div>
+          <WaitScreen title={"Connecting"} />
         ) : (
           <>
-            <WaitScreen />
+            <WaitScreen title={"Waiting for opponent to join"} />
             <div className="join flex h-12 w-full flex-row items-center justify-center pt-20">
               <div className="join-item flex h-12 w-[40rem] rounded-lg bg-btn-colour pl-5 pr-5">
                 <code className="m-auto block text-sm text-white">
@@ -122,7 +115,7 @@ const Waiting = ({ invitationId, playerId, shareLink }: WaitingProps) => {
             </div>
           </>
         )}
-        <div className="insert-x-0 absolute bottom-0 flex justify-center w-full pb-12">
+        <div className="insert-x-0 absolute bottom-0 flex w-full justify-center pb-12">
           <div className="text-white">
             <Link href="/"> Resign from Game</Link>
           </div>
