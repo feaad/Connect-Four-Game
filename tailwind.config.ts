@@ -23,7 +23,10 @@ const config: Config = {
         "btn-colour-hover": "#1E8190",
         "grid-colour": "#C2D2D4",
         "player1": "#B91372",
-        "player2": "#FF7F11"
+        "player2": "#FF7F11",
+        "bg-1": "#0E3A49",
+        "bg-2": "#228EAE",
+        "bg-3": "#1FCFCF"
       }
     },
   },
