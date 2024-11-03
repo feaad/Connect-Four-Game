@@ -13,6 +13,7 @@ import useWebSocket, { UseWebSocketProps } from "@/hooks/useWebSocket";
 import Waiting from "@/app/sharelink/[id]/Waiting";
 import WaitScreen from "@/components/WaitScreen";
 import { getToken } from "next-auth/jwt";
+import Confetti from "../../confetti/components/Confetti";
 
 interface GameProps {
 	gameData: GameType;
@@ -89,9 +90,12 @@ export default observer(function Game({ gameData }: GameProps) {
 			const token = store.game.board[Number(rowCol[0])][Number(rowCol[1])];
 			if (token == store.token) {
 				results = store.game.username.toUpperCase() + " WON!";
+				<Confetti />;
 			} else {
 				results =
-					store.token == 1 ? store.game.playerTwo.toUpperCase() : store.game.playerOne.toUpperCase();
+					store.token == 1
+						? store.game.playerTwo.toUpperCase()
+						: store.game.playerOne.toUpperCase();
 				results += " WON!";
 			}
 		} else {
@@ -105,6 +109,7 @@ export default observer(function Game({ gameData }: GameProps) {
 	function username() {
 		if (store.token == 1) {
 			colour = "bg-player1";
+
 			return store.game.playerOne.toUpperCase();
 		} else {
 			colour = "bg-player2";
@@ -123,19 +128,16 @@ export default observer(function Game({ gameData }: GameProps) {
 							<Timer store={store} />
 							<div className='w-120 flex justify-center pt-20'>
 								<div className='bg-2D565B bg-grid-bg card w-full'>
-									<div className='card-body'>
-										<h2 className='font-sans text-3xl text-white flex items-center'>
-											{`Your token ${username()} :`}
-											{"  "}
-											<span
-												className={`${colour} h-12 w-12 rounded-full ml-2`}
-											/>
-										</h2>
-
-										{/* <div
-											className={`${colour} m-auto flex h-20 w-20 rounded-full`}
-										/> */}
-									</div>
+                  <div className='card-body'>
+                    <h2 className='font-sans text-3xl text-white flex items-center'>
+                      {`Your token ${username()} :`}
+                      {"  "}
+                      <span
+                        className={`${colour} h-12 w-12 rounded-full ml-2`}
+                      />
+                    </h2>
+                    {store.connectTokens.length > 0 && <Confetti />}
+                  </div>
 								</div>
 							</div>
 							<div className='w-120 flex justify-center pt-20'>
@@ -149,7 +151,7 @@ export default observer(function Game({ gameData }: GameProps) {
 								<div className='bg-2D565B bg-grid-bg card w-full'>
 									<div className='card-body'>
 										<h2 className='font-sans text-[#FF922D]'>How to play</h2>
-										<p className='font-sans text-white'>
+										<p className='font-sans text-white text-2xl'>
 											Drop your token on your turn. Win the game by connecting
 											four of your tokens diagonally, horizontally or
 											vertically.
@@ -165,6 +167,7 @@ export default observer(function Game({ gameData }: GameProps) {
 								</div>
 							)}
 							<Grid store={store} onClick={handleOnClick} />
+							{/* <Confetti /> */}
 							<Link
 								className='flex flex-row justify-center pt-40 font-medium text-slate-400'
 								href='/'
