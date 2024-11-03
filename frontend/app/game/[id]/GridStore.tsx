@@ -88,7 +88,7 @@ const gridStore: GridStoreProps = {
             this.emptyRows[i] = j;
             break;
           }
-        }
+        } 
       }
 
       this.setAllConnected(true);
@@ -117,6 +117,7 @@ const gridStore: GridStoreProps = {
   },
 
   onMouseOver(col: number) {
+    console.log("onMouseOver");
     if (this.isMyTurn()) {
       this.columnHighlight = col;
     } else {
@@ -125,6 +126,7 @@ const gridStore: GridStoreProps = {
   },
 
   onMouseOut(col: number) {
+    console.log("onMouseOut");
     this.columnHighlight = -1;
   },
 
