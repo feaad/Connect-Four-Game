@@ -90,7 +90,6 @@ export default observer(function Game({ gameData }: GameProps) {
 			const token = store.game.board[Number(rowCol[0])][Number(rowCol[1])];
 			if (token == store.token) {
 				results = store.game.username.toUpperCase() + " WON!";
-				<Confetti />;
 			} else {
 				results =
 					store.token == 1
@@ -167,7 +166,6 @@ export default observer(function Game({ gameData }: GameProps) {
 								</div>
 							)}
 							<Grid store={store} onClick={handleOnClick} />
-							{/* <Confetti /> */}
 							<Link
 								className='flex flex-row justify-center pt-40 font-medium text-slate-400'
 								href='/'
