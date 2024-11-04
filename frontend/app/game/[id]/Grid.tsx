@@ -108,12 +108,14 @@ export default observer(function Grid({ store, onClick }: GridProps) {
 
 					return (
 						<div key={`col-${index}`} className='flex h-full w-full'>
-							<FontAwesomeIcon
-								key={`drop-${index}`}
-								icon={faArrowDown}
-								size='xl'
-								className={`${columnHighlight} fa-bounce m-auto`}
-							/>
+							{store.isMyTurn() && (
+								<FontAwesomeIcon
+									key={`drop-${index}`}
+									icon={faArrowDown}
+									size='xl'
+									className={`${columnHighlight} fa-bounce m-auto`}
+								/>
+							)}
 						</div>
 					);
 				})}
@@ -124,9 +126,9 @@ export default observer(function Grid({ store, onClick }: GridProps) {
 	}
 
 	return (
-		<div className='m-auto flex w-full pt-[3rem]'>
+		<div className='m-auto flex w-full pt-[5rem]'>
 			<div className='m-auto h-fit w-fit'>
-				<div className='flex flex-col justify-items-center gap-1'>
+				<div className='flex flex-col justify-items-center gap-6'>
 					{dropIndicator()}
 					{store.game.board.map((rowData, index) => {
 						return getRow(rowData, index);

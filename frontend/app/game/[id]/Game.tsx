@@ -125,28 +125,37 @@ export default observer(function Game({ gameData }: GameProps) {
 					<div className='grid grid-cols-3 gap-8 p-12'>
 						<div className='h-[90vh]'>
 							<Timer store={store} />
-							<div className='w-120 flex justify-center pt-20'>
-								<div className='bg-2D565B bg-grid-bg card w-full'>
-                  <div className='card-body'>
-                    <h2 className='font-sans text-3xl text-white flex items-center'>
-                      {`Your token ${username()} :`}
-                      {"  "}
-                      <span
-                        className={`${colour} h-12 w-12 rounded-full ml-2`}
-                      />
-                    </h2>
-                    {store.connectTokens.length > 0 && <Confetti />}
-                  </div>
-								</div>
-							</div>
-							<div className='w-120 flex justify-center pt-20'>
+							<div className='w-120 flex justify-center pt-14'>
 								<div className='bg-2D565B bg-grid-bg card w-full'>
 									<div className='card-body'>
-										<h2 className='font-sans text-3xl text-white'>{`It is ${store.game.currentTurn}'s turn`}</h2>
+										<h2 className='font-sans text-3xl text-white flex items-center'>
+											{` ${store.game.currentTurn.toUpperCase()}'s Turn`}{" "}
+											<span
+												className={`${
+													store.game.currentTurn === store.game.playerOne
+														? "bg-player1"
+														: "bg-player2"
+												} h-12 w-12 rounded-full ml-2`}
+											/>
+										</h2>
 									</div>
 								</div>
 							</div>
-							<div className='pt-20'>
+							<div className='w-120 flex justify-center pt-14'>
+								<div className='bg-2D565B bg-grid-bg card w-full'>
+									<div className='card-body'>
+										<h2 className='font-sans text-3xl text-white flex items-center'>
+											{`Your token colour ${username()} :`}
+											{"  "}
+											<span
+												className={`${colour} h-12 w-12 rounded-full ml-2`}
+											/>
+										</h2>
+										{store.connectTokens.length > 0 && <Confetti />}
+									</div>
+								</div>
+							</div>
+							<div className='pt-14'>
 								<div className='bg-2D565B bg-grid-bg card w-full'>
 									<div className='card-body'>
 										<h2 className='font-sans text-[#FF922D]'>How to play</h2>
@@ -167,10 +176,10 @@ export default observer(function Game({ gameData }: GameProps) {
 							)}
 							<Grid store={store} onClick={handleOnClick} />
 							<Link
-								className='flex flex-row justify-center pt-40 font-medium text-slate-400'
+								className='flex flex-row justify-center pt-28 font-medium text-xl text-slate-400'
 								href='/'
 							>
-								Resign
+								Resign From Game
 							</Link>
 						</div>
 					</div>
